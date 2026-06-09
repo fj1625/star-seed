@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <title>The Star Seed — My Home</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <!-- ===== App Shell ===== -->
+  <div id="app">
+    <!-- Status Bar -->
+    <header id="status-bar">
+      <div class="status-twinkle" id="twinkle-character">
+        <div class="twinkle-core">✨</div>
+        <div class="twinkle-face">
+          <span class="eye left"></span>
+          <span class="eye right"></span>
+          <span class="mouth"></span>
+        </div>
+        <div class="twinkle-glow"></div>
+      </div>
+      <div class="status-info">
+        <span class="twinkle-status-text" id="twinkle-status">Twinkle is sleeping...</span>
+      </div>
+      <div class="status-powers" id="power-dots">
+        <span class="power-dot" id="power-dot-1">○</span>
+        <span class="power-dot" id="power-dot-2">○</span>
+        <span class="power-dot" id="power-dot-3">○</span>
+        <span class="power-dot" id="power-dot-4">○</span>
+        <span class="power-dot" id="power-dot-5">○</span>
+      </div>
+    </header>
+
+    <!-- Day Navigation Tabs -->
+    <nav id="day-nav">
+      <button class="day-tab" id="day-tab-1">Day 1 🔦</button>
+      <button class="day-tab" id="day-tab-2">Day 2 🌈</button>
+      <button class="day-tab" id="day-tab-3">Day 3 🎵</button>
+      <button class="day-tab" id="day-tab-4">Day 4 🤸</button>
+      <button class="day-tab" id="day-tab-5">Day 5 ❤️</button>
+    </nav>
+
+    <!-- Main Content -->
+    <main id="scenes">
+      <!-- Intro Scene -->
+      <section id="intro" class="scene">
+        <div class="intro-container">
+          <div class="intro-stars"></div>
+          <div class="intro-twinkle-big">
+            <div class="big-twinkle">✨</div>
+            <div class="big-twinkle-glow"></div>
+          </div>
+          <h1 class="intro-title">The Star Seed</h1>
+          <p class="intro-subtitle">Episode 1: My Home</p>
+          <div class="intro-story">
+            <p>A tiny star seed fell from the sky...</p>
+            <p>Its name is <strong>Twinkle</strong>.</p>
+            <p>Twinkle lost its 5 magic powers!</p>
+            <p>Can you find them all?</p>
+          </div>
+          <div class="intro-powers-preview">
+            <span>🔦 Light</span>
+            <span>🌈 Color</span>
+            <span>🎵 Sound</span>
+            <span>🤸 Motion</span>
+            <span>❤️ Heart</span>
+          </div>
+          <button class="btn btn-start" id="btn-start">
+            <span class="btn-start-text">Begin the Adventure!</span>
+            <span class="btn-start-rocket">🚀</span>
+          </button>
+          <p class="intro-parent-note">👋 Parent: Print the <a href="printable/ep01-printable.html" target="_blank">game materials</a> first!</p>
+        </div>
+      </section>
+
+      <!-- Day 1: Light Power -->
+      <section id="day1" class="scene" style="display:none"></section>
+
+      <!-- Day 2: Color Power -->
+      <section id="day2" class="scene" style="display:none"></section>
+
+      <!-- Day 3: Sound Power -->
+      <section id="day3" class="scene" style="display:none"></section>
+
+      <!-- Day 4: Motion Power -->
+      <section id="day4" class="scene" style="display:none"></section>
+
+      <!-- Day 5: Heart Power -->
+      <section id="day5" class="scene" style="display:none"></section>
+
+      <!-- Complete / Certificate Scene -->
+      <section id="complete" class="scene" style="display:none"></section>
+    </main>
+
+    <!-- Day Complete Overlay -->
+    <div id="day-complete-overlay" class="overlay" style="display:none">
+      <div class="overlay-card animate-pop">
+        <div class="overlay-stars">⭐ ✨ ⭐</div>
+        <h2 class="overlay-power" id="complete-power"></h2>
+        <h3 id="complete-title"></h3>
+        <p id="complete-text"></p>
+        <div class="overlay-buttons">
+          <button class="btn btn-primary" id="btn-next-day">Next Day →</button>
+          <button class="btn btn-ghost" id="btn-go-home">Stay on this page</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <footer id="app-footer">
+      <button class="btn-restart" id="btn-restart" title="Hold 3 seconds to reset">🔄</button>
+      <span class="footer-text">The Star Seed · Week 1: My Home</span>
+    </footer>
+  </div>
+
+  <!-- Error State -->
+  <div id="app-error" style="display:none"></div>
+
+  <!-- ===== Scripts ===== -->
+  <script src="js/storage.js"></script>
+  <script src="js/audio.js"></script>
+  <script src="js/twinkle.js"></script>
+  <script src="js/engine-light.js"></script>
+  <script src="js/engine-color.js"></script>
+  <script src="js/engine-sound.js"></script>
+  <script src="js/engine-motion.js"></script>
+  <script src="js/engine-heart.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>

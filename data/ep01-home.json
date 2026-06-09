@@ -1,0 +1,235 @@
+{
+  "episodeId": "ep01",
+  "title": "My Home",
+  "theme": "home",
+  "week": 1,
+  "days": {
+    "1": {
+      "power": "Light",
+      "powerEmoji": "🔦",
+      "title": "Hidden Star Fragments",
+      "storyIntro": "Oh no... I can't see anything! My light is gone. It broke into pieces and fell around your home. Can you find them?",
+      "cards": [
+        {
+          "id": "sun",
+          "word": "sun",
+          "emoji": "☀️",
+          "silhouetteEmoji": "🌑",
+          "code": "371",
+          "letter": "S",
+          "hintText": "Something warm. Something that gives light. Look where light comes in...",
+          "foundText": "You found the Sun card! The letter is... S!"
+        },
+        {
+          "id": "tree",
+          "word": "tree",
+          "emoji": "🌳",
+          "silhouetteEmoji": "🌑",
+          "code": "528",
+          "letter": "T",
+          "hintText": "Something tall and strong. It's made of wood. Where do you sit to eat?",
+          "foundText": "You found the Tree card! The letter is... T!"
+        },
+        {
+          "id": "apple",
+          "word": "apple",
+          "emoji": "🍎",
+          "silhouetteEmoji": "🌑",
+          "code": "416",
+          "letter": "A",
+          "hintText": "Something red and round. Yummy to eat! Look where food stays cool...",
+          "foundText": "You found the Apple card! The letter is... A!"
+        },
+        {
+          "id": "rabbit",
+          "word": "rabbit",
+          "emoji": "🐰",
+          "silhouetteEmoji": "🌑",
+          "code": "693",
+          "letter": "R",
+          "hintText": "Something soft and fluffy. It has long ears. Look on something cozy...",
+          "foundText": "You found the Rabbit card! The letter is... R!"
+        }
+      ],
+      "targetWord": "STAR",
+      "completionText": "S-T-A-R! That spells STAR! Twinkle's light is back! ✨"
+    },
+    "2": {
+      "power": "Color",
+      "powerEmoji": "🌈",
+      "title": "Color Detective",
+      "storyIntro": "I can see light now... but everything is gray! I need colors. Primary colors first: Red, Blue, and Yellow. Then we can make MORE colors!",
+      "colors": [
+        {
+          "id": "orange",
+          "targetColor": "orange",
+          "targetEmoji": "🧡",
+          "mixFrom": ["red", "yellow"],
+          "exampleItems": ["carrot", "orange", "pumpkin"],
+          "promptText": "Find something ORANGE in your home!",
+          "speechText": "Red and yellow make orange! Can you find something orange in your home?"
+        },
+        {
+          "id": "green",
+          "targetColor": "green",
+          "targetEmoji": "💚",
+          "mixFrom": ["blue", "yellow"],
+          "exampleItems": ["leaf", "cucumber", "grass"],
+          "promptText": "Find something GREEN in your home!",
+          "speechText": "Blue and yellow make green! Can you find something green in your home?"
+        },
+        {
+          "id": "purple",
+          "targetColor": "purple",
+          "targetEmoji": "💜",
+          "mixFrom": ["red", "blue"],
+          "exampleItems": ["grape", "eggplant", "flower"],
+          "promptText": "Find something PURPLE in your home!",
+          "speechText": "Red and blue make purple! Can you find something purple in your home?"
+        }
+      ],
+      "completionText": "Amazing! Now the world has colors! I can see orange, green, and purple! 🌈"
+    },
+    "3": {
+      "power": "Sound",
+      "powerEmoji": "🎵",
+      "title": "Sound Password",
+      "storyIntro": "I can see colors now, but... I can't hear anything! My sounds are locked in magic jars. Listen carefully... which animal is hiding in each jar?",
+      "animals": [
+        {
+          "id": "dog",
+          "animal": "dog",
+          "emoji": "🐕",
+          "onomatopoeia": "Woof woof! Woof woof!",
+          "speechRate": 0.85,
+          "speechPitch": 0.7,
+          "distractors": ["cat", "duck"]
+        },
+        {
+          "id": "cat",
+          "animal": "cat",
+          "emoji": "🐈",
+          "onomatopoeia": "Meow meow! Meooow!",
+          "speechRate": 0.9,
+          "speechPitch": 1.6,
+          "distractors": ["dog", "bird"]
+        },
+        {
+          "id": "bird",
+          "animal": "bird",
+          "emoji": "🐦",
+          "onomatopoeia": "Tweet tweet! Tweet tweet tweet!",
+          "speechRate": 1.3,
+          "speechPitch": 2.0,
+          "distractors": ["cat", "frog"]
+        },
+        {
+          "id": "duck",
+          "animal": "duck",
+          "emoji": "🦆",
+          "onomatopoeia": "Quack quack! Quack quack!",
+          "speechRate": 0.9,
+          "speechPitch": 1.1,
+          "distractors": ["dog", "bird"]
+        },
+        {
+          "id": "frog",
+          "animal": "frog",
+          "emoji": "🐸",
+          "onomatopoeia": "Ribbit ribbit! Ribbit!",
+          "speechRate": 1.1,
+          "speechPitch": 1.3,
+          "distractors": ["duck", "cat"]
+        }
+      ],
+      "completionText": "I can hear! I can hear everything! Woof, meow, tweet, quack, ribbit! 🎵"
+    },
+    "4": {
+      "power": "Motion",
+      "powerEmoji": "🤸",
+      "title": "Star Dance",
+      "storyIntro": "I can hear sounds now, but... I still can't move! Can you teach me how to dance? I'll copy everything you do!",
+      "actions": [
+        {
+          "id": "clap",
+          "verb": "clap",
+          "emoji": "👏",
+          "instruction": "Clap your hands!",
+          "twinkleAnimation": "bounce"
+        },
+        {
+          "id": "jump",
+          "verb": "jump",
+          "emoji": "⬆️",
+          "instruction": "Jump up high!",
+          "twinkleAnimation": "bounce"
+        },
+        {
+          "id": "wave",
+          "verb": "wave",
+          "emoji": "👋",
+          "instruction": "Wave your arms!",
+          "twinkleAnimation": "sway"
+        },
+        {
+          "id": "spin",
+          "verb": "spin",
+          "emoji": "🌀",
+          "instruction": "Spin around!",
+          "twinkleAnimation": "spin"
+        },
+        {
+          "id": "stomp",
+          "verb": "stomp",
+          "emoji": "🦶",
+          "instruction": "Stomp your feet!",
+          "twinkleAnimation": "bounce"
+        },
+        {
+          "id": "stretch",
+          "verb": "stretch",
+          "emoji": "🙆",
+          "instruction": "Stretch up tall!",
+          "twinkleAnimation": "grow"
+        },
+        {
+          "id": "march",
+          "verb": "march",
+          "emoji": "🚶",
+          "instruction": "March in place!",
+          "twinkleAnimation": "bounce"
+        },
+        {
+          "id": "touch_toes",
+          "verb": "touch your toes",
+          "emoji": "👇",
+          "instruction": "Touch your toes!",
+          "twinkleAnimation": "sway"
+        }
+      ],
+      "rounds": [2, 3, 4, 5],
+      "completionText": "I can move! Look at me dance! You're the best dance teacher ever! 💃"
+    },
+    "5": {
+      "power": "Heart",
+      "powerEmoji": "❤️",
+      "title": "Heart of the Star",
+      "storyIntro": "I have light, color, sound, and motion... but there's one more thing I need. The Heart power. Only someone who loves you can give it to me. Will you find them?",
+      "heartPieceCode": "999",
+      "puzzleMessage": "One piece is missing... Ask your Earth Helper for the Heart Piece!",
+      "plantMessage": "Twinkle wants to become a real plant in your world! Earth Helper: give your child a real seed now!",
+      "countdownText": "Plant the seed now!",
+      "certificateTitle": "Star Guardian Certificate",
+      "certificateText": "This certifies that",
+      "certificateSubtext": "has completed all 5 Star Seed challenges and helped Twinkle become a real star! The star seed is now growing in your home. Take care of it every day!",
+      "completionText": "We did it! Twinkle is now a real plant in YOUR world! Take good care of it! 🌱✨"
+    }
+  },
+  "vocabulary": {
+    "nouns": ["sun", "tree", "apple", "rabbit", "carrot", "orange", "pumpkin", "leaf", "cucumber", "grape", "eggplant", "flower"],
+    "animals": ["dog", "cat", "bird", "duck", "frog"],
+    "colors": ["red", "blue", "yellow", "orange", "green", "purple"],
+    "actions": ["clap", "jump", "wave", "spin", "stomp", "stretch", "march", "touch"],
+    "phrases": ["Can you find it?", "I found it!", "Good job!", "Let's go!", "Thank you!", "We did it!", "I need your help!"]
+  }
+}

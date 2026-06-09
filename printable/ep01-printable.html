@@ -1,0 +1,549 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>The Star Seed — Week 1 Printable Materials</title>
+  <style>
+    /* --- Screen view styles --- */
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #0a0a2e;
+      color: #e8e8f0;
+      padding: 20px;
+      max-width: 800px;
+      margin: 0 auto;
+    }
+
+    .print-header {
+      text-align: center;
+      padding: 30px 0;
+    }
+
+    .print-header h1 {
+      font-size: 2rem;
+      color: #ffd700;
+      margin-bottom: 8px;
+    }
+
+    .print-header p {
+      color: #a0a0c0;
+      margin-bottom: 6px;
+    }
+
+    .print-instructions {
+      background: #14144a;
+      border-radius: 16px;
+      padding: 24px;
+      margin: 20px 0;
+      border: 1px solid rgba(255,255,255,0.1);
+    }
+
+    .print-instructions h2 {
+      color: #ffd700;
+      margin-bottom: 16px;
+      font-size: 1.3rem;
+    }
+
+    .print-instructions ol {
+      padding-left: 20px;
+      line-height: 1.8;
+    }
+
+    .print-instructions li {
+      margin-bottom: 8px;
+    }
+
+    .print-section {
+      margin: 30px 0;
+      padding: 20px;
+      background: #14144a;
+      border-radius: 16px;
+      page-break-before: always;
+    }
+
+    .print-section h3 {
+      color: #ffd700;
+      margin-bottom: 12px;
+      font-size: 1.2rem;
+      border-bottom: 1px solid rgba(255,255,255,0.1);
+      padding-bottom: 8px;
+    }
+
+    .cards-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 20px;
+    }
+
+    /* Card front */
+    .card {
+      width: 100%;
+      aspect-ratio: 3/4;
+      border: 3px solid #ffd700;
+      border-radius: 12px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(135deg, #1a1a3e, #14144a);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .card::before {
+      content: '';
+      position: absolute;
+      inset: 4px;
+      border: 2px dashed rgba(255,215,0,0.3);
+      border-radius: 8px;
+      pointer-events: none;
+    }
+
+    .card-stars {
+      position: absolute;
+      top: 8px;
+      left: 0; right: 0;
+      text-align: center;
+      font-size: 0.7rem;
+      letter-spacing: 8px;
+      color: rgba(255,215,0,0.4);
+    }
+
+    .card-emoji {
+      font-size: 4rem;
+      margin: 8px 0;
+      filter: brightness(1.2);
+    }
+
+    .card-number {
+      font-size: 0.7rem;
+      color: rgba(255,215,0,0.5);
+      margin-top: 4px;
+    }
+
+    .card-fragment {
+      position: absolute;
+      bottom: 8px;
+      font-size: 0.6rem;
+      color: rgba(255,215,0,0.3);
+    }
+
+    /* Card back */
+    .card-back {
+      width: 100%;
+      aspect-ratio: 3/4;
+      border: 3px solid #ffd700;
+      border-radius: 12px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(135deg, #1e1e3e, #0a0a2e);
+      position: relative;
+    }
+
+    .card-back::before {
+      content: '';
+      position: absolute;
+      inset: 4px;
+      border: 2px dashed rgba(255,215,0,0.3);
+      border-radius: 8px;
+      pointer-events: none;
+    }
+
+    .back-code {
+      font-size: 2rem;
+      font-weight: 900;
+      color: #ffd700;
+      letter-spacing: 8px;
+      margin-bottom: 12px;
+    }
+
+    .back-letter {
+      font-size: 3.5rem;
+      font-weight: 900;
+      color: #ffd700;
+      text-shadow: 0 0 20px rgba(255,215,0,0.5);
+    }
+
+    .back-label {
+      font-size: 0.6rem;
+      color: rgba(255,215,0,0.4);
+      margin-top: 8px;
+    }
+
+    /* Heart piece card */
+    .heart-card {
+      width: 100%;
+      max-width: 300px;
+      margin: 0 auto;
+    }
+
+    .heart-piece-front, .heart-piece-back {
+      aspect-ratio: 1;
+      border: 3px solid #ef4444;
+      border-radius: 50%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      background: radial-gradient(circle, rgba(239,68,68,0.2), #14144a);
+      position: relative;
+    }
+
+    .heart-piece-front .heart-emoji {
+      font-size: 4rem;
+    }
+
+    .heart-piece-front .heart-text {
+      font-size: 0.8rem;
+      color: #ef4444;
+      margin-top: 4px;
+    }
+
+    .heart-piece-back .back-code {
+      font-size: 2.5rem;
+      font-weight: 900;
+      color: #ef4444;
+      letter-spacing: 10px;
+    }
+
+    /* Setup guide */
+    .setup-day {
+      margin: 16px 0;
+      padding: 14px;
+      background: rgba(255,255,255,0.03);
+      border-radius: 10px;
+      border-left: 3px solid #ffd700;
+    }
+
+    .setup-day h4 {
+      color: #ffd700;
+      margin-bottom: 6px;
+    }
+
+    .setup-day p {
+      font-size: 0.9rem;
+      line-height: 1.6;
+      color: #c0c0d0;
+    }
+
+    .setup-day .hide-spot {
+      display: inline-block;
+      background: rgba(255,215,0,0.1);
+      padding: 2px 8px;
+      border-radius: 4px;
+      color: #ffd700;
+      font-weight: 600;
+    }
+
+    /* Print button */
+    .print-btn {
+      display: block;
+      margin: 30px auto;
+      padding: 16px 40px;
+      font-size: 1.2rem;
+      font-weight: 700;
+      background: linear-gradient(135deg, #ffd700, #f97316);
+      color: #1a1a2e;
+      border: none;
+      border-radius: 50px;
+      cursor: pointer;
+      box-shadow: 0 4px 20px rgba(255,165,0,0.3);
+    }
+
+    /* ===== Print styles ===== */
+    @media print {
+      body {
+        background: white;
+        color: black;
+        padding: 0;
+        max-width: none;
+      }
+
+      .print-header {
+        padding: 10px 0 20px;
+      }
+
+      .print-header h1 {
+        color: #333;
+        font-size: 1.6rem;
+      }
+
+      .print-header p {
+        color: #666;
+      }
+
+      .print-btn {
+        display: none !important;
+      }
+
+      .print-instructions {
+        background: #fff;
+        border: 1px solid #ddd;
+        color: #333;
+        page-break-after: always;
+      }
+
+      .print-instructions h2 {
+        color: #333;
+      }
+
+      .print-section {
+        background: white;
+        border: 1px solid #ddd;
+        page-break-before: always;
+        margin: 10px 0;
+        padding: 10px;
+      }
+
+      .print-section h3 {
+        color: #333;
+      }
+
+      .card, .card-back, .heart-piece-front, .heart-piece-back {
+        border: 2px solid #333;
+        background: white;
+      }
+
+      .card::before, .card-back::before {
+        border-color: rgba(0,0,0,0.15);
+      }
+
+      .card-stars, .card-number, .card-fragment, .back-label {
+        color: #888;
+      }
+
+      .back-code, .back-letter {
+        color: #333;
+        text-shadow: none;
+      }
+
+      .setup-day {
+        background: #f9f9f9;
+        border-left-color: #333;
+      }
+
+      .setup-day h4 { color: #333; }
+      .setup-day p { color: #555; }
+
+      .setup-day .hide-spot {
+        background: #eee;
+        color: #333;
+      }
+
+      .cards-grid {
+        page-break-inside: avoid;
+      }
+
+      @page {
+        size: A4;
+        margin: 15mm;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<div class="print-header">
+  <h1>🌟 The Star Seed</h1>
+  <p>Episode 1: My Home — Printable Game Materials</p>
+  <p><strong>5 days · 5 missions · 1 magical star seed</strong></p>
+</div>
+
+<button class="print-btn" onclick="window.print()">🖨️ Print All Materials</button>
+
+<!-- ===== PARENT INSTRUCTIONS ===== -->
+<div class="print-instructions">
+  <h2>📋 Parent Setup Guide (10 minutes)</h2>
+  <p style="margin-bottom:14px;color:#a0a0c0;">Read this before you print!</p>
+
+  <div class="setup-day">
+    <h4>🔦 Day 1 — Hidden Star Fragments (Card Hunt)</h4>
+    <p>Print pages 2-3 <strong>double-sided</strong> (flip on short edge). Cut out the 4 cards.</p>
+    <p>Hide them BEFORE your child starts the game:</p>
+    <p>☀️ <strong>Sun card</strong> → <span class="hide-spot">near a window</span> (where light comes in)</p>
+    <p>🌳 <strong>Tree card</strong> → <span class="hide-spot">near a wooden chair or table</span></p>
+    <p>🍎 <strong>Apple card</strong> → <span class="hide-spot">in or near the refrigerator</span></p>
+    <p>🐰 <strong>Rabbit card</strong> → <span class="hide-spot">on the sofa, bed, or a soft pillow</span></p>
+    <p><em>Make it fun! Don't hide them too well — the magic is in finding, not searching forever.</em></p>
+  </div>
+
+  <div class="setup-day">
+    <h4>🌈 Day 2 — Color Detective</h4>
+    <p>No printing needed! Your child will find real objects around the home that match the target colors. Make sure there are some colorful items accessible (red fruit, blue cup, yellow toys, etc.).</p>
+  </div>
+
+  <div class="setup-day">
+    <h4>🎵 Day 3 — Sound Password</h4>
+    <p>No printing needed! The game uses voice synthesis for animal sounds. <strong>Optional fun:</strong> you can make the animal sounds yourself from another room to surprise your child!</p>
+  </div>
+
+  <div class="setup-day">
+    <h4>🤸 Day 4 — Star Dance</h4>
+    <p>No printing needed! Just make sure there's some open floor space for your child to move around safely. Maybe join in — it's more fun!</p>
+  </div>
+
+  <div class="setup-day">
+    <h4>❤️ Day 5 — Heart of the Star (YOU are the star!)</h4>
+    <p><strong>Important preparation:</strong></p>
+    <p>1. Print the <strong>Heart Piece card</strong> (page 4) and keep it in your pocket.</p>
+    <p>2. Prepare a <strong>real seed</strong> + a <strong>small pot with soil</strong> (bean seeds or sunflower seeds work great — they sprout fast!).</p>
+    <p>3. When the game says "Find your Earth Helper," your child will come find YOU. Give them the Heart Piece card. Then later, give them the seed to plant!</p>
+    <p><em>This is the big finale — the seed becomes "Twinkle" in the real world. Water it together every day!</em></p>
+  </div>
+</div>
+
+<!-- ===== DAY 1 CARDS (Page 2-3) ===== -->
+<div class="print-section">
+  <h3>🎴 Day 1 Cards — Print Double-Sided (Flip on Short Edge)</h3>
+  <p style="color:#a0a0c0;margin-bottom:16px;">Cut along the edges. Each card ≈ 10cm × 13cm</p>
+
+  <!-- Front sides -->
+  <h4 style="color:#ffd700;margin:16px 0;">▶ CARD FRONTS (what child sees on screen as silhouettes)</h4>
+  <div class="cards-grid">
+    <!-- Card 1: Sun -->
+    <div class="card">
+      <div class="card-stars">✦ ✧ ✦ ✧ ✦</div>
+      <div class="card-emoji">☀️</div>
+      <div class="card-number">Star Fragment #1</div>
+      <div class="card-fragment">✦ light fragment</div>
+    </div>
+
+    <!-- Card 2: Tree -->
+    <div class="card">
+      <div class="card-stars">✦ ✧ ✦ ✧ ✦</div>
+      <div class="card-emoji">🌳</div>
+      <div class="card-number">Star Fragment #2</div>
+      <div class="card-fragment">✦ light fragment</div>
+    </div>
+
+    <!-- Card 3: Apple -->
+    <div class="card">
+      <div class="card-stars">✦ ✧ ✦ ✧ ✦</div>
+      <div class="card-emoji">🍎</div>
+      <div class="card-number">Star Fragment #3</div>
+      <div class="card-fragment">✦ light fragment</div>
+    </div>
+
+    <!-- Card 4: Rabbit -->
+    <div class="card">
+      <div class="card-stars">✦ ✧ ✦ ✧ ✦</div>
+      <div class="card-emoji">🐰</div>
+      <div class="card-number">Star Fragment #4</div>
+      <div class="card-fragment">✦ light fragment</div>
+    </div>
+  </div>
+
+  <!-- Back sides -->
+  <h4 style="color:#ffd700;margin:24px 0 16px;">▶ CARD BACKS (with secret codes and letters)</h4>
+  <div class="cards-grid">
+    <!-- Back 1: Sun → S, 371 -->
+    <div class="card-back">
+      <div class="back-code">371</div>
+      <div class="back-letter">S</div>
+      <div class="back-label">secret code · star letter</div>
+    </div>
+
+    <!-- Back 2: Tree → T, 528 -->
+    <div class="card-back">
+      <div class="back-code">528</div>
+      <div class="back-letter">T</div>
+      <div class="back-label">secret code · star letter</div>
+    </div>
+
+    <!-- Back 3: Apple → A, 416 -->
+    <div class="card-back">
+      <div class="back-code">416</div>
+      <div class="back-letter">A</div>
+      <div class="back-label">secret code · star letter</div>
+    </div>
+
+    <!-- Back 4: Rabbit → R, 693 -->
+    <div class="card-back">
+      <div class="back-code">693</div>
+      <div class="back-letter">R</div>
+      <div class="back-label">secret code · star letter</div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== HEART PIECE CARD (Page 4) ===== -->
+<div class="print-section">
+  <h3>❤️ Day 5 — Heart Piece Card (Keep this!)</h3>
+  <p style="color:#a0a0c0;margin-bottom:16px;">Print double-sided. Keep this card in your pocket until Day 5!</p>
+
+  <div class="heart-card">
+    <h4 style="color:#ef4444;margin:16px 0;">▶ FRONT</h4>
+    <div class="heart-piece-front">
+      <div class="heart-emoji">❤️</div>
+      <div class="heart-text">For the Earth Helper</div>
+      <div style="font-size:0.6rem;color:rgba(239,68,68,0.4);margin-top:4px;">keep me safe until Day 5</div>
+    </div>
+
+    <h4 style="color:#ef4444;margin:24px 0 16px;">▶ BACK</h4>
+    <div class="heart-piece-back">
+      <div class="back-code">999</div>
+      <div style="font-size:0.7rem;color:rgba(239,68,68,0.5);margin-top:8px;">heart code</div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== QUICK REFERENCE ===== -->
+<div class="print-instructions" style="page-break-before:always;">
+  <h2>📝 Quick Reference Card</h2>
+  <table style="width:100%;border-collapse:collapse;font-size:0.9rem;">
+    <thead>
+      <tr style="border-bottom:1px solid rgba(255,255,255,0.1);">
+        <th style="padding:8px;text-align:left;color:#ffd700;">Day</th>
+        <th style="padding:8px;text-align:left;color:#ffd700;">Power</th>
+        <th style="padding:8px;text-align:left;color:#ffd700;">What Child Does</th>
+        <th style="padding:8px;text-align:left;color:#ffd700;">Parent Prep</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr style="border-bottom:1px solid rgba(255,255,255,0.05);">
+        <td style="padding:8px;">1</td>
+        <td style="padding:8px;">🔦 Light</td>
+        <td style="padding:8px;">Find 4 hidden cards, enter codes, spell STAR</td>
+        <td style="padding:8px;">Print + hide 4 cards</td>
+      </tr>
+      <tr style="border-bottom:1px solid rgba(255,255,255,0.05);">
+        <td style="padding:8px;">2</td>
+        <td style="padding:8px;">🌈 Color</td>
+        <td style="padding:8px;">Mix colors, find matching real objects</td>
+        <td style="padding:8px;">None</td>
+      </tr>
+      <tr style="border-bottom:1px solid rgba(255,255,255,0.05);">
+        <td style="padding:8px;">3</td>
+        <td style="padding:8px;">🎵 Sound</td>
+        <td style="padding:8px;">Listen to animal sounds, match + remember sequence</td>
+        <td style="padding:8px;">None (optional: make sounds!)</td>
+      </tr>
+      <tr style="border-bottom:1px solid rgba(255,255,255,0.05);">
+        <td style="padding:8px;">4</td>
+        <td style="padding:8px;">🤸 Motion</td>
+        <td style="padding:8px;">Follow dance moves, 4 rounds of TPR actions</td>
+        <td style="padding:8px;">Clear floor space</td>
+      </tr>
+      <tr>
+        <td style="padding:8px;">5</td>
+        <td style="padding:8px;">❤️ Heart</td>
+        <td style="padding:8px;">Find parent, solve puzzle, plant real seed</td>
+        <td style="padding:8px;">Heart card + real seed + pot</td>
+      </tr>
+    </tbody>
+  </table>
+  <p style="margin-top:16px;font-size:0.85rem;color:#a0a0c0;">
+    <strong>English vocabulary this week (~15 words):</strong>
+    sun, tree, apple, rabbit · red, blue, yellow, orange, green, purple · dog, cat, bird, duck, frog · STAR
+  </p>
+</div>
+
+<button class="print-btn" onclick="window.print()" style="margin-bottom:40px;">🖨️ Print All Materials</button>
+
+</body>
+</html>

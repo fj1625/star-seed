@@ -198,13 +198,72 @@ const EngineSound = (() => {
 
     // Check if all matched
     if (matchedAnimals.length >= animals.length) {
-      // All matched! Move to sequence phase
+      // All matched! Move to sound imitation then sequence
       const matchPhase = document.getElementById('day3-match');
       if (matchPhase) matchPhase.style.display = 'none';
 
       currentPhase = 'sequence';
-      setTimeout(() => startSequencePhase(), 1000);
+      setTimeout(() => showSoundImitation(), 1000);
     }
+  }
+
+  async function showSoundImitation() {
+    const speechEl = document.getElementById('day3-speech');
+    const container = document.getElementById('day3');
+
+    // Create a quick imitation UI before sequence
+    const imitationDiv = document.createElement('div');
+    imitationDiv.className = 'voice-prompt-inline sound-imitation';
+    imitationDiv.innerHTML = `
+      <p>You know all the animals! Can you make their sounds?</p>
+      <div class="imitation-animals">
+        ${animals.map(a => `
+          <button class="btn btn-tiny btn-imitate" data-animal="${a.id}">
+            ${a.emoji} ${a.animal}
+          </button>
+        `).join('')}
+      </div>
+      <div class="mini-voice-result" id="imitate-result"></div>
+    `;
+    container.appendChild(imitationDiv);
+
+    if (speechEl) {
+      speechEl.innerHTML = `<div class="speech-bubble">Let's hear YOUR animal sounds!</div>`;
+    }
+    await Audio.speak('You know all the animals! Can you make their sounds?', { rate: 0.85 });
+
+    // Bind imitation buttons
+    imitationDiv.querySelectorAll('.btn-imitate').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const animalId = btn.dataset.animal;
+        const a = animals.find(an => an.id === animalId);
+        const resultEl = document.getElementById('imitate-result');
+
+        VoiceInput.listen({
+          lang: 'en-US',
+          onResult: (text) => {
+            if (resultEl) resultEl.textContent = `🎉 Heard: "${text}"!`;
+            Audio.speak(`That sounded like a ${a.animal}!`, { rate: 0.85 });
+            // Mark as imitated
+            const state = Storage.getState();
+            if (!state.day3SoundsImitated) state.day3SoundsImitated = [];
+            if (!state.day3SoundsImitated.includes(animalId)) {
+              state.day3SoundsImitated.push(animalId);
+              Storage.save();
+            }
+          },
+          onError: () => {
+            if (resultEl) resultEl.textContent = 'Try tapping again!';
+          }
+        });
+      });
+    });
+
+    // Auto-advance to sequence after 6s or when all buttons clicked
+    setTimeout(() => {
+      if (imitationDiv.parentNode) imitationDiv.remove();
+      startSequencePhase();
+    }, 8000);
   }
 
   async function startSequencePhase() {

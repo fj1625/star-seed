@@ -968,73 +968,128 @@ body {
 
 /* ===== DAY 2: Color Power ===== */
 
-.color-mix-area {
+/* ===== Day 2: Drag-to-Mix ===== */
+
+.color-drag-stage {
   text-align: center;
-  margin: 20px 0;
+  margin: 16px 0;
+  position: relative;
 }
 
-.mix-display {
+.drag-hint {
+  color: var(--text-muted);
+  font-size: 0.9rem;
+  margin-bottom: 12px;
+}
+
+.drag-playground {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 12px;
-  margin-bottom: 20px;
-  flex-wrap: wrap;
+  gap: 24px;
+  margin-bottom: 12px;
+  min-height: 120px;
+  position: relative;
 }
 
-.mix-color1, .mix-color2 {
-  width: 64px;
-  height: 64px;
+.color-draggable {
+  width: 80px;
+  height: 80px;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
   font-weight: 700;
-  font-size: 0.8rem;
+  font-size: 0.85rem;
   color: #fff;
   text-shadow: 0 0 4px rgba(0,0,0,0.5);
-  box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+  box-shadow: 0 4px 16px rgba(0,0,0,0.35);
+  cursor: grab;
+  touch-action: none;
+  user-select: none;
+  transition: transform 0.15s ease, box-shadow 0.15s ease, scale 0.5s, opacity 0.5s;
+  z-index: 10;
+  position: relative;
 }
 
-.mix-plus, .mix-equals {
+.color-draggable:active { cursor: grabbing; }
+
+.color-draggable.dragging {
+  scale: 1.15;
+  box-shadow: 0 0 24px rgba(255,215,0,0.6), 0 8px 20px rgba(0,0,0,0.4);
+  z-index: 20;
+}
+
+.color-draggable.mixed {
+  scale: 0;
+  opacity: 0;
+  transition: scale 0.4s ease-in, opacity 0.4s ease-in;
+}
+
+.drag-plus {
   font-size: 1.5rem;
   font-weight: 700;
   color: var(--text-muted);
 }
 
-.mix-result {
-  width: 64px;
-  height: 64px;
+.drag-equals {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--text-muted);
+  margin: 8px 0;
+}
+
+.color-mix-target {
+  width: 80px;
+  height: 80px;
   border-radius: 50%;
   border: 3px dashed rgba(255,255,255,0.3);
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 1.5rem;
+  font-size: 1.8rem;
   font-weight: 700;
-  transition: all 0.5s;
+  color: #666;
+  margin: 0 auto;
+  transition: all 0.5s ease;
+  background: transparent;
 }
 
-.mix-buttons {
-  display: flex;
+.color-mix-target.revealed {
+  scale: 1.3;
+  border-style: solid;
+  border-color: transparent;
+  color: #fff;
+  box-shadow: 0 0 30px rgba(255,255,255,0.4);
+  animation: popIn 0.5s ease;
+}
+
+.drag-celebration {
   flex-direction: column;
+  align-items: center;
   gap: 8px;
-  max-width: 300px;
-  margin: 0 auto 16px;
+  margin-top: 16px;
 }
 
-.mix-question {
-  color: var(--text-muted);
-  font-size: 0.9rem;
-  text-align: center;
+.drag-sparkles { font-size: 2rem; }
+
+.drag-result-text {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: var(--gold);
 }
 
-/* Find Object Phase */
+/* ===== Day 2: Find Object Phase ===== */
+
 .find-object-phase {
   flex-direction: column;
   align-items: center;
   gap: 16px;
   margin: 20px 0;
+}
+
+.btn-find-wrap {
+  margin-top: 8px;
 }
 
 .target-color-display {
@@ -1067,7 +1122,254 @@ body {
   text-align: center;
 }
 
-/* Confirm Phase */
+/* ===== Day 2: Voice Input Phase ===== */
+
+.voice-input-phase {
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  margin: 20px 0;
+  padding: 20px;
+  background: var(--bg-card);
+  border-radius: var(--radius-lg);
+  text-align: center;
+}
+
+.voice-prompt {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--gold);
+}
+
+.voice-hint {
+  font-size: 0.95rem;
+  color: var(--text-muted);
+  line-height: 1.6;
+}
+
+.voice-hint small {
+  font-size: 0.8rem;
+  opacity: 0.7;
+}
+
+.voice-mic-area {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.btn-mic {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 18px 36px;
+  background: var(--accent);
+  border: none;
+  border-radius: 60px;
+  color: #fff;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  box-shadow: 0 4px 16px rgba(59,130,246,0.4);
+}
+
+.btn-mic:active {
+  transform: scale(0.96);
+}
+
+.btn-mic.listening {
+  background: #ef4444;
+  box-shadow: 0 0 0 0 rgba(239,68,68,0.5);
+  animation: micPulse 1.2s infinite;
+}
+
+@keyframes micPulse {
+  0% { box-shadow: 0 0 0 0 rgba(239,68,68,0.5); }
+  100% { box-shadow: 0 0 0 16px rgba(239,68,68,0); }
+}
+
+.mic-icon { font-size: 1.8rem; }
+.mic-label { font-size: 0.85rem; }
+
+.voice-status {
+  min-height: 24px;
+  font-size: 0.9rem;
+}
+
+.voice-hearing { color: var(--gold); }
+.voice-heard { color: var(--green); }
+.voice-error { color: #f87171; font-size: 0.85rem; }
+
+.voice-or-divider {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  max-width: 280px;
+  color: var(--text-muted);
+  font-size: 0.8rem;
+}
+
+.voice-or-divider::before,
+.voice-or-divider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: rgba(255,255,255,0.1);
+}
+
+.voice-fallback-container {
+  width: 100%;
+  max-width: 300px;
+}
+
+.voice-fallback {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.voice-fallback-input {
+  flex: 1;
+  padding: 10px 14px;
+  background: var(--bg);
+  border: 2px solid rgba(255,255,255,0.1);
+  border-radius: 12px;
+  color: var(--text);
+  font-size: 1rem;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.voice-fallback-input:focus {
+  border-color: var(--gold);
+}
+
+.voice-fallback-btn {
+  padding: 10px 16px;
+  white-space: nowrap;
+}
+
+.btn-skip {
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  font-size: 0.85rem;
+  cursor: pointer;
+  padding: 8px 16px;
+  opacity: 0.6;
+  transition: opacity 0.2s;
+}
+
+.btn-skip:hover, .btn-skip:active { opacity: 1; }
+
+/* ===== Day 2: Camera Phase ===== */
+
+.camera-overlay {
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  margin: 16px 0;
+  width: 100%;
+}
+
+.camera-view {
+  position: relative;
+  width: 100%;
+  max-width: 360px;
+  aspect-ratio: 4/3;
+  border-radius: 20px;
+  overflow: hidden;
+  background: #000;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+}
+
+.camera-view video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.camera-filter {
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0.18;
+  pointer-events: none;
+  transition: background-color 0.3s;
+}
+
+.camera-frame-hint {
+  position: absolute;
+  bottom: 12px;
+  left: 0; right: 0;
+  text-align: center;
+  color: #fff;
+  font-size: 0.9rem;
+  font-weight: 600;
+  text-shadow: 0 1px 4px rgba(0,0,0,0.7);
+  pointer-events: none;
+}
+
+.camera-frame-hint.camera-unavailable {
+  position: static;
+  color: var(--text-muted);
+  text-shadow: none;
+  margin: 20px 0;
+  line-height: 1.6;
+}
+
+.camera-controls {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+.btn-capture {
+  padding: 14px 32px;
+  background: #fff;
+  border: 4px solid var(--gold);
+  border-radius: 60px;
+  color: #333;
+  font-size: 1.1rem;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.3);
+  transition: all 0.2s;
+}
+
+.btn-capture:active { transform: scale(0.95); }
+
+.camera-snap-flash {
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background: #fff;
+  opacity: 0.8;
+  pointer-events: none;
+  animation: flashFade 0.4s ease-out forwards;
+}
+
+@keyframes flashFade {
+  0% { opacity: 0.8; }
+  100% { opacity: 0; }
+}
+
+.camera-success-msg {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--gold);
+  background: rgba(255,215,0,0.1);
+  padding: 12px 24px;
+  border-radius: 16px;
+}
+
+/* ===== Day 2: Confirm Phase ===== */
+
 .confirm-phase {
   flex-direction: column;
   align-items: center;
@@ -1077,6 +1379,28 @@ body {
   background: var(--bg-card);
   border-radius: var(--radius-lg);
   text-align: center;
+}
+
+.confirm-you-found {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  margin-bottom: 8px;
+}
+
+.confirm-you-found-label {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+}
+
+.confirm-you-found-item {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: var(--gold);
+  background: rgba(255,215,0,0.1);
+  padding: 4px 16px;
+  border-radius: 20px;
 }
 
 .confirm-examples {
@@ -1108,6 +1432,60 @@ body {
 /* Color Success */
 .color-success { text-align: center; margin: 20px 0; }
 .color-success-card { padding: 20px; }
+
+/* ===== Mini Voice Prompt (Days 1/3/4) ===== */
+
+.mini-voice-prompt {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 12px;
+  padding: 10px 14px;
+  background: rgba(255,215,0,0.06);
+  border-radius: 12px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.mini-voice-hint {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  margin: 0;
+}
+
+.btn-mini-mic {
+  font-size: 0.8rem;
+  padding: 6px 14px;
+  cursor: pointer;
+}
+
+.mini-voice-result {
+  font-size: 0.8rem;
+  min-width: 80px;
+  color: var(--gold);
+}
+
+.voice-prompt-inline {
+  margin: 12px 0;
+  padding: 10px;
+  background: rgba(255,215,0,0.04);
+  border-radius: 10px;
+  text-align: center;
+}
+
+.imitation-animals {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin: 8px 0;
+}
+
+.btn-imitate {
+  cursor: pointer;
+  font-size: 0.85rem;
+  padding: 8px 14px;
+}
 
 /* ===== DAY 3: Sound Power ===== */
 
@@ -1437,6 +1815,214 @@ body {
 }
 
 /* Plant Phase */
+/* Dual-Touch Collaboration */
+.heart-phase-dual {
+  text-align: center;
+  margin: 16px 0;
+}
+
+.dual-touch-container {
+  display: flex;
+  gap: 16px;
+  justify-content: center;
+  margin: 20px 0;
+  flex-wrap: wrap;
+}
+
+.dual-touch-zone {
+  width: 44%;
+  min-width: 130px;
+  min-height: 140px;
+  border: 3px dashed var(--gold);
+  border-radius: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 20px 12px;
+  touch-action: none;
+  user-select: none;
+  background: rgba(255,215,0,0.04);
+  transition: all 0.2s;
+  -webkit-user-select: none;
+}
+
+.dual-touch-zone.active {
+  border-style: solid;
+  background: rgba(255,215,0,0.12);
+  box-shadow: 0 0 24px rgba(255,215,0,0.25);
+  transform: scale(1.02);
+}
+
+.dual-zone-icon { font-size: 2.2rem; }
+.dual-zone-label { font-size: 0.9rem; font-weight: 600; text-align: center; line-height: 1.3; }
+.dual-zone-hint {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  background: rgba(255,255,255,0.05);
+  padding: 4px 12px;
+  border-radius: 10px;
+  margin-top: 4px;
+}
+
+.dual-progress-bar {
+  width: 100%;
+  max-width: 320px;
+  height: 8px;
+  background: rgba(255,255,255,0.08);
+  border-radius: 4px;
+  overflow: hidden;
+  margin: 12px auto;
+}
+
+.dual-progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--gold), #ff6b6b);
+  border-radius: 4px;
+  width: 0%;
+  transition: width 0.05s linear;
+}
+
+.dual-status {
+  color: var(--text-muted);
+  font-size: 0.9rem;
+  margin-top: 8px;
+}
+
+.dual-celebration {
+  font-size: 3rem;
+  animation: popIn 0.6s ease;
+}
+
+/* Goodbye Recording */
+.heart-phase-goodbye {
+  margin: 16px 0;
+}
+
+.goodbye-card {
+  background: var(--bg-card);
+  border-radius: var(--radius-lg);
+  padding: 24px 20px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.goodbye-card h3 {
+  color: var(--gold);
+  margin: 0;
+}
+
+.goodbye-script {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  text-align: left;
+  padding: 14px;
+  background: var(--bg);
+  border-radius: 12px;
+}
+
+.goodbye-line {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.goodbye-role {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--gold);
+}
+
+.goodbye-text {
+  font-size: 0.95rem;
+  color: var(--text);
+  font-style: italic;
+  padding-left: 8px;
+}
+
+.goodbye-mic-area {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+/* Certificate goodbye quote */
+.certificate-goodbye {
+  margin: 16px 0;
+}
+
+.goodbye-quote-label {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  margin-bottom: 6px;
+}
+
+.goodbye-quote-card {
+  background: rgba(255,215,0,0.08);
+  border: 1px solid rgba(255,215,0,0.2);
+  border-radius: 12px;
+  padding: 12px 16px;
+}
+
+.goodbye-quote-text {
+  font-style: italic;
+  color: var(--text);
+  margin: 0 0 8px 0;
+}
+
+.btn-tiny {
+  padding: 6px 14px;
+  font-size: 0.8rem;
+  background: var(--accent);
+  border: none;
+  border-radius: 8px;
+  color: #fff;
+  cursor: pointer;
+}
+
+/* Week 2 Preview Teaser */
+.preview-week.teaser {
+  border: 2px solid var(--gold);
+  opacity: 1;
+  animation: glowPulse 3s ease-in-out infinite;
+  position: relative;
+  overflow: visible;
+}
+
+.preview-teaser-animal {
+  height: 40px;
+  overflow: hidden;
+  position: relative;
+  width: 100%;
+}
+
+.peek-animal {
+  font-size: 1.8rem;
+  display: block;
+  animation: peekOut 3s ease-in-out infinite;
+}
+
+@keyframes peekOut {
+  0%, 100% { transform: translateX(60%) scale(0.6); opacity: 0; }
+  15%, 75% { transform: translateX(0) scale(1); opacity: 1; }
+}
+
+.preview-teaser-text {
+  font-size: 0.7rem;
+  color: var(--gold);
+  font-weight: 600;
+}
+
+.btn-preview-sound {
+  margin-top: 4px;
+  cursor: pointer;
+}
+
 .heart-phase-plant {
   flex-direction: column;
   align-items: center;

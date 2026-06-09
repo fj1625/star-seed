@@ -242,12 +242,44 @@ const EngineLight = (() => {
     }
     await Audio.speak(card.foundText, { rate: 0.85 });
 
+    // Voice prompt: say the word
+    const voiceWrap = document.createElement('div');
+    voiceWrap.className = 'mini-voice-prompt';
+    voiceWrap.innerHTML = `
+      <p class="mini-voice-hint">Say it: <strong>${capitalize(card.word)}!</strong></p>
+      <button class="btn btn-tiny btn-mini-mic" id="btn-day1-voice">🎤 Speak</button>
+      <span class="mini-voice-result" id="day1-voice-result"></span>
+    `;
+    if (foundEl) foundEl.appendChild(voiceWrap);
+
+    const micBtn = voiceWrap.querySelector('#btn-day1-voice');
+    const resultSpan = voiceWrap.querySelector('#day1-voice-result');
+    micBtn.addEventListener('click', () => {
+      VoiceInput.listen({
+        lang: 'en-US',
+        onInterim: (text) => { resultSpan.textContent = '👂 ' + text; },
+        onResult: (text) => {
+          if (text.toLowerCase().includes(card.word.toLowerCase())) {
+            resultSpan.textContent = '✅ Perfect!';
+            Audio.speak('Perfect! ' + capitalize(card.word) + '!', { rate: 0.85 });
+          } else {
+            resultSpan.textContent = '💬 Good try!';
+            Audio.speak('Good try! ' + capitalize(card.word) + '!', { rate: 0.85 });
+          }
+        },
+        onError: () => { resultSpan.textContent = 'That\'s okay!'; }
+      });
+    });
+
     updateLetterDisplay();
 
     // Show next button
     if (nextEl) {
       nextEl.style.display = 'block';
       nextEl.querySelector('#btn-next-card').onclick = async () => {
+        // Remove voice prompt
+        const vp = document.querySelector('.mini-voice-prompt');
+        if (vp) vp.remove();
         // Reset UI for next card
         if (foundEl) foundEl.style.display = 'none';
         if (nextEl) nextEl.style.display = 'none';
@@ -393,6 +425,11 @@ const EngineLight = (() => {
       speechEl.innerHTML = `<div class="speech-bubble">Great! You found all the cards. Now... can you spell the secret word?</div>`;
     }
     Audio.speak('Great! You found all the cards. Now, can you spell the secret word with your letters?', { rate: 0.85 });
+  }
+
+  function capitalize(str) {
+    if (!str) return str;
+    return str.charAt(0).toUpperCase() + str.slice(1);
   }
 
   return { init, start };

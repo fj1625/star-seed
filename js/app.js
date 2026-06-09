@@ -16,6 +16,7 @@ const App = (() => {
     // Init core systems
     Storage.load();
     Audio.init();
+    VoiceInput.init();
 
     // Load episode data
     try {

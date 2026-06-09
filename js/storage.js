@@ -12,8 +12,13 @@ const Storage = (() => {
     day1CardsFound: [],
     day1Letters: [],
     day2ColorsFound: [],
+    day2ItemsFound: [],
     day3AnimalsMatched: [],
     day4HighestRound: 0,
+    day5GoodbyeMessage: null,
+    day1WordsSpoken: [],
+    day3SoundsImitated: [],
+    day4MovesNamed: [],
     playerName: '',
     episodeId: 'ep01',
     lastPlayed: null

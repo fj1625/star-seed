@@ -245,6 +245,47 @@ const EngineMotion = (() => {
         }
         await Audio.speak('Amazing! You are a great dancer!', { rate: 0.85 });
 
+        // Voice prompt: name that move!
+        const randomAction = roundActions[Math.floor(Math.random() * roundActions.length)];
+        const voiceDiv = document.createElement('div');
+        voiceDiv.className = 'mini-voice-prompt';
+        voiceDiv.innerHTML = `
+          <span class="mini-voice-hint">${randomAction.emoji} What move was that? Say it!</span>
+          <button class="btn btn-tiny btn-mini-mic">🎤 Speak</button>
+          <span class="mini-voice-result"></span>
+        `;
+        const danceStage = document.getElementById('dance-stage');
+        if (danceStage) danceStage.appendChild(voiceDiv);
+
+        const micBtn = voiceDiv.querySelector('.btn-mini-mic');
+        const resultEl = voiceDiv.querySelector('.mini-voice-result');
+        micBtn.addEventListener('click', () => {
+          VoiceInput.listen({
+            lang: 'en-US',
+            onResult: (text) => {
+              if (text.toLowerCase().includes(randomAction.verb.toLowerCase())) {
+                resultEl.textContent = '✅ Yes! ' + randomAction.emoji;
+                Audio.speak('Yes! ' + randomAction.instruction, { rate: 0.85 });
+                // Track it
+                const state = Storage.getState();
+                if (!state.day4MovesNamed) state.day4MovesNamed = [];
+                if (!state.day4MovesNamed.includes(randomAction.id)) {
+                  state.day4MovesNamed.push(randomAction.id);
+                  Storage.save();
+                }
+              } else {
+                resultEl.textContent = '💬 ' + randomAction.verb + '!';
+                Audio.speak('It\'s ' + randomAction.verb + '! Good try!', { rate: 0.85 });
+              }
+            },
+            onError: () => { resultEl.textContent = 'That\'s okay!'; }
+          });
+        });
+
+        // Wait a beat then advance
+        await sleep(1000);
+        if (voiceDiv.parentNode) voiceDiv.remove();
+
         if (currentRound >= rounds.length) {
           onAllRoundsComplete();
         } else {

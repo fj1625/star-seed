@@ -122,6 +122,7 @@ const EngineColor = (() => {
 
     // Create answer buttons with wrong + right answers
     if (mixBtns) {
+      mixBtns.style.display = 'flex'; // reset visibility from previous color
       const allColors = ['red', 'blue', 'yellow', 'orange', 'green', 'purple'];
       const wrongColors = allColors.filter(c => c !== color.targetColor).slice(0, 2);
       const options = [color.targetColor, ...wrongColors].sort(() => Math.random() - 0.5);

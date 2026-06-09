@@ -102,6 +102,22 @@ const EngineLight = (() => {
     const nextEl = document.getElementById('day1-next');
     const speechEl = document.getElementById('day1-speech');
 
+    // Re-render code entry to destroy old event listeners from previous cards
+    if (codeEntryEl) {
+      codeEntryEl.innerHTML = `
+        <p class="code-prompt">Enter the secret code from the card!</p>
+        <div class="code-inputs">
+          <input type="number" id="code-digit-1" min="0" max="9" maxlength="1" inputmode="numeric" pattern="[0-9]">
+          <input type="number" id="code-digit-2" min="0" max="9" maxlength="1" inputmode="numeric" pattern="[0-9]">
+          <input type="number" id="code-digit-3" min="0" max="9" maxlength="1" inputmode="numeric" pattern="[0-9]">
+        </div>
+        <button class="btn btn-primary" id="btn-submit-code">Check!</button>
+        <p class="code-error" id="day1-code-error"></p>
+        <p class="code-hint">Can't find the card? <button class="btn-link" id="btn-another-hint">Give me a hint!</button></p>
+      `;
+      codeEntryEl.style.display = 'none';
+    }
+
     // Show silhouette
     if (silhouetteEl) {
       silhouetteEl.style.display = 'flex';
@@ -190,6 +206,9 @@ const EngineLight = (() => {
   }
 
   async function onCardFound(index, card) {
+    // Prevent duplicate processing (safety net)
+    if (foundCards.includes(card.id)) return;
+
     foundCards.push(card.id);
     collectedLetters.push(card.letter);
     Storage.addDay1Card(card.id, card.letter);

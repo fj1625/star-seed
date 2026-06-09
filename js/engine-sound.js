@@ -35,7 +35,7 @@ const EngineSound = (() => {
       currentPhase = 'sequence';
       renderDay3();
       await speakIntro();
-      startSequencePhase();
+      await startSequencePhase();
       return;
     }
 
@@ -77,7 +77,8 @@ const EngineSound = (() => {
     if (speechEl) {
       speechEl.innerHTML = `<div class="speech-bubble">${data.days['3'].storyIntro}</div>`;
     }
-    await Audio.speak(data.days['3'].storyIntro, { rate: 0.85, cancelPrevious: true });
+    // No cancelPrevious here — it's the first speech on Day 3, nothing to cancel
+    await Audio.speak(data.days['3'].storyIntro, { rate: 0.85 });
   }
 
   function showMatchPhase() {
@@ -130,9 +131,12 @@ const EngineSound = (() => {
     }
   }
 
-  function showAnimalChoices(jarIdx, correctAnimal, unmatchedAnimals) {
+  function showAnimalChoices(jarIdx, correctAnimal, _unmatchedAnimals) {
     const choicesEl = document.getElementById('animal-choices');
-    if (!choicesEl) return;
+    if (!choicesEl) {
+      console.warn('showAnimalChoices: #animal-choices not found in DOM');
+      return;
+    }
 
     // Get 3 options: correct + 2 distractors
     const distractors = animals.filter(a =>
@@ -153,6 +157,9 @@ const EngineSound = (() => {
         `).join('')}
       </div>
     `;
+
+    // Scroll into view so choices are visible on mobile
+    choicesEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
 
     choicesEl.querySelectorAll('.btn-animal-choice').forEach(btn => {
       btn.addEventListener('click', async () => {
@@ -200,7 +207,7 @@ const EngineSound = (() => {
     }
   }
 
-  function startSequencePhase() {
+  async function startSequencePhase() {
     const seqPhase = document.getElementById('day3-sequence');
     const matchPhase = document.getElementById('day3-match');
     const seqJars = document.getElementById('sequence-jars-display');
@@ -212,8 +219,8 @@ const EngineSound = (() => {
     if (matchPhase) matchPhase.style.display = 'none';
     if (seqPhase) seqPhase.style.display = 'block';
 
-    // Generate sequence (4 animals from the matched set, random order)
-    sequenceOrder = [...animals].sort(() => Math.random() - 0.5).slice(0, 4);
+    // Generate sequence (4 animal IDs from the matched set, random order)
+    sequenceOrder = [...animals].sort(() => Math.random() - 0.5).slice(0, 4).map(a => a.id);
     playerSequence = [];
     sequenceAttempts = 0;
 
@@ -257,27 +264,64 @@ const EngineSound = (() => {
       });
     }
 
-    // Play button
+    // Play button — disabled during instruction speech to prevent race with Edge TTS
     if (playBtn) {
-      playBtn.onclick = async () => {
-        playBtn.disabled = true;
-        // Play the sequence with pauses
-        for (const animal of sequenceOrder) {
-          const a = animals.find(an => an.id === animal);
-          if (!a) continue;
-          // Highlight corresponding jar briefly
-          const jarEl = document.getElementById(`seq-jar-${a.id}`);
-          if (jarEl) {
-            jarEl.classList.add('highlight');
-            setTimeout(() => jarEl.classList.remove('highlight'), 800);
-          }
-          await Audio.speak(a.onomatopoeia, {
-            rate: a.speechRate,
-            pitch: a.speechPitch
-          });
-          await sleep(500);
+      playBtn.disabled = true;
+      playBtn.textContent = '⏳ Listen...';
+      playBtn.onclick = null;
+      playBtn.onclick = async function() {
+        console.log('[Day3] Play clicked. sequenceOrder:', sequenceOrder);
+        if (!sequenceOrder || !sequenceOrder.length) {
+          console.warn('[Day3] sequenceOrder empty, regenerating');
+          sequenceOrder = [...animals].sort(() => Math.random() - 0.5).slice(0, 4).map(a => a.id);
         }
-        playBtn.disabled = false;
+
+        try {
+          const btn = this;
+          btn.disabled = true;
+
+          // Highlight all jars with "listening" glow during playback
+          document.querySelectorAll('.seq-jar').forEach(function(j) {
+            j.classList.add('highlight');
+          });
+
+          for (let i = 0; i < sequenceOrder.length; i++) {
+            const animalId = sequenceOrder[i];
+            const a = animals.find(an => an.id === animalId);
+            if (!a) { console.warn('[Day3] no animal for id:', animalId); continue; }
+
+            btn.textContent = a.emoji + ' ' + a.animal;
+            console.log('[Day3] speaking:', a.onomatopoeia, 'rate:', a.speechRate, 'pitch:', a.speechPitch);
+
+            await Audio.speak(a.onomatopoeia, {
+              rate: a.speechRate,
+              pitch: a.speechPitch
+            });
+            await sleep(500);
+          }
+
+          // Done playing — remove glow and show prompt
+          document.querySelectorAll('.seq-jar').forEach(function(j) {
+            j.classList.remove('highlight');
+          });
+
+          console.log('[Day3] sequence done');
+
+          // Show the prompt: now it's the player's turn
+          const status = document.getElementById('sequence-status');
+          if (status) {
+            status.innerHTML = '<span class="seq-hint">👆 Now you try! Tap the animals in order!</span>';
+          }
+
+          // Reactivate the play button as a hint
+          btn.disabled = false;
+          btn.textContent = '🔁 Replay if needed';
+
+        } catch (e) {
+          console.warn('[Day3] error:', e);
+          const restored = document.getElementById('btn-play-sequence');
+          if (restored) { restored.disabled = false; restored.textContent = '🔊 Play the sequence'; }
+        }
       };
     }
 
@@ -285,7 +329,7 @@ const EngineSound = (() => {
     if (submitBtn) {
       submitBtn.onclick = async () => {
         const correct = playerSequence.every(
-          (id, i) => id === sequenceOrder[i].id
+          (id, i) => id === sequenceOrder[i]
         ) && playerSequence.length === sequenceOrder.length;
 
         if (correct) {
@@ -317,10 +361,20 @@ const EngineSound = (() => {
       };
     }
 
+    // Show instruction text + speak it, THEN enable the play button
+    const instructionText = 'Now listen to the sound password... then repeat it!';
     if (speechEl) {
-      speechEl.innerHTML = `<div class="speech-bubble">Now listen to the sound password... then repeat it!</div>`;
+      speechEl.innerHTML = `<div class="speech-bubble">${instructionText}</div>`;
     }
-    Audio.speak('Now listen to the sound password... then tap the animals in the same order!', { rate: 0.85 });
+
+    // Speak instruction with play button disabled to avoid Edge TTS race
+    await Audio.speak(instructionText, { rate: 0.85, cancelPrevious: true });
+
+    // Now safe to enable — speech is done, no race possible
+    if (playBtn) {
+      playBtn.disabled = false;
+      playBtn.textContent = '🔊 Play the sequence';
+    }
   }
 
   function resetSequenceJars() {
@@ -343,7 +397,10 @@ const EngineSound = (() => {
       successEl.innerHTML = `
         <div class="success-card animate-pop">
           <div class="success-animals">
-            ${sequenceOrder.map(a => `<span class="dancing-animal">${a.emoji}</span>`).join('')}
+            ${sequenceOrder.map(id => {
+              const a = animals.find(an => an.id === id);
+              return `<span class="dancing-animal">${a ? a.emoji : '❓'}</span>`;
+            }).join('')}
           </div>
           <p class="success-text">${data.days['3'].completionText}</p>
         </div>

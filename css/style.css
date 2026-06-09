@@ -555,6 +555,122 @@ body {
   color: var(--cyan);
 }
 
+/* --- Intro: Continue Button --- */
+.intro-continue {
+  margin: 16px 0;
+  animation: popIn 0.5s ease;
+}
+
+.intro-continue-label {
+  font-size: 0.9rem;
+  color: var(--gold);
+  margin-bottom: 8px;
+}
+
+.btn-continue {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 14px 32px;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #1a1a2e;
+  background: linear-gradient(135deg, var(--gold), #ffed4a);
+  border: none;
+  border-radius: 30px;
+  cursor: pointer;
+  box-shadow: 0 4px 15px rgba(255,215,0,0.4);
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.btn-continue:active {
+  transform: scale(0.95);
+  box-shadow: 0 2px 8px rgba(255,215,0,0.3);
+}
+
+.btn-continue-icon {
+  font-size: 1.3rem;
+}
+
+/* --- Intro: Day Selector Grid --- */
+.intro-day-select {
+  margin: 24px 0 12px;
+  text-align: center;
+}
+
+.intro-day-select-label {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  margin-bottom: 10px;
+}
+
+.intro-day-grid {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px;
+}
+
+.intro-day-btn {
+  padding: 10px 14px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  border: 2px solid rgba(255,255,255,0.15);
+  border-radius: 14px;
+  background: rgba(255,255,255,0.05);
+  color: var(--text);
+  cursor: pointer;
+  transition: all 0.2s;
+  min-width: 90px;
+}
+
+.intro-day-btn.unlocked {
+  border-color: var(--blue);
+  background: rgba(59,130,246,0.15);
+}
+
+.intro-day-btn.unlocked:hover {
+  background: rgba(59,130,246,0.25);
+}
+
+.intro-day-btn.completed {
+  border-color: var(--green);
+  background: rgba(34,197,94,0.2);
+}
+
+.intro-day-btn.completed::after {
+  content: ' ✓';
+  color: var(--green);
+}
+
+.intro-day-btn.locked {
+  opacity: 0.4;
+  cursor: not-allowed;
+  background: rgba(255,255,255,0.02);
+}
+
+.intro-day-btn:active:not(.locked) {
+  transform: scale(0.95);
+}
+
+/* --- Intro: Reset Link --- */
+.intro-reset-note {
+  margin-top: 8px;
+  font-size: 0.75rem;
+}
+
+.intro-reset-note a {
+  color: var(--text-muted);
+  text-decoration: none;
+  opacity: 0.6;
+  transition: opacity 0.2s;
+}
+
+.intro-reset-note a:hover {
+  opacity: 1;
+  color: var(--red);
+}
+
 /* ===== DAY 1: Light Power ===== */
 
 .silhouette-display {
@@ -1123,6 +1239,13 @@ body {
 }
 
 .seq-dot { font-size: 1.4rem; }
+
+.seq-hint {
+  color: var(--gold);
+  font-size: 0.9rem;
+  font-weight: 600;
+  animation: glowPulse 1.5s infinite alternate;
+}
 
 .sequence-attempts {
   text-align: center;

@@ -43,22 +43,39 @@ const App = (() => {
 
     // Bind UI
     bindNavigation();
+    bindIntroButtons();
     bindRestartButton();
 
     // Determine starting scene
+    // ALWAYS show intro first — let user choose to continue or start fresh
+    showScene('intro');
+
     const state = Storage.getState();
-    if (state.completedDays.length === 0) {
-      showScene('intro');
-      setTimeout(() => {
-        Audio.speak('Hello, Star Guardian! I am Twinkle. I need your help!', { rate: 0.9 });
-      }, 500);
-    } else if (state.completedDays.length >= 5) {
-      showScene('complete');
-      setTimeout(() => EngineHeart && EngineHeart.showCertificate(), 300);
-    } else {
-      // Resume from current day — use goToDay to init the engine
-      goToDay(state.currentDay);
+
+    // If there's saved progress, show continue button
+    if (state.completedDays.length > 0) {
+      showContinueOption(state);
     }
+
+    // Show/hide reset link
+    const resetNote = document.getElementById('intro-reset-note');
+    if (resetNote) {
+      resetNote.style.display = state.completedDays.length > 0 ? 'block' : 'none';
+    }
+
+    // Update day selector grid
+    updateIntroDaySelect(state);
+
+    // Speak greeting
+    setTimeout(() => {
+      if (state.completedDays.length >= 5) {
+        Audio.speak('Welcome back, Star Guardian! You have collected all powers!', { rate: 0.9 });
+      } else if (state.completedDays.length > 0) {
+        Audio.speak('Welcome back! Ready to continue?', { rate: 0.9 });
+      } else {
+        Audio.speak('Hello, Star Guardian! I am Twinkle. I need your help!', { rate: 0.9 });
+      }
+    }, 500);
   }
 
   /** Show a specific scene, hide others */
@@ -255,6 +272,12 @@ const App = (() => {
           Storage.resetAll();
           Twinkle.syncFromStorage();
           updateStatusBar();
+          // Hide continue & reset link
+          const cont = document.getElementById('intro-continue');
+          const rn = document.getElementById('intro-reset-note');
+          if (cont) cont.style.display = 'none';
+          if (rn) rn.style.display = 'none';
+          updateIntroDaySelect(Storage.getState());
           showScene('intro');
           Audio.speak('Welcome back, Star Guardian!', { rate: 0.9 });
         }
@@ -266,6 +289,119 @@ const App = (() => {
     });
     btn.addEventListener('pointerleave', () => {
       clearTimeout(holdTimer);
+    });
+  }
+
+  /** Bind intro scene buttons: continue, day select, reset link, secret unlock */
+  function bindIntroButtons() {
+    // Continue button
+    const continueBtn = document.getElementById('btn-continue');
+    if (continueBtn) {
+      continueBtn.addEventListener('click', () => {
+        const state = Storage.getState();
+        goToDay(state.currentDay);
+      });
+    }
+
+    // Day selector buttons in intro
+    const dayGrid = document.getElementById('intro-day-grid');
+    if (dayGrid) {
+      dayGrid.querySelectorAll('.intro-day-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const day = parseInt(btn.dataset.day);
+          if (Storage.isDayUnlocked(day) || Storage.isDayCompleted(day)) {
+            goToDay(day);
+          } else {
+            btn.classList.add('shake');
+            setTimeout(() => btn.classList.remove('shake'), 500);
+            Audio.speak('Finish the previous days first!', { rate: 0.9 });
+          }
+        });
+      });
+    }
+
+    // Reset link on intro page
+    const resetLink = document.getElementById('intro-reset-link');
+    if (resetLink) {
+      resetLink.addEventListener('click', (e) => {
+        e.preventDefault();
+        if (confirm('Reset ALL progress? This cannot be undone!')) {
+          Storage.resetAll();
+          Twinkle.syncFromStorage();
+          updateStatusBar();
+          // Hide continue, reset link, update day selector
+          const cont = document.getElementById('intro-continue');
+          const rn = document.getElementById('intro-reset-note');
+          if (cont) cont.style.display = 'none';
+          if (rn) rn.style.display = 'none';
+          updateIntroDaySelect(Storage.getState());
+          Audio.speak('All progress reset. Let\'s start again!', { rate: 0.9 });
+        }
+      });
+    }
+
+    // Secret unlock: 5 rapid taps on big Twinkle unlocks ALL days
+    const bigTwinkle = document.querySelector('.intro-twinkle-big');
+    if (bigTwinkle) {
+      let tapCount = 0;
+      let tapTimer = null;
+      bigTwinkle.addEventListener('click', () => {
+        tapCount++;
+        if (tapTimer) clearTimeout(tapTimer);
+        if (tapCount >= 5) {
+          tapCount = 0;
+          // Unlock all days by simulating completion
+          const st = Storage.getState();
+          for (let d = 1; d <= 5; d++) {
+            if (!st.completedDays.includes(d)) {
+              st.completedDays.push(d);
+            }
+          }
+          st.currentDay = 5;
+          Storage.save();
+          Twinkle.syncFromStorage();
+          updateStatusBar();
+          updateIntroDaySelect(Storage.getState());
+          // Show continue button too
+          showContinueOption(Storage.getState());
+          const rn = document.getElementById('intro-reset-note');
+          if (rn) rn.style.display = 'block';
+          Audio.speak('All days unlocked! You can play any day now.', { rate: 0.9 });
+        } else {
+          tapTimer = setTimeout(() => { tapCount = 0; }, 800);
+        }
+      });
+    }
+  }
+
+  /** Show the "Continue from Day X" option on intro */
+  function showContinueOption(state) {
+    const cont = document.getElementById('intro-continue');
+    const daySpan = document.getElementById('continue-day');
+    if (cont) cont.style.display = 'block';
+    if (daySpan) daySpan.textContent = state.currentDay;
+  }
+
+  /** Update day selector buttons on intro based on progress */
+  function updateIntroDaySelect(state) {
+    const dayGrid = document.getElementById('intro-day-grid');
+    if (!dayGrid) return;
+
+    const buttons = dayGrid.querySelectorAll('.intro-day-btn');
+    buttons.forEach(btn => {
+      const day = parseInt(btn.dataset.day);
+      btn.classList.remove('locked', 'completed', 'unlocked');
+
+      if (state.completedDays.includes(day)) {
+        btn.classList.add('completed');
+        btn.disabled = false;
+      } else if (Storage.isDayUnlocked(day)) {
+        btn.classList.add('unlocked');
+        btn.disabled = false;
+      } else {
+        btn.classList.add('locked');
+        btn.disabled = true;
+      }
     });
   }
 
@@ -285,7 +421,8 @@ const App = (() => {
 
   return {
     init, showScene, goToDay, onDayComplete,
-    updateStatusBar, getEpisodeData
+    updateStatusBar, getEpisodeData,
+    updateIntroDaySelect, showContinueOption
   };
 })();
 

@@ -48,6 +48,18 @@ const Audio = (() => {
    * @param {boolean} [options.cancelPrevious=false] - Cancel any ongoing speech
    * @returns {Promise} Resolves when speech ends
    */
+  /**
+   * Strip emoji characters from text so they don't get read aloud.
+   * Uses Unicode property escapes for broad emoji coverage.
+   */
+  function stripEmoji(text) {
+    if (!text) return text;
+    return text
+      .replace(/\p{Extended_Pictographic}/gu, '')
+      .replace(/\s+/g, ' ')
+      .trim();
+  }
+
   function speak(text, options = {}) {
     if (!isSupported) {
       console.warn('Speech not supported, text:', text);
@@ -65,8 +77,12 @@ const Audio = (() => {
       cancel();
     }
 
+    // Strip emojis — Web Speech API reads their Unicode names aloud
+    const cleanText = stripEmoji(text);
+    if (!cleanText) return Promise.resolve(); // nothing left to speak
+
     return new Promise((resolve) => {
-      const utter = new SpeechSynthesisUtterance(text);
+      const utter = new SpeechSynthesisUtterance(cleanText);
       utter.rate = rate;
       utter.pitch = pitch;
       utter.volume = 1.0;
@@ -74,13 +90,31 @@ const Audio = (() => {
         utter.voice = voice || preferredVoice;
       }
 
+      let done = false;
+
+      // Safety net: Chrome sometimes silently ignores synth.speak()
+      // and neither onend nor onerror fires. Timeout after 8s.
+      const safetyTimer = setTimeout(() => {
+        if (!done) {
+          done = true;
+          isSpeaking = false;
+          resolve();
+        }
+      }, 8000);
+
       utter.onend = () => {
+        if (done) return;
+        done = true;
+        clearTimeout(safetyTimer);
         isSpeaking = false;
         resolve();
         processQueue();
       };
 
       utter.onerror = (e) => {
+        if (done) return;
+        done = true;
+        clearTimeout(safetyTimer);
         if (e.error !== 'canceled' && e.error !== 'interrupted') {
           console.warn('Speech error:', e.error);
         }
@@ -90,7 +124,20 @@ const Audio = (() => {
       };
 
       isSpeaking = true;
-      synth.speak(utter);
+      // Chrome workaround: resume if Chrome paused the synth (e.g. tab background)
+      if (synth.paused) synth.resume();
+
+      // Chrome/Edge: synth.speaking may still report true from a stale
+      // utterance whose onend already fired. New synth.speak() is silently
+      // ignored in that state. Poll until free, then force-cancel if stuck.
+      (function trySpeak(attempts) {
+        if (synth.speaking && attempts < 30) {
+          setTimeout(function() { trySpeak(attempts + 1); }, 100);
+        } else {
+          if (synth.speaking) synth.cancel(); // stuck — force clear
+          synth.speak(utter);
+        }
+      })(0);
     });
   }
 
@@ -138,8 +185,31 @@ const Audio = (() => {
     return isSpeaking || speakQueue.length > 0;
   }
 
+  /**
+   * Wait for all pending speech to finish (without cancelling).
+   * Checks both our isSpeaking flag AND Chrome's internal synth.speaking.
+   * @param {number} [timeout=5000] - Max wait in ms
+   */
+  async function waitForSilence(timeout = 5000) {
+    const start = Date.now();
+    while (isSpeaking || speakQueue.length > 0 || (synth && synth.speaking)) {
+      if (Date.now() - start > timeout) {
+        // If Chrome's synth is genuinely stuck, force-reset
+        if (synth && synth.speaking) {
+          synth.cancel();
+        }
+        // If only our flag was stuck (Chrome silently ignored a speak),
+        // just reset our flag — do NOT call synth.cancel()
+        isSpeaking = false;
+        speakQueue = [];
+        break;
+      }
+      await new Promise(r => setTimeout(r, 80));
+    }
+  }
+
   return {
-    init, speak, speakQueued, onDone, cancel, isSpeakingNow,
+    init, speak, speakQueued, onDone, cancel, isSpeakingNow, waitForSilence,
     isSupported: () => isSupported
   };
 })();

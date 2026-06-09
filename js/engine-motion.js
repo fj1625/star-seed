@@ -110,6 +110,19 @@ const EngineMotion = (() => {
     const roundNumEl = document.getElementById('round-num');
     if (roundNumEl) roundNumEl.textContent = roundIdx + 1;
 
+    // Update round dots: mark completed, set active on current
+    for (let i = 0; i < rounds.length; i++) {
+      const dot = document.getElementById('rdot-' + i);
+      if (!dot) continue;
+      dot.classList.remove('active');
+      if (i < roundIdx) {
+        dot.classList.add('done');
+        dot.textContent = '⭐';
+      } else if (i === roundIdx) {
+        dot.classList.add('active');
+      }
+    }
+
     // Show start button
     if (startBtn) {
       startBtn.style.display = 'block';
@@ -163,7 +176,7 @@ const EngineMotion = (() => {
 
     // Pause, then next
     await sleep(1200);
-    performActionSequence(index + 1);
+    await performActionSequence(index + 1);
   }
 
   async function showChildTurn() {
@@ -203,10 +216,12 @@ const EngineMotion = (() => {
     if (speechEl) {
       speechEl.innerHTML = `<div class="speech-bubble">Your turn! Show me the moves!</div>`;
     }
-    await Audio.speak('Your turn! Do all the moves!', { rate: 0.9 });
 
-    // Wait for child to press DONE
+    // Set up DONE button BEFORE speaking — otherwise the button is
+    // visible but still disabled from the previous round's click,
+    // and the user sees no response when tapping it.
     if (doneBtn) {
+      doneBtn.disabled = false;
       doneBtn.style.display = 'block';
       doneBtn.textContent = '✓ DONE! I did all the moves!';
       doneBtn.onclick = async () => {
@@ -233,10 +248,13 @@ const EngineMotion = (() => {
         if (currentRound >= rounds.length) {
           onAllRoundsComplete();
         } else {
-          startDanceRound(currentRound);
+          await startDanceRound(currentRound);
         }
       };
     }
+
+    // Speak after button is ready — child can tap DONE immediately
+    await Audio.speak('Your turn! Do all the moves!', { rate: 0.9 });
   }
 
   async function onAllRoundsComplete() {

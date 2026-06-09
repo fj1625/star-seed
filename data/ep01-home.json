@@ -109,7 +109,7 @@
           "id": "cat",
           "animal": "cat",
           "emoji": "🐈",
-          "onomatopoeia": "Meow meow! Meooow!",
+          "onomatopoeia": "Meow meow! Mee-ow!",
           "speechRate": 0.9,
           "speechPitch": 1.6,
           "distractors": ["dog", "bird"]
@@ -148,7 +148,7 @@
       "power": "Motion",
       "powerEmoji": "🤸",
       "title": "Star Dance",
-      "storyIntro": "I can hear sounds now, but... I still can't move! Can you teach me how to dance? I'll copy everything you do!",
+      "storyIntro": "I can hear sounds now, but... I still can't move well! Let's dance together! I'll try a move first, then YOU show me you can do it too!",
       "actions": [
         {
           "id": "clap",

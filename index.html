@@ -68,11 +68,36 @@
             <span>🤸 Motion</span>
             <span>❤️ Heart</span>
           </div>
+          <!-- Continue area (shown when progress exists) -->
+          <div class="intro-continue" id="intro-continue" style="display:none">
+            <p class="intro-continue-label">You have saved progress!</p>
+            <button class="btn btn-continue" id="btn-continue">
+              <span>Continue → Day <span id="continue-day">1</span></span>
+              <span class="btn-continue-icon">💾</span>
+            </button>
+          </div>
+
           <button class="btn btn-start" id="btn-start">
             <span class="btn-start-text">Begin the Adventure!</span>
             <span class="btn-start-rocket">🚀</span>
           </button>
+
+          <!-- Day selector (for free navigation) -->
+          <div class="intro-day-select" id="intro-day-select">
+            <p class="intro-day-select-label">Or jump to any day:</p>
+            <div class="intro-day-grid" id="intro-day-grid">
+              <button class="intro-day-btn" data-day="1">🔦 Day 1</button>
+              <button class="intro-day-btn locked" data-day="2" disabled>🌈 Day 2</button>
+              <button class="intro-day-btn locked" data-day="3" disabled>🎵 Day 3</button>
+              <button class="intro-day-btn locked" data-day="4" disabled>🤸 Day 4</button>
+              <button class="intro-day-btn locked" data-day="5" disabled>❤️ Day 5</button>
+            </div>
+          </div>
+
           <p class="intro-parent-note">👋 Parent: Print the <a href="printable/ep01-printable.html" target="_blank">game materials</a> first!</p>
+          <p class="intro-reset-note" id="intro-reset-note" style="display:none">
+            <a href="#" id="intro-reset-link">🔄 Reset all progress</a>
+          </p>
         </div>
       </section>
 

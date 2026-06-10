@@ -13,7 +13,7 @@ const Audio = (() => {
   // ==== Volcano Engine TTS via Cloudflare Workers ====
   // Set this to your Worker URL after deploying tts-proxy/cloudflare-worker.js
   // e.g. 'https://star-seed-tts.yourname.workers.dev'
-  const VOLCANO_WORKER_URL = 'https://workers-playground-black-base-adc8.lidi1625.workers.dev';
+  const VOLCANO_WORKER_URL = ''; // Temporarily disabled until Workers is properly deployed
   let currentVolcanoAudio = null; // for cancellation
 
   /** Initialize speech synthesis */
@@ -129,12 +129,24 @@ const Audio = (() => {
     const cleanText = stripEmoji(text);
     if (!cleanText) return Promise.resolve(); // nothing left to speak
 
-    // Use Volcano Engine TTS if configured, else fall back to Web Speech API
-    if (VOLCANO_WORKER_URL) {
-      return speakVolcano(cleanText, rate);
-    }
+    console.log('[Audio] speak() called:', cleanText.slice(0, 40));
 
-    return speakWebSpeech(cleanText, options);
+    // Use Volcano Engine TTS if configured, else fall back to Web Speech API
+    const speakPromise = VOLCANO_WORKER_URL
+      ? speakVolcano(cleanText, rate)
+      : speakWebSpeech(cleanText, options);
+
+    // Global safety: no matter what happens inside, force-resolve after 10s
+    // so the game NEVER hangs waiting for speech
+    const timeoutPromise = new Promise((resolve) => {
+      setTimeout(() => {
+        console.warn('[Audio] speak() global 10s timeout — forcing resolve');
+        isSpeaking = false;
+        resolve();
+      }, 10000);
+    });
+
+    return Promise.race([speakPromise, timeoutPromise]);
   }
 
   /**
@@ -210,8 +222,9 @@ const Audio = (() => {
 
   /** Original Web Speech API implementation */
   function speakWebSpeech(text, options = {}) {
+    console.log('[Audio] speakWebSpeech called, isSupported:', isSupported, 'text:', text.slice(0, 40));
     if (!isSupported) {
-      console.warn('Speech not supported, text:', text);
+      console.warn('[Audio] Web Speech not supported, skipping:', text);
       return Promise.resolve();
     }
 
@@ -236,6 +249,7 @@ const Audio = (() => {
       // and neither onend nor onerror fires. Timeout after 8s.
       const safetyTimer = setTimeout(() => {
         if (!done) {
+          console.warn('[Audio] Web Speech safety timeout — forcing resolve');
           done = true;
           isSpeaking = false;
           resolve();
@@ -244,6 +258,7 @@ const Audio = (() => {
 
       utter.onend = () => {
         if (done) return;
+        console.log('[Audio] Web Speech onend fired');
         done = true;
         clearTimeout(safetyTimer);
         isSpeaking = false;
@@ -253,11 +268,9 @@ const Audio = (() => {
 
       utter.onerror = (e) => {
         if (done) return;
+        console.warn('[Audio] Web Speech onerror:', e.error, e.message);
         done = true;
         clearTimeout(safetyTimer);
-        if (e.error !== 'canceled' && e.error !== 'interrupted') {
-          console.warn('Speech error:', e.error);
-        }
         isSpeaking = false;
         resolve();
         processQueue();
@@ -265,7 +278,10 @@ const Audio = (() => {
 
       isSpeaking = true;
       // Chrome workaround: resume if Chrome paused the synth (e.g. tab background)
-      if (synth.paused) synth.resume();
+      if (synth.paused) {
+        console.log('[Audio] Resuming paused synth');
+        synth.resume();
+      }
 
       // Chrome/Edge: synth.speaking may still report true from a stale
       // utterance whose onend already fired. New synth.speak() is silently
@@ -274,6 +290,7 @@ const Audio = (() => {
         if (synth.speaking && attempts < 30) {
           setTimeout(function() { trySpeak(attempts + 1); }, 100);
         } else {
+          console.log('[Audio] Calling synth.speak(), attempts:', attempts, 'synth.speaking:', synth.speaking);
           if (synth.speaking) synth.cancel(); // stuck — force clear
           synth.speak(utter);
         }

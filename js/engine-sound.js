@@ -11,6 +11,9 @@ const EngineSound = (() => {
   let playerSequence = [];
   let sequenceAttempts = 0;
   const MAX_ATTEMPTS = 3;
+  let pendingTimers = new Set();
+  let lastStartTime = 0;
+  let lastSequenceStartTime = 0;
 
   function init(episodeData) {
     data = episodeData;
@@ -18,6 +21,13 @@ const EngineSound = (() => {
   }
 
   async function start() {
+    const now = Date.now();
+    if (now - lastStartTime < 500) {
+      console.warn('[Day3] start() debounced');
+      return;
+    }
+    lastStartTime = now;
+    clearPendingTimers();
     currentPhase = 'match';
     matchedAnimals = Storage.getState().day3AnimalsMatched;
     sequenceOrder = [];
@@ -110,6 +120,8 @@ const EngineSound = (() => {
 
       jarsGrid.querySelectorAll('.sound-jar').forEach(jar => {
         jar.addEventListener('click', () => {
+          // Prevent double-tap on the same jar
+          if (jar.classList.contains('playing')) return;
           const idx = parseInt(jar.dataset.index);
           const animal = unmatchedAnimals[idx];
 
@@ -163,11 +175,18 @@ const EngineSound = (() => {
 
     choicesEl.querySelectorAll('.btn-animal-choice').forEach(btn => {
       btn.addEventListener('click', async () => {
+        // Prevent double-click / rapid tap
+        if (btn.disabled) return;
+        btn.disabled = true;
+
         if (btn.dataset.id === correctAnimal.id) {
           onAnimalMatched(jarIdx, correctAnimal);
         } else {
           btn.classList.add('shake');
-          setTimeout(() => btn.classList.remove('shake'), 500);
+          setTimeout(() => {
+            btn.classList.remove('shake');
+            btn.disabled = false;
+          }, 500);
           Audio.speak('Try again! Listen carefully!', { rate: 0.9 });
         }
       });
@@ -175,6 +194,11 @@ const EngineSound = (() => {
   }
 
   async function onAnimalMatched(jarIdx, animal) {
+    // Guard: prevent double-fire from rapid taps
+    if (matchedAnimals.includes(animal.id)) {
+      console.warn('[Day3] onAnimalMatched called twice for:', animal.id);
+      return;
+    }
     matchedAnimals.push(animal.id);
     Storage.addDay3Animal(animal.id);
     App.updateStatusBar();
@@ -210,6 +234,9 @@ const EngineSound = (() => {
   async function showSoundImitation() {
     const speechEl = document.getElementById('day3-speech');
     const container = document.getElementById('day3');
+
+    // Guard: prevent duplicate imitation UIs from rapid onAnimalMatched calls
+    if (container.querySelector('.sound-imitation')) return;
 
     // Create a quick imitation UI before sequence
     const imitationDiv = document.createElement('div');
@@ -267,6 +294,12 @@ const EngineSound = (() => {
   }
 
   async function startSequencePhase() {
+    const now = Date.now();
+    if (now - lastSequenceStartTime < 500) {
+      console.warn('[Day3] startSequencePhase() debounced');
+      return;
+    }
+    lastSequenceStartTime = now;
     const seqPhase = document.getElementById('day3-sequence');
     const matchPhase = document.getElementById('day3-match');
     const seqJars = document.getElementById('sequence-jars-display');
@@ -474,7 +507,18 @@ const EngineSound = (() => {
   }
 
   function sleep(ms) {
-    return new Promise(r => setTimeout(r, ms));
+    return new Promise(resolve => {
+      const timer = setTimeout(() => {
+        pendingTimers.delete(timer);
+        resolve();
+      }, ms);
+      pendingTimers.add(timer);
+    });
+  }
+
+  function clearPendingTimers() {
+    pendingTimers.forEach(t => clearTimeout(t));
+    pendingTimers.clear();
   }
 
   return { init, start };

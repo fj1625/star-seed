@@ -216,6 +216,41 @@
       "title": "Heart of the Star",
       "storyIntro": "I have light, color, sound, and motion... but there's one more thing I need. The Heart power. Only someone who loves you can give it to me. Will you find them?",
       "heartPieceCode": "999",
+      "recallQuestions": [
+        {
+          "day": 1,
+          "emoji": "🔦",
+          "prompt": "What word did we spell with the 4 cards?",
+          "acceptedAnswers": ["star"],
+          "hint": "S-T-A-R!",
+          "puzzlePiecePower": "light"
+        },
+        {
+          "day": 2,
+          "emoji": "🌈",
+          "prompt": "Red plus blue makes what color?",
+          "acceptedAnswers": ["purple"],
+          "hint": "Purple!",
+          "puzzlePiecePower": "color"
+        },
+        {
+          "day": 3,
+          "emoji": "🎵",
+          "prompt": "Which animal says Ribbit?",
+          "acceptedAnswers": ["frog"],
+          "hint": "Frog!",
+          "puzzlePiecePower": "sound"
+        },
+        {
+          "day": 4,
+          "emoji": "🤸",
+          "prompt": "Tell me one move we danced!",
+          "acceptedAnswers": [],
+          "hint": "Clap, jump, spin... any dance move!",
+          "puzzlePiecePower": "motion",
+          "isOpenEnded": true
+        }
+      ],
       "puzzleMessage": "One piece is missing... Ask your Earth Helper for the Heart Piece!",
       "plantMessage": "Twinkle wants to become a real plant in your world! Earth Helper: give your child a real seed now!",
       "countdownText": "Plant the seed now!",

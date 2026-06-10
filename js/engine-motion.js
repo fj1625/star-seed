@@ -282,15 +282,21 @@ const EngineMotion = (() => {
           });
         });
 
-        // Wait a beat then advance
-        await sleep(1000);
-        if (voiceDiv.parentNode) voiceDiv.remove();
+        // Add Next Round button — user controls when to advance
+        const nextBtn = document.createElement('button');
+        nextBtn.className = 'btn btn-tiny';
+        nextBtn.textContent = currentRound >= rounds.length ? 'Finish! 🎉' : 'Next Round →';
+        nextBtn.style.marginTop = '12px';
+        voiceDiv.appendChild(nextBtn);
 
-        if (currentRound >= rounds.length) {
-          onAllRoundsComplete();
-        } else {
-          await startDanceRound(currentRound);
-        }
+        nextBtn.addEventListener('click', async () => {
+          if (voiceDiv.parentNode) voiceDiv.remove();
+          if (currentRound >= rounds.length) {
+            onAllRoundsComplete();
+          } else {
+            await startDanceRound(currentRound);
+          }
+        });
       };
     }
 

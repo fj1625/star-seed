@@ -263,22 +263,18 @@ const EngineHeart = (() => {
     }
     await Audio.speak('You did it together! Now let\'s complete the puzzle!', { rate: 0.85 });
 
-    // Transition to puzzle
+    // Transition to recall challenge + puzzle
     setTimeout(() => {
       if (dualPhase) dualPhase.style.display = 'none';
       if (puzzlePhase) puzzlePhase.style.display = 'block';
-      if (speechEl) {
-        speechEl.innerHTML = `<div class="speech-bubble">One piece is missing... Earth Helper: give your Star Guardian the Heart Piece card!</div>`;
-      }
-      Audio.speak('One piece is missing. Earth Helper, give the Heart Piece card to your Star Guardian!', { rate: 0.85 });
-      buildPuzzle();
-      setupHeartCodeEntry();
+      buildPuzzle([]); // all pieces hidden initially
+      startRecallChallenge();
     }, 2000);
   }
 
   // ==================== PUZZLE PHASE ====================
 
-  function buildPuzzle() {
+  function buildPuzzle(unlockedPieces = []) {
     const grid = document.getElementById('puzzle-grid');
     if (!grid) return;
 
@@ -290,21 +286,20 @@ const EngineHeart = (() => {
       { power: 'heart', emoji: '❤️', color: '#EF4444', label: 'Heart', missing: true }
     ];
 
-    const shuffled = [...pieces].sort(() => Math.random() - 0.5);
-
-    grid.innerHTML = shuffled.map(p => {
-      if (p.missing) {
+    grid.innerHTML = pieces.map(p => {
+      const isUnlocked = unlockedPieces.includes(p.power);
+      if (!isUnlocked) {
         return `
-          <div class="puzzle-piece missing" id="piece-heart">
+          <div class="puzzle-piece missing" id="piece-${p.power}">
             <div class="piece-inner">
               <span class="piece-question">❓</span>
-              <span class="piece-label">Missing!</span>
+              <span class="piece-label">?</span>
             </div>
           </div>
         `;
       }
       return `
-        <div class="puzzle-piece placed animate-pop" style="--piece-color:${p.color}">
+        <div class="puzzle-piece placed animate-pop" id="piece-${p.power}" style="--piece-color:${p.color}">
           <div class="piece-inner">
             <span class="piece-emoji">${p.emoji}</span>
             <span class="piece-label">${p.label}</span>
@@ -312,6 +307,154 @@ const EngineHeart = (() => {
         </div>
       `;
     }).join('');
+  }
+
+  function unlockPuzzlePiece(power) {
+    const piece = document.getElementById(`piece-${power}`);
+    if (!piece) return;
+
+    const pieceData = {
+      light: { emoji: '🔆', color: '#FFD700', label: 'Light' },
+      color: { emoji: '🌈', color: '#FF6B9D', label: 'Color' },
+      sound: { emoji: '🎵', color: '#4ECDC4', label: 'Sound' },
+      motion: { emoji: '💫', color: '#A78BFA', label: 'Motion' }
+    };
+
+    const p = pieceData[power];
+    if (!p) return;
+
+    piece.classList.remove('missing');
+    piece.classList.add('placed', 'animate-pop');
+    piece.style.setProperty('--piece-color', p.color);
+    piece.querySelector('.piece-inner').innerHTML = `
+      <span class="piece-emoji">${p.emoji}</span>
+      <span class="piece-label">${p.label}</span>
+    `;
+  }
+
+  async function startRecallChallenge() {
+    const speechEl = document.getElementById('day5-speech');
+    const codeEntry = document.getElementById('heart-piece-entry');
+
+    // Hide code entry initially
+    if (codeEntry) codeEntry.style.display = 'none';
+
+    const questions = data.days['5'].recallQuestions;
+
+    for (let i = 0; i < questions.length; i++) {
+      const q = questions[i];
+      const success = await askRecallQuestion(q, i + 1, questions.length);
+      if (success) {
+        unlockPuzzlePiece(q.puzzlePiecePower);
+        await Audio.speak(`Yes! ${q.hint}`, { rate: 0.85 });
+        await sleep(800);
+      }
+    }
+
+    // All questions answered
+    if (speechEl) {
+      speechEl.innerHTML = `<div class="speech-bubble happy">All pieces are back! Now complete the heart!</div>`;
+    }
+    await Audio.speak('All pieces are back! Earth Helper, give the Heart Piece card to your Star Guardian!', { rate: 0.85 });
+
+    // Show code entry
+    if (codeEntry) codeEntry.style.display = 'block';
+    setupHeartCodeEntry();
+  }
+
+  async function askRecallQuestion(q, current, total) {
+    const puzzlePhase = document.getElementById('heart-phase-puzzle');
+    const speechEl = document.getElementById('day5-speech');
+
+    // Create or update recall UI
+    let recallArea = document.getElementById('recall-challenge-area');
+    if (!recallArea) {
+      recallArea = document.createElement('div');
+      recallArea.id = 'recall-challenge-area';
+      recallArea.className = 'recall-challenge';
+      puzzlePhase.appendChild(recallArea);
+    }
+
+    recallArea.innerHTML = `
+      <div class="recall-progress">Question ${current} of ${total}</div>
+      <div class="recall-day-badge">Day ${q.day} ${q.emoji}</div>
+      <p class="recall-prompt">${q.prompt}</p>
+      <div class="voice-mic-area">
+        <button class="btn btn-mic" id="recall-mic-btn">🎤 Tap to Answer</button>
+        <p class="voice-status" id="recall-voice-status"></p>
+      </div>
+      <div class="voice-fallback-container" id="recall-fallback"></div>
+      <button class="btn btn-skip" id="recall-skip-btn" style="margin-top:8px;">Skip →</button>
+    `;
+
+    if (speechEl) {
+      speechEl.innerHTML = `<div class="speech-bubble">${q.prompt}</div>`;
+    }
+    await Audio.speak(q.prompt, { rate: 0.85, cancelPrevious: true });
+
+    return new Promise((resolve) => {
+      const micBtn = document.getElementById('recall-mic-btn');
+      const statusEl = document.getElementById('recall-voice-status');
+      const skipBtn = document.getElementById('recall-skip-btn');
+      const fallbackContainer = document.getElementById('recall-fallback');
+
+      let resolved = false;
+
+      const checkAnswer = (text) => {
+        const lowerText = text.toLowerCase().trim();
+
+        // Day 4 open-ended: any action verb accepted
+        if (q.isOpenEnded) {
+          const day4Actions = data.days['4'].actions;
+          return day4Actions.some(a => lowerText.includes(a.verb.toLowerCase()));
+        }
+
+        // Standard: check accepted answers
+        return q.acceptedAnswers.some(ans => lowerText.includes(ans.toLowerCase()));
+      };
+
+      const onAnswer = (text) => {
+        if (resolved) return;
+        if (checkAnswer(text)) {
+          resolved = true;
+          if (statusEl) statusEl.innerHTML = '<span class="voice-heard">✅ Correct!</span>';
+          resolve(true);
+        } else {
+          if (statusEl) statusEl.innerHTML = `<span class="voice-error">💡 ${q.hint}</span>`;
+          Audio.speak(`Not quite. ${q.hint}`, { rate: 0.9 });
+        }
+      };
+
+      const onSkip = () => {
+        if (resolved) return;
+        resolved = true;
+        resolve(true);
+      };
+
+      if (micBtn) {
+        micBtn.addEventListener('click', () => {
+          VoiceInput.listen({
+            lang: 'en-US',
+            onResult: onAnswer,
+            onError: () => {
+              if (statusEl) statusEl.innerHTML = '<span class="voice-error">Try again or type below!</span>';
+            }
+          });
+        });
+      }
+
+      if (skipBtn) {
+        skipBtn.addEventListener('click', onSkip);
+      }
+
+      if (fallbackContainer) {
+        VoiceInput.renderFallbackInput(fallbackContainer, {
+          placeholder: 'Type your answer...',
+          buttonText: 'Check',
+          onSubmit: onAnswer
+        });
+      }
+    });
   }
 
   function setupHeartCodeEntry() {

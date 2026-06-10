@@ -1961,6 +1961,37 @@ body {
   animation: popIn 0.6s ease;
 }
 
+/* Recall Challenge */
+.recall-challenge {
+  text-align: center;
+  margin: 16px 0;
+  padding: 20px;
+  background: var(--bg-card);
+  border-radius: var(--radius-lg);
+}
+
+.recall-progress {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  margin-bottom: 8px;
+}
+
+.recall-day-badge {
+  display: inline-block;
+  padding: 4px 14px;
+  background: rgba(255,215,0,0.15);
+  color: var(--gold);
+  border-radius: 20px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  margin-bottom: 12px;
+}
+
+.recall-prompt {
+  font-size: 1.1rem;
+  margin-bottom: 16px;
+}
+
 /* Goodbye Recording */
 .heart-phase-goodbye {
   margin: 16px 0;

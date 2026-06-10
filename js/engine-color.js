@@ -525,8 +525,16 @@ const EngineColor = (() => {
 
     const video = document.getElementById('day2-cam-video');
     const filter = document.getElementById('cam-color-filter');
-    const captureBtn = document.getElementById('btn-capture');
+    const controls = document.querySelector('#day2-camera .camera-controls');
     const flash = document.getElementById('cam-flash');
+
+    // Reset controls to original state (in case a previous round called showCameraUnavailable)
+    if (controls) {
+      controls.innerHTML = `
+        <button class="btn btn-capture" id="btn-capture">📸 Capture!</button>
+        <button class="btn btn-skip" id="btn-day2-skip-camera">Skip →</button>
+      `;
+    }
 
     // Apply color filter
     if (filter) {

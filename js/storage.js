@@ -8,6 +8,7 @@ const Storage = (() => {
   const defaultState = () => ({
     currentDay: 1,
     completedDays: [],
+    completedEpisodes: [],
     twinklePowers: [],
     day1CardsFound: [],
     day1Letters: [],
@@ -123,6 +124,32 @@ const Storage = (() => {
     } catch (e) { /* ignore */ }
   }
 
+  /** Reset day-specific progress when switching episodes */
+  function resetEpisodeProgress() {
+    state.currentDay = 1;
+    state.completedDays = [];
+    state.twinklePowers = [];
+    state.day1CardsFound = [];
+    state.day1Letters = [];
+    state.day2ColorsFound = [];
+    state.day2ItemsFound = [];
+    state.day3AnimalsMatched = [];
+    state.day4HighestRound = 0;
+    state.day5GoodbyeMessage = null;
+    state.day1WordsSpoken = [];
+    state.day3SoundsImitated = [];
+    state.day4MovesNamed = [];
+    save();
+  }
+
+  /** Mark an episode as completed */
+  function markEpisodeComplete(episodeId) {
+    if (!state.completedEpisodes.includes(episodeId)) {
+      state.completedEpisodes.push(episodeId);
+      save();
+    }
+  }
+
   /** Check if a specific day is unlocked */
   function isDayUnlocked(day) {
     if (day === 1) return true;
@@ -139,7 +166,7 @@ const Storage = (() => {
     completeDay, addPower,
     addDay1Card, addDay2Color, addDay3Animal, setDay4Round,
     setPlayerName,
-    resetAll,
+    resetAll, resetEpisodeProgress, markEpisodeComplete,
     isDayUnlocked, isDayCompleted
   };
 })();

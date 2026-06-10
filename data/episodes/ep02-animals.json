@@ -1,0 +1,235 @@
+{
+  "episodeId": "ep02",
+  "title": "Animals",
+  "theme": "animals",
+  "week": 2,
+  "days": {
+    "1": {
+      "power": "Light",
+      "powerEmoji": "🔦",
+      "title": "Zoo Animal Hunt",
+      "storyIntro": "Welcome back, Star Guardian! I need to find my animal friends. They are hiding around your home! Four zoo animals are out there. Can you find them all?",
+      "cards": [
+        {
+          "id": "monkey",
+          "word": "monkey",
+          "emoji": "🐵",
+          "silhouetteEmoji": "🌑",
+          "code": "247",
+          "letter": "W",
+          "hintText": "This animal swings from trees and loves bananas. Look where things climb high...",
+          "foundText": "You found the Monkey card! The letter is... W!"
+        },
+        {
+          "id": "lion",
+          "word": "lion",
+          "emoji": "🦁",
+          "silhouetteEmoji": "🌑",
+          "code": "583",
+          "letter": "I",
+          "hintText": "The king of the jungle! Has a big fluffy mane. Look where something roars...",
+          "foundText": "You found the Lion card! The letter is... I!"
+        },
+        {
+          "id": "panda",
+          "word": "panda",
+          "emoji": "🐼",
+          "silhouetteEmoji": "🌑",
+          "code": "619",
+          "letter": "L",
+          "hintText": "Black and white, soft and cuddly. Loves bamboo. Look where it's cozy and quiet...",
+          "foundText": "You found the Panda card! The letter is... L!"
+        },
+        {
+          "id": "tiger",
+          "word": "tiger",
+          "emoji": "🐯",
+          "silhouetteEmoji": "🌑",
+          "code": "734",
+          "letter": "D",
+          "hintText": "Orange with black stripes. Very fast and strong! Look where things pounce and play...",
+          "foundText": "You found the Tiger card! The letter is... D!"
+        }
+      ],
+      "targetWord": "WILD",
+      "completionText": "W-I-L-D! That spells WILD! All the zoo animals are free! 🦁🐯🐼🐵"
+    },
+    "2": {
+      "power": "Color",
+      "powerEmoji": "🌈",
+      "title": "Animal Colors",
+      "storyIntro": "The animals are here... but they lost their colors! Let's mix some new colors to paint the animals. Can you mix pink, sky blue, and brown?",
+      "colors": [
+        {
+          "id": "pink",
+          "targetColor": "pink",
+          "targetEmoji": "🩷",
+          "mixFrom": ["red", "white"],
+          "exampleItems": ["pig", "flamingo", "flower"],
+          "promptText": "Find something PINK in your home!",
+          "speechText": "Red and white make pink! Can you find something pink in your home?"
+        },
+        {
+          "id": "skyblue",
+          "targetColor": "skyblue",
+          "targetEmoji": "🩵",
+          "mixFrom": ["blue", "white"],
+          "exampleItems": ["sky", "egg", "fish"],
+          "promptText": "Find something LIGHT BLUE in your home!",
+          "speechText": "Blue and white make light blue! Can you find something light blue in your home?"
+        },
+        {
+          "id": "brown",
+          "targetColor": "brown",
+          "targetEmoji": "🤎",
+          "mixFrom": ["orange", "black"],
+          "exampleItems": ["bear", "chocolate", "wood"],
+          "promptText": "Find something BROWN in your home!",
+          "speechText": "Orange and black make brown! Can you find something brown in your home?"
+        }
+      ],
+      "completionText": "Amazing! Now the animals have their colors! Pink, light blue, and brown! 🎨"
+    },
+    "3": {
+      "power": "Sound",
+      "powerEmoji": "🎵",
+      "title": "Farm Sounds",
+      "storyIntro": "I can see the animals now, but... I still can't hear them! Some farm animals are making sounds in these jars. Listen closely — can you tell which animal is in each jar?",
+      "animals": [
+        {
+          "id": "cow",
+          "animal": "cow",
+          "emoji": "🐄",
+          "onomatopoeia": "Moo moooo! Moo!",
+          "speechRate": 0.75,
+          "speechPitch": 0.5,
+          "distractors": ["sheep", "pig"]
+        },
+        {
+          "id": "sheep",
+          "animal": "sheep",
+          "emoji": "🐑",
+          "onomatopoeia": "Baa baa! Baaa!",
+          "speechRate": 0.9,
+          "speechPitch": 1.4,
+          "distractors": ["cow", "horse"]
+        },
+        {
+          "id": "horse",
+          "animal": "horse",
+          "emoji": "🐎",
+          "onomatopoeia": "Neigh neigh! Whinny!",
+          "speechRate": 1.0,
+          "speechPitch": 1.0,
+          "distractors": ["sheep", "pig"]
+        },
+        {
+          "id": "pig",
+          "animal": "pig",
+          "emoji": "🐖",
+          "onomatopoeia": "Oink oink! Oink oink oink!",
+          "speechRate": 1.1,
+          "speechPitch": 1.2,
+          "distractors": ["cow", "horse"]
+        },
+        {
+          "id": "chicken",
+          "animal": "chicken",
+          "emoji": "🐔",
+          "onomatopoeia": "Cluck cluck! Bawk bawk!",
+          "speechRate": 1.2,
+          "speechPitch": 1.6,
+          "distractors": ["sheep", "pig"]
+        }
+      ],
+      "completionText": "Moo! Baa! Neigh! Oink! Cluck! Now I can hear all the farm animals! 🎵"
+    },
+    "4": {
+      "power": "Motion",
+      "powerEmoji": "🤸",
+      "title": "Animal Dance",
+      "storyIntro": "I can hear the animals now, but... I want to move like them too! Let's do the Animal Dance! I'll show you a move, then YOU show me you can do it!",
+      "actions": [
+        {
+          "id": "hop",
+          "verb": "hop",
+          "emoji": "🐰",
+          "instruction": "Hop like a rabbit!",
+          "twinkleAnimation": "bounce"
+        },
+        {
+          "id": "stomp",
+          "verb": "stomp",
+          "emoji": "🐘",
+          "instruction": "Stomp like an elephant!",
+          "twinkleAnimation": "bounce"
+        },
+        {
+          "id": "swim",
+          "verb": "swim",
+          "emoji": "🐟",
+          "instruction": "Swim like a fish!",
+          "twinkleAnimation": "sway"
+        },
+        {
+          "id": "fly",
+          "verb": "fly",
+          "emoji": "🐦",
+          "instruction": "Fly like a bird!",
+          "twinkleAnimation": "spin"
+        },
+        {
+          "id": "crawl",
+          "verb": "crawl",
+          "emoji": "🦀",
+          "instruction": "Crawl like a crab!",
+          "twinkleAnimation": "sway"
+        },
+        {
+          "id": "gallop",
+          "verb": "gallop",
+          "emoji": "🐎",
+          "instruction": "Gallop like a horse!",
+          "twinkleAnimation": "bounce"
+        },
+        {
+          "id": "waddle",
+          "verb": "waddle",
+          "emoji": "🐧",
+          "instruction": "Waddle like a penguin!",
+          "twinkleAnimation": "sway"
+        },
+        {
+          "id": "slither",
+          "verb": "slither",
+          "emoji": "🐍",
+          "instruction": "Slither like a snake!",
+          "twinkleAnimation": "sway"
+        }
+      ],
+      "rounds": [2, 3, 4, 5],
+      "completionText": "You moved like all the animals! Hop, stomp, swim, fly, crawl! You're the best animal dancer! 💃🐾"
+    },
+    "5": {
+      "power": "Heart",
+      "powerEmoji": "❤️",
+      "title": "Animal Rescue",
+      "storyIntro": "I have all my powers back, but... there's a baby animal who lost its mommy! Only the Heart Power can reunite them. Will you and your Earth Helper help the baby find its family?",
+      "heartPieceCode": "738",
+      "puzzleMessage": "One piece is missing... Ask your Earth Helper for the Heart Piece!",
+      "plantMessage": "The baby animal needs a home! Earth Helper: give your child a small toy animal or draw one together!",
+      "countdownText": "Welcome the baby animal home!",
+      "certificateTitle": "Animal Rescuer Certificate",
+      "certificateText": "This certifies that",
+      "certificateSubtext": "has completed all 5 Animal Adventures and helped Twinkle reunite the animal families! The rescued animals are now safe and sound. Be kind to all animals every day!",
+      "completionText": "We did it! The baby animal found its mommy! You are a true Animal Rescuer! 🐾❤️"
+    }
+  },
+  "vocabulary": {
+    "nouns": ["monkey", "lion", "panda", "tiger", "pig", "flamingo", "bear", "chocolate", "egg", "fish"],
+    "animals": ["cow", "sheep", "horse", "pig", "chicken", "monkey", "lion", "panda", "tiger", "rabbit", "elephant", "bird", "crab", "penguin", "snake"],
+    "colors": ["pink", "sky blue", "brown", "red", "blue", "white", "orange", "black"],
+    "actions": ["hop", "stomp", "swim", "fly", "crawl", "gallop", "waddle", "slither"],
+    "phrases": ["Can you find it?", "I found it!", "Good job!", "Let's go!", "Thank you!", "We did it!", "I need your help!", "The baby is safe!"]
+  }
+}

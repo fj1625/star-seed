@@ -545,6 +545,68 @@ body {
   font-size: 0.9rem;
 }
 
+/* --- Episode Selector --- */
+.episode-selector {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  margin: 20px 0 8px;
+}
+
+.episode-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 18px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  background: rgba(255,255,255,0.05);
+  border: 2px solid rgba(255,255,255,0.1);
+  border-radius: 25px;
+  cursor: pointer;
+  transition: all 0.25s;
+  position: relative;
+}
+
+.episode-btn.active {
+  color: var(--gold);
+  border-color: var(--gold);
+  background: rgba(255,215,0,0.1);
+  box-shadow: 0 0 12px rgba(255,215,0,0.2);
+}
+
+.episode-btn.locked {
+  opacity: 0.45;
+  cursor: not-allowed;
+  filter: grayscale(0.6);
+}
+
+.episode-btn:not(.locked):not(.active):hover {
+  border-color: rgba(255,255,255,0.3);
+  color: #fff;
+}
+
+.episode-btn:not(.locked):active {
+  transform: scale(0.95);
+}
+
+.episode-btn-emoji {
+  font-size: 1.3rem;
+}
+
+.episode-btn-label {
+  white-space: nowrap;
+}
+
+.episode-btn-check {
+  position: absolute;
+  top: -5px;
+  right: -3px;
+  font-size: 0.55rem;
+  color: var(--gold);
+}
+
 .intro-parent-note {
   margin-top: 16px;
   font-size: 0.8rem;
@@ -1004,10 +1066,13 @@ body {
   color: #fff;
   text-shadow: 0 0 4px rgba(0,0,0,0.5);
   box-shadow: 0 4px 16px rgba(0,0,0,0.35);
+  border: 3px solid rgba(0,0,0,0.2);
   cursor: grab;
   touch-action: none;
   user-select: none;
-  transition: transform 0.15s ease, box-shadow 0.15s ease, scale 0.5s, opacity 0.5s;
+  /* NOTE: no transform transition — causes drag lag on mobile */
+  transition: box-shadow 0.15s ease, scale 0.5s, opacity 0.5s;
+  will-change: transform;
   z-index: 10;
   position: relative;
 }
@@ -1018,6 +1083,7 @@ body {
   scale: 1.15;
   box-shadow: 0 0 24px rgba(255,215,0,0.6), 0 8px 20px rgba(0,0,0,0.4);
   z-index: 20;
+  transition: none;
 }
 
 .color-draggable.mixed {
@@ -1165,7 +1231,7 @@ body {
   align-items: center;
   gap: 4px;
   padding: 18px 36px;
-  background: var(--accent);
+  background: linear-gradient(135deg, var(--blue), var(--purple));
   border: none;
   border-radius: 60px;
   color: #fff;
@@ -2181,6 +2247,40 @@ body {
 .preview-icon { font-size: 1.8rem; }
 .preview-label { font-size: 0.7rem; }
 .preview-lock { font-size: 0.9rem; }
+
+.preview-week.unlocked {
+  opacity: 1;
+  border: 2px solid var(--cyan);
+  box-shadow: 0 0 16px rgba(0,200,255,0.2);
+}
+
+.preview-week.completed {
+  opacity: 1;
+  border: 2px solid var(--gold);
+  box-shadow: 0 0 16px rgba(255,215,0,0.2);
+}
+
+.preview-status {
+  font-size: 0.7rem;
+  color: var(--gold);
+}
+
+.btn-go-episode {
+  margin-top: 4px;
+  padding: 6px 14px;
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: #1a1a2e;
+  background: linear-gradient(135deg, var(--cyan), #0ea5e9);
+  border: none;
+  border-radius: 14px;
+  cursor: pointer;
+  transition: transform 0.15s;
+}
+
+.btn-go-episode:active {
+  transform: scale(0.93);
+}
 
 /* ===== Overlay ===== */
 

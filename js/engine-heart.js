@@ -578,29 +578,11 @@ const EngineHeart = (() => {
           </div>
         </div>
 
-        <!-- Week 2 Unlock Teaser -->
-        <div class="episode-preview">
-          <h3>More Adventures Coming Soon!</h3>
-          <div class="preview-weeks">
-            <div class="preview-week teaser">
-              <span class="preview-icon">🐾</span>
-              <span class="preview-label">Week 2: Animals</span>
-              <div class="preview-teaser-animal">
-                <span class="peek-animal">🐵</span>
-              </div>
-              <span class="preview-teaser-text">🔜 Coming soon!</span>
-              <button class="btn btn-tiny btn-preview-sound" id="btn-preview-sound">🎵 Hear a friend</button>
-            </div>
-            <div class="preview-week locked">
-              <span class="preview-icon">🍎</span>
-              <span class="preview-label">Week 3: Body & Food</span>
-              <span class="preview-lock">🔒</span>
-            </div>
-            <div class="preview-week locked">
-              <span class="preview-icon">🌿</span>
-              <span class="preview-label">Week 4: Nature</span>
-              <span class="preview-lock">🔒</span>
-            </div>
+        <!-- Week 2 Unlock / More Episodes -->
+        <div class="episode-preview" id="cert-episode-preview">
+          <h3 id="preview-heading">More Adventures!</h3>
+          <div class="preview-weeks" id="preview-weeks">
+            <!-- Populated dynamically based on unlocked episodes -->
           </div>
         </div>
         <button class="btn btn-primary" id="btn-restart-game">Play Again? 🔄</button>
@@ -621,9 +603,18 @@ const EngineHeart = (() => {
       }
     });
 
-    // Preview sound
+    // Build dynamic episode preview
+    buildEpisodePreview();
+
+    // Preview sound — delegate to dynamic button
     document.getElementById('btn-preview-sound')?.addEventListener('click', () => {
-      Audio.speak('Ooh ooh! Ah ah! I\'ll see you soon!', { rate: 0.8, pitch: 1.5 });
+      Audio.speak('Ooh ooh! Ah ah! Let\'s go on a new adventure!', { rate: 0.8, pitch: 1.5 });
+    });
+
+    // Go to Week 2 button
+    document.getElementById('btn-go-ep02')?.addEventListener('click', async () => {
+      await App.switchEpisode('ep02');
+      App.showScene('intro');
     });
 
     // Restart
@@ -637,6 +628,108 @@ const EngineHeart = (() => {
     // Speak
     const name = playerName !== 'Star Guardian' ? playerName : '';
     Audio.speak(`Congratulations${name ? ', ' + name : ''}! You completed all 5 Star Seed challenges!`, { rate: 0.85 });
+  }
+
+  /** Build episode preview cards on certificate */
+  function buildEpisodePreview() {
+    const container = document.getElementById('preview-weeks');
+    const heading = document.getElementById('preview-heading');
+    if (!container) return;
+
+    const state = Storage.getState();
+    const ep01Completed = state.completedEpisodes.includes('ep01');
+    const ep02Completed = state.completedEpisodes.includes('ep02');
+
+    const episodes = [
+      {
+        id: 'ep01', icon: '🏠', label: 'Week 1: My Home',
+        completed: ep01Completed,
+        unlocked: true,
+        teaser: null
+      },
+      {
+        id: 'ep02', icon: '🐾', label: 'Week 2: Animals',
+        completed: ep02Completed,
+        unlocked: ep01Completed || ep02Completed,
+        teaser: ep01Completed ? null : '🔜 Complete Week 1 to unlock!',
+        action: ep01Completed ? 'go' : 'preview',
+        animal: '🐵', sound: 'Ooh ooh! Ah ah!'
+      },
+      {
+        id: 'ep03', icon: '🍎', label: 'Week 3: Body & Food',
+        completed: false,
+        unlocked: false,
+        teaser: '🔒 Coming soon!'
+      },
+      {
+        id: 'ep04', icon: '🌿', label: 'Week 4: Nature',
+        completed: false,
+        unlocked: false,
+        teaser: '🔒 Coming soon!'
+      }
+    ];
+
+    if (heading) {
+      heading.textContent = ep02Completed
+        ? 'All Adventures Complete! 🎉'
+        : 'More Adventures!';
+    }
+
+    container.innerHTML = episodes.map(ep => {
+      let statusHtml = '';
+      let extraClass = '';
+      let actionHtml = '';
+
+      if (ep.completed) {
+        extraClass = 'completed';
+        statusHtml = '<span class="preview-status">✅ Done!</span>';
+      } else if (ep.unlocked && ep.action === 'go') {
+        extraClass = 'unlocked';
+        actionHtml = `<button class="btn btn-tiny btn-go-episode" id="btn-go-${ep.id}">▶ Play!</button>`;
+      } else if (!ep.unlocked) {
+        extraClass = 'locked';
+        statusHtml = `<span class="preview-lock">🔒</span>`;
+        if (ep.teaser) {
+          statusHtml += `<span class="preview-teaser-text">${ep.teaser}</span>`;
+        }
+      } else {
+        // ep01 unlocked but not completed
+        extraClass = 'unlocked';
+      }
+
+      // Animal sound preview for ep02 when not yet unlocked
+      if (ep.id === 'ep02' && !ep.unlocked && ep.animal) {
+        actionHtml = `<button class="btn btn-tiny btn-preview-sound" id="btn-preview-sound">🎵 Hear a friend</button>
+          <div class="preview-teaser-animal"><span class="peek-animal">${ep.animal}</span></div>`;
+      }
+
+      return `
+        <div class="preview-week ${extraClass}">
+          <span class="preview-icon">${ep.icon}</span>
+          <span class="preview-label">${ep.label}</span>
+          ${statusHtml}
+          ${actionHtml}
+        </div>
+      `;
+    }).join('');
+
+    // Bind episode go buttons
+    container.querySelectorAll('.btn-go-episode').forEach(btn => {
+      btn.addEventListener('click', async () => {
+        const epId = btn.id.replace('btn-go-', '');
+        if (epId === 'ep02') {
+          await App.switchEpisode('ep02');
+        }
+      });
+    });
+
+    // Bind preview sound
+    const previewSoundBtn = container.querySelector('#btn-preview-sound');
+    if (previewSoundBtn) {
+      previewSoundBtn.addEventListener('click', () => {
+        Audio.speak('Ooh ooh! Ah ah! I\'ll see you soon!', { rate: 0.8, pitch: 1.5 });
+      });
+    }
   }
 
   function sleep(ms) {

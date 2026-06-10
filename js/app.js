@@ -5,11 +5,36 @@
 const App = (() => {
   let episodeData = null;
   let currentScene = 'intro';
+  let currentEpisodeId = 'ep01';
+  let episodeList = [];
 
   // Scene sections in DOM
   const scenes = [
     'intro', 'day1', 'day2', 'day3', 'day4', 'day5', 'complete'
   ];
+
+  /** Available episodes (discovered at init time) */
+  async function discoverEpisodes() {
+    // Try to load episode list — in production, scan known episodes
+    const known = [
+      { id: 'ep01', title: 'My Home', emoji: '🏠', dataUrl: 'data/ep01-home.json' },
+      { id: 'ep02', title: 'Animals', emoji: '🐾', dataUrl: 'data/episodes/ep02-animals.json' }
+    ];
+    // Verify which ones exist
+    const available = [];
+    for (const ep of known) {
+      try {
+        const resp = await fetch(ep.dataUrl, { method: 'HEAD' });
+        if (resp.ok || resp.status === 0) {
+          available.push(ep);
+        }
+      } catch (e) {
+        // If HEAD fails, assume it exists (CORS/static server may not support HEAD)
+        available.push(ep);
+      }
+    }
+    return available.length > 0 ? available : known;
+  }
 
   /** Initialize the entire app */
   async function init() {
@@ -18,14 +43,25 @@ const App = (() => {
     Audio.init();
     VoiceInput.init();
 
+    // Discover available episodes
+    episodeList = await discoverEpisodes();
+
+    // Determine which episode to load
+    const state = Storage.getState();
+    currentEpisodeId = state.episodeId || 'ep01';
+
+    // If saved episode not in list, use first available
+    const found = episodeList.find(ep => ep.id === currentEpisodeId);
+    if (!found) currentEpisodeId = episodeList[0].id;
+
     // Load episode data
-    try {
-      const resp = await fetch('data/ep01-home.json');
-      episodeData = await resp.json();
-    } catch (e) {
-      console.error('Failed to load episode data', e);
-      showError('Could not load game data. Please check your connection.');
-      return;
+    await loadEpisode(currentEpisodeId);
+
+    // Migration: if all 5 days completed but episode not marked complete, fix it
+    const stAfterLoad = Storage.getState();
+    if (stAfterLoad.completedDays.length >= 5
+        && !stAfterLoad.completedEpisodes.includes(stAfterLoad.episodeId || 'ep01')) {
+      Storage.markEpisodeComplete(stAfterLoad.episodeId || 'ep01');
     }
 
     // Init Twinkle
@@ -36,25 +72,20 @@ const App = (() => {
     updateStatusBar();
 
     // Init engines
-    if (typeof EngineLight !== 'undefined') EngineLight.init(episodeData);
-    if (typeof EngineColor !== 'undefined') EngineColor.init(episodeData);
-    if (typeof EngineSound !== 'undefined') EngineSound.init(episodeData);
-    if (typeof EngineMotion !== 'undefined') EngineMotion.init(episodeData);
-    if (typeof EngineHeart !== 'undefined') EngineHeart.init(episodeData);
+    initAllEngines();
 
     // Bind UI
     bindNavigation();
     bindIntroButtons();
     bindRestartButton();
+    bindEpisodeSelector();
 
-    // Determine starting scene
-    // ALWAYS show intro first — let user choose to continue or start fresh
+    // Always show intro first
     showScene('intro');
-
-    const state = Storage.getState();
+    updateIntroForEpisode();
 
     // If there's saved progress, show continue button
-    if (state.completedDays.length > 0) {
+    if (state.completedDays.length > 0 && state.episodeId === currentEpisodeId) {
       showContinueOption(state);
     }
 
@@ -77,6 +108,188 @@ const App = (() => {
         Audio.speak('Hello, Star Guardian! I am Twinkle. I need your help!', { rate: 0.9 });
       }
     }, 500);
+  }
+
+  /** Load episode data from JSON */
+  async function loadEpisode(episodeId) {
+    const ep = episodeList.find(e => e.id === episodeId);
+    const url = ep ? ep.dataUrl : `data/episodes/${episodeId}.json`;
+
+    try {
+      const resp = await fetch(url);
+      if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+      episodeData = await resp.json();
+      currentEpisodeId = episodeId;
+
+      // Store in state
+      const state = Storage.getState();
+      state.episodeId = episodeId;
+      Storage.save();
+
+      return true;
+    } catch (e) {
+      console.error('Failed to load episode data:', url, e);
+      // Fallback: try ep01
+      if (episodeId !== 'ep01') {
+        console.warn('Falling back to ep01');
+        return loadEpisode('ep01');
+      }
+      showError('Could not load game data. Please check your connection.');
+      return false;
+    }
+  }
+
+  /** Switch to a different episode */
+  async function switchEpisode(episodeId) {
+    if (episodeId === currentEpisodeId) return;
+
+    Audio.cancel();
+
+    const loaded = await loadEpisode(episodeId);
+    if (!loaded) return;
+
+    // Reset day progress for the new episode (but keep playerName)
+    const state = Storage.getState();
+    const playerName = state.playerName;
+    Storage.resetEpisodeProgress();
+    if (playerName) {
+      state.playerName = playerName;
+      Storage.save();
+    }
+
+    initAllEngines();
+    showScene('intro');
+    updateIntroForEpisode();
+    updateIntroDaySelect(Storage.getState());
+
+    const continueEl = document.getElementById('intro-continue');
+    if (continueEl) continueEl.style.display = 'none';
+    const resetNote = document.getElementById('intro-reset-note');
+    if (resetNote) resetNote.style.display = 'none';
+
+    Twinkle.syncFromStorage();
+    updateStatusBar();
+
+    Audio.speak(`Welcome to Week ${episodeData.week}: ${episodeData.title}!`, { rate: 0.9 });
+  }
+
+  /** Initialize all engines with current episode data */
+  function initAllEngines() {
+    if (typeof EngineLight !== 'undefined') EngineLight.init(episodeData);
+    if (typeof EngineColor !== 'undefined') EngineColor.init(episodeData);
+    if (typeof EngineSound !== 'undefined') EngineSound.init(episodeData);
+    if (typeof EngineMotion !== 'undefined') EngineMotion.init(episodeData);
+    if (typeof EngineHeart !== 'undefined') EngineHeart.init(episodeData);
+  }
+
+  /** Update intro scene for current episode */
+  function updateIntroForEpisode() {
+    if (!episodeData) return;
+
+    // Update title and subtitle
+    const subtitle = document.querySelector('.intro-subtitle');
+    if (subtitle) {
+      subtitle.textContent = `Week ${episodeData.week}: ${episodeData.title}`;
+    }
+
+    // Update story text based on episode
+    const story = document.querySelector('.intro-story');
+    if (story) {
+      const weekStories = {
+        1: `
+          <p>A tiny star seed fell from the sky...</p>
+          <p>Its name is <strong>Twinkle</strong>.</p>
+          <p>Twinkle lost its 5 magic powers!</p>
+          <p>Can you find them all?</p>
+        `,
+        2: `
+          <p>Twinkle needs your help again!</p>
+          <p>The <strong>zoo animals</strong> are missing!</p>
+          <p>Can you find them and bring them home?</p>
+          <p>New animal friends are waiting for you!</p>
+        `
+      };
+      story.innerHTML = weekStories[episodeData.week] || weekStories[1];
+    }
+
+    // Update parent note link
+    const parentNote = document.querySelector('.intro-parent-note a');
+    if (parentNote) {
+      parentNote.href = `printable/ep${episodeData.episodeId.replace('ep', '')}-printable.html`;
+    }
+
+    // Update footer
+    const footer = document.querySelector('.footer-text');
+    if (footer) {
+      footer.textContent = `The Star Seed · Week ${episodeData.week}: ${episodeData.title}`;
+    }
+
+    // Update day tabs with episode-specific emojis
+    updateDayTabsForEpisode();
+  }
+
+  /** Update day navigation tabs with current episode info */
+  function updateDayTabsForEpisode() {
+    if (!episodeData) return;
+    for (let d = 1; d <= 5; d++) {
+      const dayData = episodeData.days[String(d)];
+      if (!dayData) continue;
+      const tab = document.getElementById(`day-tab-${d}`);
+      if (tab) {
+        const shortTitle = dayData.title.length > 14
+          ? dayData.title.substring(0, 12) + '…'
+          : dayData.title;
+        tab.textContent = `Day ${d} ${dayData.powerEmoji}`;
+        tab.title = `${dayData.power} Power: ${dayData.title}`;
+      }
+    }
+  }
+
+  /** Bind episode selector buttons */
+  function bindEpisodeSelector() {
+    const selector = document.getElementById('episode-selector');
+    if (!selector) return;
+
+    selector.innerHTML = episodeList.map(ep => {
+      const isActive = ep.id === currentEpisodeId;
+      const isEp01 = ep.id === 'ep01';
+      // ep01 is always unlocked; ep02 requires ep01 completion or secret unlock
+      const epState = Storage.getState();
+      const unlocked = isEp01
+        || epState.completedEpisodes.includes('ep01')
+        || epState.completedEpisodes.includes(ep.id);
+      const lockedClass = (!unlocked && !isEp01) ? 'locked' : '';
+      const activeClass = isActive ? 'active' : '';
+
+      return `
+        <button class="episode-btn ${activeClass} ${lockedClass}"
+                data-episode="${ep.id}"
+                ${(!unlocked && !isEp01) ? 'disabled' : ''}>
+          <span class="episode-btn-emoji">${ep.emoji}</span>
+          <span class="episode-btn-label">${ep.title}</span>
+          ${isActive ? '<span class="episode-btn-check">●</span>' : ''}
+        </button>
+      `;
+    }).join('');
+
+    // Bind click handlers
+    selector.querySelectorAll('.episode-btn:not([disabled])').forEach(btn => {
+      btn.addEventListener('click', async () => {
+        const epId = btn.dataset.episode;
+        if (epId !== currentEpisodeId) {
+          await switchEpisode(epId);
+        }
+      });
+    });
+
+    // Locked episodes show shake on tap
+    selector.querySelectorAll('.episode-btn[disabled]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        btn.classList.add('shake');
+        setTimeout(() => btn.classList.remove('shake'), 500);
+        Audio.speak('Complete Week 1 first to unlock!', { rate: 0.9 });
+      });
+    });
   }
 
   /** Show a specific scene, hide others */
@@ -127,6 +340,14 @@ const App = (() => {
     }
 
     updateStatusBar();
+
+    // Check if all days complete → mark episode complete
+    const state = Storage.getState();
+    if (state.completedDays.length >= 5) {
+      Storage.markEpisodeComplete(currentEpisodeId);
+      // Unlock next episode
+      bindEpisodeSelector();
+    }
 
     // Show completion overlay
     const dayData = episodeData.days[String(day)];
@@ -359,15 +580,23 @@ const App = (() => {
             }
           }
           st.currentDay = 5;
+          // Also unlock all episodes
+          if (!st.completedEpisodes.includes('ep01')) {
+            st.completedEpisodes.push('ep01');
+          }
+          if (!st.completedEpisodes.includes('ep02')) {
+            st.completedEpisodes.push('ep02');
+          }
           Storage.save();
           Twinkle.syncFromStorage();
           updateStatusBar();
           updateIntroDaySelect(Storage.getState());
+          bindEpisodeSelector();
           // Show continue button too
           showContinueOption(Storage.getState());
           const rn = document.getElementById('intro-reset-note');
           if (rn) rn.style.display = 'block';
-          Audio.speak('All days unlocked! You can play any day now.', { rate: 0.9 });
+          Audio.speak('All days and episodes unlocked! You can play anything now.', { rate: 0.9 });
         } else {
           tapTimer = setTimeout(() => { tapCount = 0; }, 800);
         }
@@ -423,7 +652,8 @@ const App = (() => {
   return {
     init, showScene, goToDay, onDayComplete,
     updateStatusBar, getEpisodeData,
-    updateIntroDaySelect, showContinueOption
+    updateIntroDaySelect, showContinueOption,
+    switchEpisode, getCurrentEpisodeId: () => currentEpisodeId
   };
 })();
 

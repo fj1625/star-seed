@@ -71,6 +71,14 @@ const VoiceInput = (() => {
       // continuous=false means auto-stop after one utterance — better for kids
       recognition.continuous = false;
 
+      let audioStarted = false;
+      let startCheckTimer = null;
+
+      recognition.onaudiostart = () => {
+        audioStarted = true;
+        clearTimeout(startCheckTimer);
+      };
+
       recognition.onresult = (event) => {
         let interim = '';
         let final = '';
@@ -93,6 +101,7 @@ const VoiceInput = (() => {
           const cleanFinal = final.trim();
           if (cleanFinal) {
             clearSilenceTimer();
+            clearTimeout(startCheckTimer);
             isListening = false;
             activeCallbacks.onResult(cleanFinal);
             activeCallbacks = null;
@@ -104,6 +113,7 @@ const VoiceInput = (() => {
 
       recognition.onerror = (event) => {
         clearSilenceTimer();
+        clearTimeout(startCheckTimer);
         isListening = false;
         const cb = activeCallbacks;
         activeCallbacks = null;
@@ -122,6 +132,7 @@ const VoiceInput = (() => {
 
       recognition.onend = () => {
         clearSilenceTimer();
+        clearTimeout(startCheckTimer);
         isListening = false;
         // If onResult wasn't called but we had callbacks, it was no-speech or aborted
         if (activeCallbacks) {
@@ -134,6 +145,21 @@ const VoiceInput = (() => {
       recognition.start();
       isListening = true;
       resetSilenceTimeout();
+
+      // Guard: some browsers (iOS Safari) claim to support SpeechRecognition
+      // but never actually start capturing audio. If onaudiostart doesn't fire
+      // within 3s, treat it as a permission/blocking error.
+      startCheckTimer = setTimeout(() => {
+        if (!audioStarted && activeCallbacks) {
+          try { recognition.stop(); } catch (e) { /* ignore */ }
+          isListening = false;
+          if (activeCallbacks && activeCallbacks.onError) {
+            activeCallbacks.onError('not-allowed');
+          }
+          activeCallbacks = null;
+        }
+      }, 3000);
+
       return true;
 
     } catch (e) {

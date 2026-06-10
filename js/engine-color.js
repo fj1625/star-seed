@@ -112,11 +112,22 @@ const EngineColor = (() => {
       <div class="color-success" id="day2-success" style="display:none"></div>
     `;
 
-    // Bind global camera skip button
+    // Bind camera overlay click delegation once — survives innerHTML replacements
     setTimeout(() => {
-      const skipCam = document.getElementById('btn-day2-skip-camera');
-      if (skipCam) {
-        skipCam.addEventListener('click', () => goToConfirmPhase());
+      const cameraOverlay = document.getElementById('day2-camera');
+      if (cameraOverlay && !cameraOverlay.dataset.delegated) {
+        cameraOverlay.dataset.delegated = '1';
+        cameraOverlay.addEventListener('click', (e) => {
+          const btn = e.target.closest('button');
+          if (!btn) return;
+          if (btn.id === 'btn-capture') {
+            capturePhoto(pendingColor);
+          } else if (btn.id === 'btn-cam-done' || btn.id === 'btn-cam-continue') {
+            goToConfirmPhase(pendingColor);
+          } else if (btn.id === 'btn-day2-skip-camera') {
+            goToConfirmPhase(pendingColor);
+          }
+        });
       }
     }, 0);
   }
@@ -203,12 +214,14 @@ const EngineColor = (() => {
 
       clone.addEventListener('pointermove', (e) => {
         if (!dragState || dragState.el !== clone) return;
+        e.preventDefault();
 
         const dx = e.clientX - dragState.startX;
         const dy = e.clientY - dragState.startY;
         clone.style.transform = `translate(${dx}px, ${dy}px)`;
 
-        checkCollision(color);
+        // NOTE: collision check moved to pointerup for performance.
+        // getBoundingClientRect() in pointermove forces sync layout every frame.
       });
 
       clone.addEventListener('pointerup', (e) => {
@@ -331,20 +344,20 @@ const EngineColor = (() => {
     }
     if (promptEl) promptEl.textContent = color.promptText;
 
-    // Replace inner content with button
-    const existingBtn = findPhase.querySelector('.btn-find-wrap');
-    if (!existingBtn) {
-      const btnWrap = document.createElement('div');
-      btnWrap.className = 'btn-find-wrap';
-      btnWrap.innerHTML = `<button class="btn btn-find" id="btn-found-it">✨ I FOUND IT! ✨</button>`;
-      findPhase.appendChild(btnWrap);
+    // Always recreate the button so its closure captures the CURRENT color
+    const oldBtnWrap = findPhase.querySelector('.btn-find-wrap');
+    if (oldBtnWrap) oldBtnWrap.remove();
 
-      const foundBtn = btnWrap.querySelector('#btn-found-it');
-      if (foundBtn) {
-        foundBtn.addEventListener('click', () => {
-          showVoiceInputPhase(color);
-        });
-      }
+    const btnWrap = document.createElement('div');
+    btnWrap.className = 'btn-find-wrap';
+    btnWrap.innerHTML = `<button class="btn btn-find" id="btn-found-it">✨ I FOUND IT! ✨</button>`;
+    findPhase.appendChild(btnWrap);
+
+    const foundBtn = btnWrap.querySelector('#btn-found-it');
+    if (foundBtn) {
+      foundBtn.addEventListener('click', () => {
+        showVoiceInputPhase(color);
+      });
     }
 
     const speechEl = document.getElementById('day2-speech');
@@ -369,50 +382,70 @@ const EngineColor = (() => {
     if (voiceStatus) voiceStatus.innerHTML = '';
     if (fallbackContainer) fallbackContainer.innerHTML = '';
 
+    // Speak the voice prompt
+    const speechEl = document.getElementById('day2-speech');
+    if (speechEl) {
+      speechEl.innerHTML = `<div class="speech-bubble">Tell Twinkle what you found! Say "I found a..."</div>`;
+    }
+    Audio.speak('Tell me what you found! Say: I found a ' + color.exampleItems[0], { rate: 0.85 });
+
     // Current color context for callbacks
     const currentColor = color;
 
-    if (micBtn) {
+    if (micBtn && micBtn.parentNode) {
       const newMicBtn = micBtn.cloneNode(true);
       micBtn.parentNode.replaceChild(newMicBtn, micBtn);
 
-      newMicBtn.addEventListener('click', () => {
-        if (VoiceInput.isActive()) {
-          VoiceInput.stop();
-          newMicBtn.classList.remove('listening');
-          if (voiceStatus) voiceStatus.innerHTML = '';
-          return;
-        }
-
-        const started = VoiceInput.listen({
-          lang: 'en-US',
-          onInterim: (text) => {
-            if (voiceStatus) {
-              voiceStatus.innerHTML = `<span class="voice-hearing">👂 Hearing: "${text}"</span>`;
-            }
-            newMicBtn.classList.add('listening');
-          },
-          onResult: (text) => {
+      newMicBtn.addEventListener('pointerdown', (e) => {
+        e.preventDefault();
+        try {
+          if (VoiceInput.isActive()) {
+            VoiceInput.stop();
             newMicBtn.classList.remove('listening');
-            if (voiceStatus) {
-              voiceStatus.innerHTML = `<span class="voice-heard">✅ Heard: "${text}"</span>`;
-            }
-            processVoiceResult(text, currentColor);
-          },
-          onError: (errorType) => {
-            newMicBtn.classList.remove('listening');
-            if (errorType === 'not-allowed') {
-              if (voiceStatus) voiceStatus.innerHTML = '<span class="voice-error">Microphone blocked. Use the keyboard below!</span>';
-            } else if (errorType === 'no-speech') {
-              if (voiceStatus) voiceStatus.innerHTML = '<span class="voice-error">Didn\'t hear anything. Try again or type below!</span>';
-            } else {
-              if (voiceStatus) voiceStatus.innerHTML = '<span class="voice-error">Hmm, that didn\'t work. Type it below!</span>';
-            }
+            if (voiceStatus) voiceStatus.innerHTML = '';
+            return;
           }
-        });
 
-        if (!started) {
-          if (voiceStatus) voiceStatus.innerHTML = '<span class="voice-error">Voice not supported on this device. Type below!</span>';
+          if (voiceStatus) voiceStatus.innerHTML = '<span class="voice-hearing">🎤 Listening...</span>';
+          newMicBtn.classList.add('listening');
+
+          const started = VoiceInput.listen({
+            lang: 'en-US',
+            onInterim: (text) => {
+              if (voiceStatus) {
+                voiceStatus.innerHTML = `<span class="voice-hearing">👂 Hearing: "${text}"</span>`;
+              }
+              newMicBtn.classList.add('listening');
+            },
+            onResult: (text) => {
+              newMicBtn.classList.remove('listening');
+              if (voiceStatus) {
+                voiceStatus.innerHTML = `<span class="voice-heard">✅ Heard: "${text}"</span>`;
+              }
+              processVoiceResult(text, currentColor);
+            },
+            onError: (errorType) => {
+              newMicBtn.classList.remove('listening');
+              if (errorType === 'not-allowed') {
+                if (voiceStatus) voiceStatus.innerHTML = '<span class="voice-error">🔒 Microphone blocked. Use the keyboard below!</span>';
+              } else if (errorType === 'no-speech') {
+                if (voiceStatus) voiceStatus.innerHTML = '<span class="voice-error">🤷 Didn\'t hear anything. Try again or type below!</span>';
+              } else if (errorType === 'not-supported') {
+                if (voiceStatus) voiceStatus.innerHTML = '<span class="voice-error">🎤 Voice not supported here. Type below!</span>';
+              } else {
+                if (voiceStatus) voiceStatus.innerHTML = '<span class="voice-error">⚠️ Hmm, that didn\'t work. Type it below!</span>';
+              }
+            }
+          });
+
+          if (!started) {
+            newMicBtn.classList.remove('listening');
+            if (voiceStatus) voiceStatus.innerHTML = '<span class="voice-error">🎤 Voice not supported on this device. Type below!</span>';
+          }
+        } catch (err) {
+          console.error('Mic button error:', err);
+          newMicBtn.classList.remove('listening');
+          if (voiceStatus) voiceStatus.innerHTML = '<span class="voice-error">⚠️ Something went wrong. Type below!</span>';
         }
       });
     }
@@ -483,6 +516,9 @@ const EngineColor = (() => {
   let cameraStream = null;
 
   function goToCameraPhase(color) {
+    // Save color for later phases (fix: Continue button was silently failing)
+    pendingColor = color;
+
     // Try to open camera
     showOnly('day2-camera');
 
@@ -508,12 +544,7 @@ const EngineColor = (() => {
           video.style.display = 'block';
         }
 
-        // Bind capture button
-        if (captureBtn) {
-          const newCapture = captureBtn.cloneNode(true);
-          captureBtn.parentNode.replaceChild(newCapture, captureBtn);
-          newCapture.addEventListener('click', () => capturePhoto(color));
-        }
+        // Capture button click is handled by camera overlay event delegation
       }).catch(() => {
         // Camera not available — skip gracefully
         showCameraUnavailable();
@@ -525,58 +556,70 @@ const EngineColor = (() => {
 
   function showCameraUnavailable() {
     const video = document.getElementById('day2-cam-video');
-    const controls = document.querySelector('.camera-controls');
+    const cameraOverlay = document.getElementById('day2-camera');
+    const controls = cameraOverlay ? cameraOverlay.querySelector('.camera-controls') : null;
     if (video) {
       video.style.display = 'none';
     }
-    const hint = document.querySelector('.camera-frame-hint');
+    const hint = cameraOverlay ? cameraOverlay.querySelector('.camera-frame-hint') : null;
     if (hint) {
       hint.innerHTML = '📱 Camera not available.<br>That\'s okay! You found it!';
       hint.classList.add('camera-unavailable');
     }
-    // Replace capture button with "Continue" button
+    // Replace capture button with "Continue" button — event delegation handles it
     if (controls) {
       controls.innerHTML = `<button class="btn btn-primary" id="btn-cam-continue">Continue →</button>`;
-      const contBtn = document.getElementById('btn-cam-continue');
-      if (contBtn) {
-        contBtn.addEventListener('click', () => goToConfirmPhase());
-      }
     }
   }
 
   function capturePhoto(color) {
-    const video = document.getElementById('day2-cam-video');
-    const canvas = document.getElementById('day2-cam-canvas');
-    const flash = document.getElementById('cam-flash');
+    try {
+      const video = document.getElementById('day2-cam-video');
+      const canvas = document.getElementById('day2-cam-canvas');
+      const flash = document.getElementById('cam-flash');
 
-    if (!video || !canvas) return;
-
-    // Show flash
-    if (flash) {
-      flash.style.display = 'block';
-      setTimeout(() => { flash.style.display = 'none'; }, 300);
-    }
-
-    // Capture frame
-    canvas.width = video.videoWidth || 320;
-    canvas.height = video.videoHeight || 240;
-    const ctx = canvas.getContext('2d');
-    ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-
-    // Stop camera
-    stopCamera();
-
-    // Show success and advance
-    const controls = document.querySelector('.camera-controls');
-    if (controls) {
-      controls.innerHTML = `
-        <div class="camera-success-msg animate-pop">✨ Match! ✨</div>
-        <button class="btn btn-primary" id="btn-cam-done">Continue →</button>
-      `;
-      const doneBtn = document.getElementById('btn-cam-done');
-      if (doneBtn) {
-        doneBtn.addEventListener('click', () => goToConfirmPhase());
+      if (!video || !canvas) {
+        console.warn('capturePhoto: video or canvas not found');
+        goToConfirmPhase(color);
+        return;
       }
+
+      // Show flash
+      if (flash) {
+        flash.style.display = 'block';
+        setTimeout(() => { flash.style.display = 'none'; }, 300);
+      }
+
+      // Capture frame — wrap in try/catch because drawImage can throw
+      // if the video element is not in a ready state
+      try {
+        canvas.width = video.videoWidth || 320;
+        canvas.height = video.videoHeight || 240;
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+      } catch (drawErr) {
+        console.warn('capturePhoto: drawImage failed (video may not be ready)', drawErr);
+        // Don't block the user — continue anyway
+      }
+
+      // Stop camera
+      stopCamera();
+
+      // Show success and advance — event delegation handles the Continue button
+      const controls = document.querySelector('#day2-camera .camera-controls');
+      if (controls) {
+        controls.innerHTML = `
+          <div class="camera-success-msg animate-pop">✨ Match! ✨</div>
+          <button class="btn btn-primary" id="btn-cam-done">Continue →</button>
+        `;
+      } else {
+        goToConfirmPhase(color);
+      }
+    } catch (err) {
+      console.error('capturePhoto error:', err);
+      // Don't leave user stuck — proceed to confirm
+      stopCamera();
+      goToConfirmPhase(color);
     }
   }
 
@@ -597,56 +640,72 @@ const EngineColor = (() => {
   let pendingSpokenItem = null;
 
   function goToConfirmPhase(colorOverride) {
-    if (colorOverride) pendingColor = colorOverride;
-    const color = pendingColor;
-    if (!color) return;
-
-    showOnly('day2-confirm');
-
-    // Show what the child found
-    const state = Storage.getState();
-    const itemsFound = state.day2ItemsFound || [];
-    const lastItem = itemsFound[itemsFound.length - 1];
-
-    const confirmItem = document.getElementById('day2-confirm-item');
-    if (confirmItem && lastItem) {
-      confirmItem.innerHTML = `
-        <div class="confirm-you-found">
-          <span class="confirm-you-found-label">You found:</span>
-          <span class="confirm-you-found-item">${lastItem.itemName}</span>
-        </div>
-      `;
-    }
-
-    const examplesEl = document.getElementById('day2-examples');
-    if (examplesEl) {
-      examplesEl.innerHTML = color.exampleItems.map(item =>
-        `<div class="example-item">
-          <span class="example-emoji">${getEmojiForItem(item)}</span>
-          <span class="example-name">${item}</span>
-        </div>`
-      ).join('');
-    }
-
-    const yesBtn = document.getElementById('btn-yes');
-    const noBtn = document.getElementById('btn-no');
-
-    if (yesBtn) {
-      const newYes = yesBtn.cloneNode(true);
-      yesBtn.parentNode.replaceChild(newYes, yesBtn);
-      newYes.addEventListener('click', () => onColorFound(color));
-    }
-
-    if (noBtn) {
-      const newNo = noBtn.cloneNode(true);
-      noBtn.parentNode.replaceChild(newNo, noBtn);
-      newNo.addEventListener('click', () => {
+    try {
+      if (colorOverride) pendingColor = colorOverride;
+      const color = pendingColor;
+      if (!color) {
+        console.warn('goToConfirmPhase: no color available');
+        // Show a fallback so the user isn't stuck
+        const speechEl = document.getElementById('day2-speech');
+        if (speechEl) {
+          speechEl.innerHTML = `<div class="speech-bubble">Oops! Let's try that again.</div>`;
+        }
+        Audio.speak("Oops! Let's try that again.", { rate: 0.9 });
+        // Reset to find phase so user can retry
         showOnly('day2-find');
-        Audio.speak('Keep looking! You can do it!', { rate: 0.9 });
-      });
-    }
+        return;
+      }
 
-    Audio.speak('Did it look like one of these?', { rate: 0.85 });
+      showOnly('day2-confirm');
+
+      // Show what the child found
+      const state = Storage.getState();
+      const itemsFound = state.day2ItemsFound || [];
+      const lastItem = itemsFound[itemsFound.length - 1];
+
+      const confirmItem = document.getElementById('day2-confirm-item');
+      if (confirmItem && lastItem) {
+        confirmItem.innerHTML = `
+          <div class="confirm-you-found">
+            <span class="confirm-you-found-label">You found:</span>
+            <span class="confirm-you-found-item">${lastItem.itemName}</span>
+          </div>
+        `;
+      }
+
+      const examplesEl = document.getElementById('day2-examples');
+      if (examplesEl) {
+        const examples = color.exampleItems || [];
+        examplesEl.innerHTML = examples.map(item =>
+          `<div class="example-item">
+            <span class="example-emoji">${getEmojiForItem(item)}</span>
+            <span class="example-name">${item}</span>
+          </div>`
+        ).join('');
+      }
+
+      const yesBtn = document.getElementById('btn-yes');
+      const noBtn = document.getElementById('btn-no');
+
+      if (yesBtn) {
+        const newYes = yesBtn.cloneNode(true);
+        yesBtn.parentNode.replaceChild(newYes, yesBtn);
+        newYes.addEventListener('click', () => onColorFound(color));
+      }
+
+      if (noBtn) {
+        const newNo = noBtn.cloneNode(true);
+        noBtn.parentNode.replaceChild(newNo, noBtn);
+        newNo.addEventListener('click', () => {
+          showOnly('day2-find');
+          Audio.speak('Keep looking! You can do it!', { rate: 0.9 });
+        });
+      }
+
+      Audio.speak('Did it look like one of these?', { rate: 0.85 });
+    } catch (err) {
+      console.error('goToConfirmPhase error:', err);
+    }
   }
 
   // ==================== COMPLETION ====================
@@ -711,9 +770,14 @@ const EngineColor = (() => {
 
   function getEmojiForItem(item) {
     const map = {
+      // Week 1
       carrot: '🥕', orange: '🍊', pumpkin: '🎃',
       leaf: '🍃', cucumber: '🥒', grass: '🌿',
-      grape: '🍇', eggplant: '🍆', flower: '🌸'
+      grape: '🍇', eggplant: '🍆', flower: '🌸',
+      // Week 2
+      pig: '🐖', flamingo: '🦩', flower2: '🌺',
+      sky: '☁️', egg: '🥚', fish: '🐟',
+      bear: '🐻', chocolate: '🍫', wood: '🪵'
     };
     return map[item] || '🔍';
   }

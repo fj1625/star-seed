@@ -21,17 +21,64 @@ const Audio = (() => {
     }
     isSupported = true;
 
-    // Voice loading is async on some browsers (Chrome)
+    // Voice loading is async on some browsers (Chrome, iOS)
     const loadVoices = () => {
       const voices = synth.getVoices();
-      // Prefer en-US female voice
-      preferredVoice = voices.find(v =>
-        v.lang.startsWith('en-US') && v.name.includes('Female')
-      ) || voices.find(v =>
-        v.lang.startsWith('en-US')
-      ) || voices.find(v =>
-        v.lang.startsWith('en')
-      ) || voices[0];
+      if (!voices || voices.length === 0) return;
+
+      // Log all voices for debugging — open DevTools to see what your device offers
+      console.log('[Audio] Available voices:');
+      voices.forEach((v, i) => {
+        console.log(`  ${i + 1}. ${v.name} [${v.lang}] ${v.default ? '(default)' : ''}`);
+      });
+
+      // Score-based selection: prioritize high-quality voices
+      const HIGH_QUALITY = ['Siri', 'Premium', 'Enhanced', 'Natural', 'Wavenet', 'Neural', 'Aaron', 'Nicky', 'Samantha', 'Catherine'];
+      const LOW_QUALITY  = ['Compact', 'Default', 'Google US English'];
+
+      let bestVoice = null;
+      let bestScore = -Infinity;
+
+      for (const v of voices) {
+        if (!v.lang || !v.lang.toLowerCase().startsWith('en')) continue;
+
+        let score = 0;
+        const nameLower = v.name.toLowerCase();
+        const langLower = v.lang.toLowerCase();
+
+        // Language match
+        if (langLower === 'en-us') score += 10;
+        else if (langLower.startsWith('en')) score += 5;
+
+        // High-quality keywords
+        for (const kw of HIGH_QUALITY) {
+          if (nameLower.includes(kw.toLowerCase())) score += 20;
+        }
+
+        // Microsoft Natural voices are excellent on Windows/Edge
+        if (nameLower.includes('microsoft') && nameLower.includes('natural')) score += 25;
+
+        // Low-quality / robotic keywords
+        for (const kw of LOW_QUALITY) {
+          if (nameLower.includes(kw.toLowerCase())) score -= 15;
+        }
+
+        // Female preference (small bonus)
+        if (nameLower.includes('female')) score += 2;
+
+        // Penalize explicitly "default" voices on mobile — usually basic quality
+        if (v.default && !nameLower.includes('premium') && !nameLower.includes('natural')) {
+          score -= 5;
+        }
+
+        if (score > bestScore) {
+          bestScore = score;
+          bestVoice = v;
+        }
+      }
+
+      preferredVoice = bestVoice || voices.find(v => v.lang?.startsWith('en')) || voices[0];
+      console.log('[Audio] Selected voice:', preferredVoice?.name, '(score:', bestScore + ')');
     };
 
     loadVoices();

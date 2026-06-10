@@ -17,7 +17,7 @@ const VOLC_TOKEN = 'i8iN5_phIawWujvD-I8dpTZrvEuzC5aG';
 const VOLC_CLUSTER = 'volcano_tts';
 
 // English voice — change this in the Volcano console if you prefer another
-const VOICE_TYPE = 'en_female_alice_pro_sts';
+const VOICE_TYPE = 'en_female_dacey_uranus_bigtts';
 
 export default {
   async fetch(request, env, ctx) {

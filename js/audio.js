@@ -142,6 +142,7 @@ const Audio = (() => {
    * Returns Promise that resolves when audio finishes playing.
    */
   async function speakVolcano(text, rate) {
+    console.log('[Audio] speakVolcano start:', text.slice(0, 40));
     isSpeaking = true;
     try {
       const resp = await fetch(VOLCANO_WORKER_URL, {
@@ -151,10 +152,11 @@ const Audio = (() => {
       });
 
       const result = await resp.json();
+      console.log('[Audio] Volcano result code:', result.code, 'data length:', result.data ? result.data.length : 0);
 
       if (result.code !== 3000 || !result.data) {
-        console.warn('[Audio] Volcano TTS error:', result);
-        // Fall back to Web Speech API
+        console.warn('[Audio] Volcano TTS API error:', result);
+        isSpeaking = false;
         return speakWebSpeech(text, { rate });
       }
 
@@ -163,27 +165,45 @@ const Audio = (() => {
       currentVolcanoAudio = audio;
 
       return new Promise((resolve) => {
+        // Safety: if audio never starts/finishes, force-resolve after 10s
+        const timeoutGuard = setTimeout(() => {
+          console.warn('[Audio] Volcano audio timeout — forcing resolve');
+          currentVolcanoAudio = null;
+          isSpeaking = false;
+          resolve();
+          processQueue();
+        }, 10000);
+
         audio.onended = () => {
+          clearTimeout(timeoutGuard);
           currentVolcanoAudio = null;
           isSpeaking = false;
           resolve();
           processQueue();
         };
         audio.onerror = (e) => {
+          clearTimeout(timeoutGuard);
           console.warn('[Audio] Volcano audio playback error:', e);
           currentVolcanoAudio = null;
           isSpeaking = false;
           resolve();
           processQueue();
         };
-        audio.play();
+        // Mobile browsers block autoplay without user gesture — catch and fallback
+        audio.play().catch(err => {
+          clearTimeout(timeoutGuard);
+          console.warn('[Audio] audio.play() blocked by browser autoplay policy:', err.message);
+          currentVolcanoAudio = null;
+          isSpeaking = false;
+          // Critical fallback: when autoplay is blocked, use Web Speech API so
+          // the game never hangs and the user still hears something
+          speakWebSpeech(text, { rate }).then(resolve);
+        });
       });
 
     } catch (err) {
       console.warn('[Audio] Volcano TTS fetch failed:', err);
-      currentVolcanoAudio = null;
       isSpeaking = false;
-      // Fall back to Web Speech API
       return speakWebSpeech(text, { rate });
     }
   }

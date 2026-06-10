@@ -10,6 +10,12 @@ const Audio = (() => {
   let speakQueue = [];
   let onQueueEmpty = null;
 
+  // ==== Volcano Engine TTS via Cloudflare Workers ====
+  // Set this to your Worker URL after deploying tts-proxy/cloudflare-worker.js
+  // e.g. 'https://star-seed-tts.yourname.workers.dev'
+  const VOLCANO_WORKER_URL = ''; // <-- PASTE YOUR WORKER URL HERE
+  let currentVolcanoAudio = null; // for cancellation
+
   /** Initialize speech synthesis */
   function init() {
     if (typeof window === 'undefined') return;
@@ -108,11 +114,6 @@ const Audio = (() => {
   }
 
   function speak(text, options = {}) {
-    if (!isSupported) {
-      console.warn('Speech not supported, text:', text);
-      return Promise.resolve();
-    }
-
     const {
       rate = 1.0,
       pitch = 1.0,
@@ -124,12 +125,84 @@ const Audio = (() => {
       cancel();
     }
 
-    // Strip emojis — Web Speech API reads their Unicode names aloud
+    // Strip emojis — TTS engines read their Unicode names aloud
     const cleanText = stripEmoji(text);
     if (!cleanText) return Promise.resolve(); // nothing left to speak
 
+    // Use Volcano Engine TTS if configured, else fall back to Web Speech API
+    if (VOLCANO_WORKER_URL) {
+      return speakVolcano(cleanText, rate);
+    }
+
+    return speakWebSpeech(cleanText, options);
+  }
+
+  /**
+   * Volcano Engine TTS via Cloudflare Workers proxy.
+   * Returns Promise that resolves when audio finishes playing.
+   */
+  async function speakVolcano(text, rate) {
+    isSpeaking = true;
+    try {
+      const resp = await fetch(VOLCANO_WORKER_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ text, rate }),
+      });
+
+      const result = await resp.json();
+
+      if (result.code !== 3000 || !result.data) {
+        console.warn('[Audio] Volcano TTS error:', result);
+        // Fall back to Web Speech API
+        return speakWebSpeech(text, { rate });
+      }
+
+      // Play base64 MP3 audio
+      const audio = new Audio('data:audio/mp3;base64,' + result.data);
+      currentVolcanoAudio = audio;
+
+      return new Promise((resolve) => {
+        audio.onended = () => {
+          currentVolcanoAudio = null;
+          isSpeaking = false;
+          resolve();
+          processQueue();
+        };
+        audio.onerror = (e) => {
+          console.warn('[Audio] Volcano audio playback error:', e);
+          currentVolcanoAudio = null;
+          isSpeaking = false;
+          resolve();
+          processQueue();
+        };
+        audio.play();
+      });
+
+    } catch (err) {
+      console.warn('[Audio] Volcano TTS fetch failed:', err);
+      currentVolcanoAudio = null;
+      isSpeaking = false;
+      // Fall back to Web Speech API
+      return speakWebSpeech(text, { rate });
+    }
+  }
+
+  /** Original Web Speech API implementation */
+  function speakWebSpeech(text, options = {}) {
+    if (!isSupported) {
+      console.warn('Speech not supported, text:', text);
+      return Promise.resolve();
+    }
+
+    const {
+      rate = 1.0,
+      pitch = 1.0,
+      voice = null,
+    } = options;
+
     return new Promise((resolve) => {
-      const utter = new SpeechSynthesisUtterance(cleanText);
+      const utter = new SpeechSynthesisUtterance(text);
       utter.rate = rate;
       utter.pitch = pitch;
       utter.volume = 1.0;
@@ -222,6 +295,10 @@ const Audio = (() => {
   function cancel() {
     if (synth) {
       synth.cancel();
+    }
+    if (currentVolcanoAudio) {
+      currentVolcanoAudio.pause();
+      currentVolcanoAudio = null;
     }
     speakQueue = [];
     isSpeaking = false;

@@ -84,7 +84,7 @@ body {
 
 .power-dot {
   font-size: 1.2rem;
-  transition: all 0.3s;
+  transition: transform 0.3s, opacity 0.3s;
   opacity: 0.3;
 }
 
@@ -121,7 +121,7 @@ body {
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  transition: all 0.5s;
+  transition: filter 0.5s, transform 0.5s, opacity 0.5s;
 }
 
 .twinkle-face {
@@ -141,7 +141,7 @@ body {
   border-radius: 50%;
   position: absolute;
   top: 3px;
-  transition: all 0.3s;
+  transition: height 0.3s, background-color 0.3s, transform 0.3s;
 }
 
 .eye.left { left: 3px; }
@@ -157,7 +157,7 @@ body {
   bottom: 1px;
   left: 50%;
   transform: translateX(-50%);
-  transition: all 0.3s;
+  transition: border-color 0.3s, width 0.3s, transform 0.3s;
 }
 
 /* Twinkle States */
@@ -247,7 +247,7 @@ body {
   border: 2px solid transparent;
   border-radius: 12px;
   cursor: pointer;
-  transition: all 0.3s;
+  transition: border-color 0.3s, color 0.3s, background-color 0.3s, opacity 0.3s;
   white-space: nowrap;
 }
 
@@ -352,7 +352,7 @@ body {
   border: none;
   border-radius: var(--radius);
   cursor: pointer;
-  transition: all 0.2s;
+  transition: transform 0.2s, box-shadow 0.2s, background-color 0.2s, opacity 0.2s, border-color 0.2s;
   min-height: 48px;
   text-align: center;
   -webkit-tap-highlight-color: transparent;
@@ -565,7 +565,7 @@ body {
   border: 2px solid rgba(255,255,255,0.1);
   border-radius: 25px;
   cursor: pointer;
-  transition: all 0.25s;
+  transition: border-color 0.25s, color 0.25s, background-color 0.25s, transform 0.25s, box-shadow 0.25s, opacity 0.25s;
   position: relative;
 }
 
@@ -682,7 +682,7 @@ body {
   background: rgba(255,255,255,0.05);
   color: var(--text);
   cursor: pointer;
-  transition: all 0.2s;
+  transition: border-color 0.2s, background-color 0.2s, transform 0.2s, opacity 0.2s;
   min-width: 90px;
 }
 
@@ -1405,7 +1405,7 @@ body {
   font-weight: 700;
   cursor: pointer;
   box-shadow: 0 4px 16px rgba(0,0,0,0.3);
-  transition: all 0.2s;
+  transition: transform 0.2s, box-shadow 0.2s, background-color 0.2s;
 }
 
 .btn-capture:active { transform: scale(0.95); }
@@ -1843,7 +1843,7 @@ body {
   justify-content: center;
   background: var(--bg-card);
   border: 2px solid rgba(255,255,255,0.1);
-  transition: all 0.5s;
+  transition: background-color 0.5s, border-color 0.5s, box-shadow 0.5s, transform 0.5s;
 }
 
 .puzzle-piece.placed {
@@ -2044,7 +2044,7 @@ body {
 .btn-tiny {
   padding: 6px 14px;
   font-size: 0.8rem;
-  background: var(--accent);
+  background: var(--blue);
   border: none;
   border-radius: 8px;
   color: #fff;

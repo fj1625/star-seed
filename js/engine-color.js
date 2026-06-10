@@ -19,6 +19,7 @@ const EngineColor = (() => {
 
   async function start() {
     isActive = true;
+    clearPendingTimers();
     foundColors = Storage.getState().day2ColorsFound;
     currentColorIndex = foundColors.length;
 
@@ -162,7 +163,7 @@ const EngineColor = (() => {
     const resultText = document.getElementById('drag-result-text');
 
     // Reset state
-    if (target) { target.textContent = '?'; target.className = 'color-mix-target'; }
+    if (target) { target.textContent = '?'; target.classList.remove('revealed'); target.style.backgroundColor = 'transparent'; }
     if (celeb) celeb.style.display = 'none';
 
     // Set up circles
@@ -782,8 +783,21 @@ const EngineColor = (() => {
     return map[item] || '🔍';
   }
 
+  let pendingTimers = new Set();
+
   function sleep(ms) {
-    return new Promise(r => setTimeout(r, ms));
+    return new Promise(resolve => {
+      const timer = setTimeout(() => {
+        pendingTimers.delete(timer);
+        resolve();
+      }, ms);
+      pendingTimers.add(timer);
+    });
+  }
+
+  function clearPendingTimers() {
+    pendingTimers.forEach(t => clearTimeout(t));
+    pendingTimers.clear();
   }
 
   return { init, start };

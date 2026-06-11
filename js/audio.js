@@ -172,9 +172,11 @@ const Audio = (() => {
         return speakWebSpeech(text, { rate });
       }
 
-      // Play base64 MP3 audio
-      const audio = new Audio('data:audio/mp3;base64,' + result.data);
+      // Play base64 audio (Google Translate TTS returns audio/mpeg)
+      const audio = new Audio('data:audio/mpeg;base64,' + result.data);
+      audio.volume = 1.0;
       currentVolcanoAudio = audio;
+      console.log('[Audio] Audio element created, src length:', result.data.length, 'bytes');
 
       return new Promise((resolve) => {
         // Safety: if audio never starts/finishes, force-resolve after 10s

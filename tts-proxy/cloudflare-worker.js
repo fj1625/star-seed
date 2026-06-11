@@ -22,10 +22,19 @@ function synthesizeEdgeTTS(text, rate) {
 
     ws.addEventListener('open', function() {
       var timestamp = new Date().toISOString();
-      var requestId = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
-        var r = Math.random() * 16 | 0, v = c === 'x' ? r : (r & 0x3 | 0x8);
-        return v.toString(16);
-      });
+      var requestId = '';
+      var chars = '0123456789abcdef';
+      for (var i = 0; i < 36; i++) {
+        if (i === 8 || i === 13 || i === 18 || i === 23) {
+          requestId += '-';
+        } else if (i === 14) {
+          requestId += '4';
+        } else if (i === 19) {
+          requestId += chars[8 + Math.floor(Math.random() * 4)];
+        } else {
+          requestId += chars[Math.floor(Math.random() * 16)];
+        }
+      }
 
       var configPayload = JSON.stringify({
         context: {

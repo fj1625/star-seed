@@ -43,21 +43,21 @@ const Audio = (() => {
         return;
       }
 
+      // Detect platform
+      const isIOS = /iPhone|iPad|iPod/.test(navigator.userAgent);
+
       // Show ALL voices on page for mobile diagnosis
       console.log('[Audio] Available voices:');
       const engVoices = voices.filter(v => v.lang && v.lang.startsWith('en'));
-      const debugLines = [];
       voices.forEach((v, i) => {
-        const local = typeof v.localService !== 'undefined' ? (v.localService ? '本地' : '网络') : '?';
+        const local = typeof v.localService !== 'undefined' ? (v.localService ? '本地' : '云端') : '?';
         const def = v.default ? '★' : '';
         console.log(`  ${i + 1}. ${def} ${v.name} [${v.lang}] ${v.localService !== undefined ? '(' + local + ')' : ''}`);
-        if (v.lang && v.lang.startsWith('en')) {
-          debugLines.push(`${def}${v.name} [${local}]`);
-        }
       });
 
       // Score-based selection
-      // Priority: network > local, en-US > other en, female > male, system default
+      // iOS: localService is always undefined — not a quality signal
+      // Android/Chrome: localService=false = cloud/network high-quality
       let bestVoice = null;
       let bestScore = -Infinity;
 
@@ -68,9 +68,15 @@ const Audio = (() => {
         const nameLower = v.name.toLowerCase();
         const langLower = v.lang.toLowerCase();
 
-        // Network voices sound WAY better than local ones
-        if (v.localService === false) score += 40;       // network/high-quality
-        else if (v.localService === true) score -= 10;    // local/robotic
+        // Network/cloud voices — only reliable on non-iOS
+        if (!isIOS) {
+          if (v.localService === false) score += 40;        // Google cloud TTS
+          else if (v.localService === true) score -= 10;     // local robotic
+        } else {
+          // iOS: "Enhanced" in name = downloaded HQ voice
+          if (nameLower.includes('(enhanced)') || nameLower.includes('enhanced')) score += 50;
+          // iOS default Samantha voice is good — don't penalize
+        }
 
         // Language match
         if (langLower === 'en-us') score += 10;
@@ -79,17 +85,19 @@ const Audio = (() => {
         // System default voice
         if (v.default) score += 10;
 
-        // Female names (common TTS female voices)
-        const FEMALE = ['female', 'samantha', 'karen', 'moira', 'tessa', 'veena', 'victoria', 'lisa', 'catherine', 'emma', 'jenny', 'aria', 'nicky', 'siri', 'susan', 'mary', 'anna'];
+        // Female names
+        const FEMALE = ['samantha', 'karen', 'moira', 'tessa', 'veena', 'victoria', 'lisa', 'catherine', 'emma', 'jenny', 'aria', 'nicky', 'siri', 'susan', 'mary', 'anna', 'ava', 'allison', 'shelley', 'fiona'];
         for (const kw of FEMALE) {
-          if (nameLower.includes(kw)) { score += 15; break; }
+          if (nameLower.includes(kw)) { score += 20; break; }
         }
 
         // Male names — penalty
-        const MALE = ['male', 'david', 'daniel', 'paul', 'tom', 'mark', 'alex', 'james', 'john', 'michael', 'george', 'fred', 'ryan', 'tony'];
+        const MALE = ['david', 'daniel', 'paul', 'tom', 'mark', 'alex', 'james', 'john', 'michael', 'george', 'fred', 'ryan', 'tony', 'lee', 'oliver', 'arthur'];
         for (const kw of MALE) {
           if (nameLower.includes(kw)) { score -= 20; break; }
         }
+        // "male" keyword (e.g. "Samantha (Male)" or similar)
+        if (nameLower.includes('male')) score -= 30;
 
         if (score > bestScore) {
           bestScore = score;
@@ -98,11 +106,19 @@ const Audio = (() => {
       }
 
       preferredVoice = bestVoice || engVoices[0] || voices[0];
-      const quality = preferredVoice?.localService === false ? '✅ 高质量网络语音' : '⚠️ 本地基础语音（可能比较机械）';
-      const engCount = engVoices.length;
-      const netCount = engVoices.filter(v => v.localService === false).length;
-      showDebug(`设备有 ${engCount} 个英文语音(${netCount} 个高质量)。已选: ${preferredVoice?.name || '默认'} — ${quality}`);
-      console.log('[Audio] Selected voice:', preferredVoice?.name, '(score:', bestScore + ')');
+
+      // Build helpful debug message
+      const vName = preferredVoice?.name || 'default';
+      const isEnhanced = vName.toLowerCase().includes('enhanced');
+      const isCloud = preferredVoice?.localService === false;
+      let qualityNote = '';
+      if (isCloud) qualityNote = '✅ 云端高音质';
+      else if (isEnhanced) qualityNote = '✅ iOS 增强音质';
+      else if (isIOS) qualityNote = '⚠️ 基础音质 — 设置>辅助功能>朗读内容>语音>英文 可下载增强版';
+      else qualityNote = '⚠️ 本地基础语音（可能比较机械）';
+
+      showDebug(`🎤 ${vName} — ${qualityNote}`);
+      console.log('[Audio] Selected voice:', vName, '(score:', bestScore + ')');
     };
 
     loadVoices();

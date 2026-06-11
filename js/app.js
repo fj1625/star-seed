@@ -168,7 +168,10 @@ const App = (() => {
     Twinkle.syncFromStorage();
     updateStatusBar();
 
-    Audio.speak(`Welcome to Week ${episodeData.week}: ${episodeData.title}!`, { rate: 0.9 });
+    const welcomeText = episodeData.week
+      ? `Welcome to Week ${episodeData.week}: ${episodeData.title}!`
+      : `Welcome to ${episodeData.title}!`;
+    Audio.speak(welcomeText, { rate: 0.9 });
   }
 
   /** Initialize all engines with current episode data */
@@ -695,9 +698,14 @@ const App = (() => {
     if (listenBtn) {
       listenBtn.addEventListener('click', () => {
         const week = episodeData?.week || 1;
-        const storyText = week === 2
-          ? 'Twinkle needs your help again! The zoo animals are missing! Can you find them and bring them home?'
-          : 'A tiny star seed fell from the sky. Its name is Twinkle. Twinkle lost its 5 magic powers! Can you find them all?';
+        let storyText;
+        if (week === 2) {
+          storyText = 'Twinkle needs your help again! The zoo animals are missing! Can you find them and bring them home?';
+        } else if (week === 0) {
+          storyText = 'Twinkle is ready for an outdoor adventure! Let\'s explore nature together! Find treasures, mix colors, hear wild sounds, and move like animals in the wild!';
+        } else {
+          storyText = 'A tiny star seed fell from the sky. Its name is Twinkle. Twinkle lost its 5 magic powers! Can you find them all?';
+        }
         Audio.speak('The Star Seed. ' + storyText, { rate: 0.85, cancelPrevious: true });
       });
     }

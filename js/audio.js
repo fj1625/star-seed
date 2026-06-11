@@ -51,7 +51,9 @@ const Audio = (() => {
 
       // Score-based selection: prioritize high-quality voices
       const HIGH_QUALITY = ['Siri', 'Premium', 'Enhanced', 'Natural', 'Wavenet', 'Neural', 'Aaron', 'Nicky', 'Samantha', 'Catherine'];
-      const LOW_QUALITY  = ['Compact', 'Default', 'Google US English'];
+      const LOW_QUALITY  = ['Compact', 'Google US English'];
+      const MALE_NAMES   = ['male', 'david', 'daniel', 'paul', 'tom', 'mark', 'alex', 'james', 'john', 'michael', 'george', 'fred', 'ryan', 'tony'];
+      const FEMALE_NAMES = ['female', 'samantha', 'karen', 'moira', 'tessa', 'veena', 'victoria', 'lisa', 'catherine', 'emma', 'jenny', 'aria', 'nicky', 'siri'];
 
       let bestVoice = null;
       let bestScore = -Infinity;
@@ -80,13 +82,18 @@ const Audio = (() => {
           if (nameLower.includes(kw.toLowerCase())) score -= 15;
         }
 
-        // Female preference (small bonus)
-        if (nameLower.includes('female')) score += 2;
-
-        // Penalize explicitly "default" voices on mobile — usually basic quality
-        if (v.default && !nameLower.includes('premium') && !nameLower.includes('natural')) {
-          score -= 5;
+        // Female voice — strong bonus
+        for (const kw of FEMALE_NAMES) {
+          if (nameLower.includes(kw.toLowerCase())) score += 20;
         }
+
+        // Male voice — strong penalty
+        for (const kw of MALE_NAMES) {
+          if (nameLower.includes(kw.toLowerCase())) score -= 30;
+        }
+
+        // Default voice reflects system TTS setting — use it if it's English
+        if (v.default) score += 15;
 
         if (score > bestScore) {
           bestScore = score;
@@ -95,6 +102,7 @@ const Audio = (() => {
       }
 
       preferredVoice = bestVoice || voices.find(v => v.lang?.startsWith('en')) || voices[0];
+      showDebug('🎤 当前语音: ' + (preferredVoice?.name || '默认'));
       console.log('[Audio] Selected voice:', preferredVoice?.name, '(score:', bestScore + ')');
     };
 
@@ -249,8 +257,18 @@ const Audio = (() => {
 
     return new Promise((resolve) => {
       const utter = new SpeechSynthesisUtterance(text);
+
+      // Detect if we're stuck with a male/mechanical voice and boost pitch
+      const voiceName = (voice || preferredVoice)?.name || '';
+      const nameLower = voiceName.toLowerCase();
+      const MALE_KEYWORDS = ['male', 'david', 'daniel', 'paul', 'tom', 'mark', 'alex', 'james', 'john'];
+      const isMaleVoice = MALE_KEYWORDS.some(kw => nameLower.includes(kw));
+      const isLowQuality = nameLower.includes('google') && !nameLower.includes('premium') && !nameLower.includes('natural');
+
+      // If caller explicitly set pitch, respect it. Otherwise auto-adjust.
+      const autoPitch = (isMaleVoice || isLowQuality) ? 1.3 : 1.0;
       utter.rate = rate;
-      utter.pitch = pitch;
+      utter.pitch = (pitch === 1.0) ? autoPitch : pitch; // only auto-adjust if caller didn't override
       utter.volume = 1.0;
 
       // Use the voice selected during init (respects user settings + female preference)

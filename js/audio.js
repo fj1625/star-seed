@@ -13,7 +13,7 @@ const Audio = (() => {
   // ==== Volcano Engine TTS via Cloudflare Workers ====
   // Set this to your Worker URL after deploying tts-proxy/cloudflare-worker.js
   // e.g. 'https://star-seed-tts.yourname.workers.dev'
-  const VOLCANO_WORKER_URL = 'https://star-seed.lidi1625.workers.dev';
+  const VOLCANO_WORKER_URL = ''; // Back to Web Speech API — install high-quality voice pack on your phone for better quality
   let currentVolcanoAudio = null; // for cancellation
 
   /** Initialize speech synthesis */

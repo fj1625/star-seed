@@ -45,7 +45,7 @@ const EngineColor = (() => {
         <h2>🌈 Color Power</h2>
         <p class="day-subtitle">Color Detective</p>
       </div>
-      <div class="twinkle-speech" id="day2-speech"></div>
+      <div class="twinkle-speech" id="day2-speech" aria-live="polite" aria-atomic="true"></div>
 
       <!-- Drag-to-mix stage -->
       <div class="color-drag-stage" id="day2-drag">

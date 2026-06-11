@@ -2,7 +2,8 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <title>The Star Seed — My Home</title>
@@ -127,7 +128,7 @@
     </main>
 
     <!-- Day Complete Overlay -->
-    <div id="day-complete-overlay" class="overlay" style="display:none">
+    <div id="day-complete-overlay" class="overlay" style="display:none" role="dialog" aria-modal="true" aria-labelledby="complete-title">
       <div class="overlay-card animate-pop">
         <div class="overlay-stars">⭐ ✨ ⭐</div>
         <h2 class="overlay-power" id="complete-power"></h2>

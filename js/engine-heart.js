@@ -38,7 +38,7 @@ const EngineHeart = (() => {
         <h2>❤️ Heart Power</h2>
         <p class="day-subtitle">Heart of the Star</p>
       </div>
-      <div class="twinkle-speech" id="day5-speech"></div>
+      <div class="twinkle-speech" id="day5-speech" aria-live="polite" aria-atomic="true"></div>
 
       <!-- Dual-touch phase -->
       <div class="heart-phase-dual" id="heart-phase-dual">

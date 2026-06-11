@@ -64,7 +64,7 @@ const EngineSound = (() => {
         <h2>🎵 Sound Power</h2>
         <p class="day-subtitle">Sound Password</p>
       </div>
-      <div class="twinkle-speech" id="day3-speech"></div>
+      <div class="twinkle-speech" id="day3-speech" aria-live="polite" aria-atomic="true"></div>
       <div class="sound-phase-match" id="day3-match">
         <p class="phase-instruction">Tap a jar to hear a sound. Which animal is it?</p>
         <div class="jars-grid" id="jars-grid"></div>
@@ -103,7 +103,7 @@ const EngineSound = (() => {
 
     if (jarsGrid) {
       jarsGrid.innerHTML = unmatchedAnimals.map((a, i) => `
-        <div class="sound-jar" data-index="${i}" id="jar-${i}">
+        <div class="sound-jar" role="button" tabindex="0" aria-label="Jar ${matchedAnimals.length + i + 1}, tap to hear" data-index="${i}" id="jar-${i}">
           <div class="jar-icon">🫙</div>
           <div class="jar-label">Jar ${matchedAnimals.length + i + 1}</div>
           <div class="jar-status" id="jar-status-${i}">?</div>
@@ -315,7 +315,7 @@ const EngineSound = (() => {
     // Show animal jars for tapping (in fixed order, not sequence order)
     if (seqJars) {
       seqJars.innerHTML = animals.map(a => `
-        <div class="seq-jar" data-id="${a.id}" id="seq-jar-${a.id}">
+        <div class="seq-jar" role="button" tabindex="0" aria-label="${a.animal}, tap to add to sequence" data-id="${a.id}" id="seq-jar-${a.id}">
           <div class="seq-jar-emoji">${a.emoji}</div>
           <div class="seq-jar-name">${a.animal}</div>
         </div>

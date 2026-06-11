@@ -46,7 +46,7 @@ const EngineLight = (() => {
         <h2>🔦 Light Power</h2>
         <p class="day-subtitle">Hidden Star Fragments</p>
       </div>
-      <div class="twinkle-speech" id="day1-speech"></div>
+      <div class="twinkle-speech" id="day1-speech" aria-live="polite" aria-atomic="true"></div>
       <div class="silhouette-display" id="day1-silhouette"></div>
       <div class="code-entry" id="day1-code-entry" style="display:none">
         <p class="code-prompt">Enter the secret code from the card!</p>
@@ -329,7 +329,7 @@ const EngineLight = (() => {
     // Create drop slots
     if (slotsEl) {
       slotsEl.innerHTML = targetWord.split('').map((_, i) =>
-        `<div class="spelling-slot" data-slot="${i}" id="slot-${i}"></div>`
+        `<div class="spelling-slot" role="button" tabindex="0" data-slot="${i}" id="slot-${i}"></div>`
       ).join('');
     }
 
@@ -337,7 +337,7 @@ const EngineLight = (() => {
     if (poolEl) {
       const shuffled = [...collectedLetters].sort(() => Math.random() - 0.5);
       poolEl.innerHTML = shuffled.map((letter, i) =>
-        `<div class="spelling-letter" data-letter="${letter}" data-pool-index="${i}" id="pool-${i}">
+        `<div class="spelling-letter" role="button" tabindex="0" data-letter="${letter}" data-pool-index="${i}" id="pool-${i}">
           ${letter}
         </div>`
       ).join('');

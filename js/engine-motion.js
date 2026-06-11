@@ -42,7 +42,7 @@ const EngineMotion = (() => {
         <h2>🤸 Motion Power</h2>
         <p class="day-subtitle">Star Dance</p>
       </div>
-      <div class="twinkle-speech" id="day4-speech"></div>
+      <div class="twinkle-speech" id="day4-speech" aria-live="polite" aria-atomic="true"></div>
       <div class="dance-stage" id="dance-stage">
         <div class="twinkle-dancer" id="twinkle-dancer">
           <div class="twinkle-body">✨</div>

@@ -404,6 +404,26 @@ const App = (() => {
     };
 
     overlay.style.display = 'flex';
+    overlay.setAttribute('aria-hidden', 'false');
+    // Focus the primary button for keyboard users
+    if (nextBtn && nextBtn.style.display !== 'none') nextBtn.focus();
+
+    // Escape to close
+    const escHandler = (e) => {
+      if (e.key === 'Escape') {
+        overlay.style.display = 'none';
+        overlay.setAttribute('aria-hidden', 'true');
+        document.removeEventListener('keydown', escHandler);
+      }
+    };
+    document.addEventListener('keydown', escHandler);
+
+    // Clean up handler when buttons are clicked
+    const cleanupEsc = () => document.removeEventListener('keydown', escHandler);
+    const origNext = nextBtn.onclick;
+    nextBtn.onclick = () => { cleanupEsc(); overlay.setAttribute('aria-hidden', 'true'); if (origNext) origNext(); };
+    const origHome = homeBtn.onclick;
+    homeBtn.onclick = () => { cleanupEsc(); overlay.setAttribute('aria-hidden', 'true'); if (origHome) origHome(); };
   }
 
   /** Update the top status bar */

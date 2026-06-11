@@ -16,21 +16,32 @@ const Audio = (() => {
   const VOLCANO_WORKER_URL = ''; // Back to Web Speech API — install high-quality voice pack on your phone for better quality
   let currentVolcanoAudio = null; // for cancellation
 
+  /** Show debug info on page for mobile users who can't open DevTools */
+  function showDebug(msg) {
+    var el = document.getElementById('audio-debug');
+    if (el) el.textContent = msg;
+    console.log('[Audio]', msg);
+  }
+
   /** Initialize speech synthesis */
   function init() {
     if (typeof window === 'undefined') return;
     synth = window.speechSynthesis;
     if (!synth) {
-      console.warn('Web Speech API not supported');
+      showDebug('❌ 设备不支持语音播放');
       isSupported = false;
       return;
     }
     isSupported = true;
+    showDebug('✅ 语音引擎已就绪，正在加载语音列表...');
 
     // Voice loading is async on some browsers (Chrome, iOS)
     const loadVoices = () => {
       const voices = synth.getVoices();
-      if (!voices || voices.length === 0) return;
+      if (!voices || voices.length === 0) {
+        showDebug('⏳ 语音列表加载中... (如果卡住，请刷新页面)');
+        return;
+      }
 
       // Log all voices for debugging — open DevTools to see what your device offers
       console.log('[Audio] Available voices:');

@@ -382,12 +382,24 @@ const App = (() => {
       Audio.speak(dayData.completionText, { rate: 0.9 });
     }, 300);
 
-    // Next day button
+    // Parent unlock section (hidden by default, shown for days 1-4)
+    const unlockSection = document.getElementById('parent-unlock');
+    const codeInput = document.getElementById('parent-code-input');
+    const unlockBtn = document.getElementById('btn-unlock-day');
+    const unlockHint = document.getElementById('parent-unlock-hint');
+
+    // Reset unlock UI
+    if (unlockSection) unlockSection.style.display = 'none';
+    if (codeInput) { codeInput.value = ''; codeInput.disabled = false; }
+    if (unlockHint) unlockHint.style.display = 'none';
+
+    // Next day button — hidden until parent unlocks (days 1-4)
     if (day < 5) {
-      nextBtn.style.display = 'block';
+      nextBtn.style.display = 'none'; // hidden by default, shown after password
       nextBtn.textContent = `Day ${day + 1} →`;
       nextBtn.onclick = () => {
         overlay.style.display = 'none';
+        overlay.setAttribute('aria-hidden', 'true');
         showScene(`day${day + 1}`);
         const nextEngineMap = {
           2: EngineColor,
@@ -398,11 +410,41 @@ const App = (() => {
         activeEngine = nextEngineMap[day + 1] || null;
         if (activeEngine && activeEngine.start) activeEngine.start();
       };
+
+      // Show parent unlock section
+      if (unlockSection) unlockSection.style.display = 'block';
+
+      // Handle unlock button
+      const tryUnlock = () => {
+        const val = codeInput ? codeInput.value.trim() : '';
+        if (val === '1801') {
+          if (unlockSection) unlockSection.style.display = 'none';
+          nextBtn.style.display = 'block';
+          nextBtn.focus();
+          Audio.speak('Unlocked! Ready for the next day!', { rate: 0.9 });
+        } else {
+          if (unlockHint) unlockHint.style.display = 'block';
+          codeInput.value = '';
+          codeInput.focus();
+        }
+      };
+
+      if (unlockBtn) {
+        unlockBtn.onclick = tryUnlock;
+        // Also allow Enter key
+        if (codeInput) {
+          codeInput.onkeydown = (e) => {
+            if (e.key === 'Enter') tryUnlock();
+          };
+        }
+      }
     } else {
+      // Day 5 — no lock, direct certificate
       nextBtn.style.display = 'block';
       nextBtn.textContent = 'See Your Certificate! 🏆';
       nextBtn.onclick = () => {
         overlay.style.display = 'none';
+        overlay.setAttribute('aria-hidden', 'true');
         showScene('complete');
         EngineHeart && EngineHeart.showCertificate();
       };
@@ -410,6 +452,7 @@ const App = (() => {
 
     homeBtn.onclick = () => {
       overlay.style.display = 'none';
+      overlay.setAttribute('aria-hidden', 'true');
     };
 
     overlay.style.display = 'flex';

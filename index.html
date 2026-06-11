@@ -7,7 +7,7 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <title>The Star Seed — My Home</title>
-  <link rel="stylesheet" href="css/style.css?v=20260616">
+  <link rel="stylesheet" href="css/style.css?v=20260617">
 </head>
 <body>
   <!-- ===== App Shell ===== -->
@@ -144,6 +144,14 @@
           <button class="btn btn-primary" id="btn-next-day">Next Day →</button>
           <button class="btn btn-ghost" id="btn-go-home">Stay on this page</button>
         </div>
+        <div class="parent-unlock" id="parent-unlock" style="display:none">
+          <p class="parent-unlock-msg">Today's mission is complete! Please come back tomorrow. 🌙</p>
+          <div class="parent-unlock-row">
+            <input type="password" class="parent-code-input" id="parent-code-input" placeholder="Parent code" maxlength="4">
+            <button class="btn btn-tiny" id="btn-unlock-day">Unlock</button>
+          </div>
+          <p class="parent-unlock-hint" id="parent-unlock-hint" style="display:none">Wrong code. Try again!</p>
+        </div>
       </div>
     </div>
 
@@ -159,16 +167,16 @@
   <div id="app-error" style="display:none"></div>
 
   <!-- ===== Scripts ===== -->
-  <script src="js/storage.js?v=20260616"></script>
-  <script src="js/audio.js?v=20260616"></script>
-  <script src="js/voice-input.js?v=20260616"></script>
-  <script src="js/utils.js?v=20260616"></script>
-  <script src="js/twinkle.js?v=20260616"></script>
-  <script src="js/engine-light.js?v=20260616"></script>
-  <script src="js/engine-color.js?v=20260616"></script>
-  <script src="js/engine-sound.js?v=20260616"></script>
-  <script src="js/engine-motion.js?v=20260616"></script>
-  <script src="js/engine-heart.js?v=20260616"></script>
-  <script src="js/app.js?v=20260616"></script>
+  <script src="js/storage.js?v=20260617"></script>
+  <script src="js/audio.js?v=20260617"></script>
+  <script src="js/voice-input.js?v=20260617"></script>
+  <script src="js/utils.js?v=20260617"></script>
+  <script src="js/twinkle.js?v=20260617"></script>
+  <script src="js/engine-light.js?v=20260617"></script>
+  <script src="js/engine-color.js?v=20260617"></script>
+  <script src="js/engine-sound.js?v=20260617"></script>
+  <script src="js/engine-motion.js?v=20260617"></script>
+  <script src="js/engine-heart.js?v=20260617"></script>
+  <script src="js/app.js?v=20260617"></script>
 </body>
 </html>

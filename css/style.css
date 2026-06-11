@@ -2384,6 +2384,50 @@ body {
   align-items: center;
 }
 
+.parent-unlock {
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px dashed rgba(255,255,255,0.15);
+  text-align: center;
+}
+
+.parent-unlock-msg {
+  font-size: 0.85rem;
+  color: var(--gold);
+  margin-bottom: 10px;
+  line-height: 1.4;
+}
+
+.parent-unlock-row {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+  align-items: center;
+}
+
+.parent-code-input {
+  width: 100px;
+  padding: 6px 10px;
+  border-radius: 8px;
+  border: 1px solid rgba(255,255,255,0.2);
+  background: rgba(0,0,0,0.3);
+  color: #fff;
+  font-size: 0.9rem;
+  text-align: center;
+  letter-spacing: 2px;
+}
+
+.parent-code-input:focus {
+  outline: none;
+  border-color: var(--gold);
+}
+
+.parent-unlock-hint {
+  font-size: 0.75rem;
+  color: #ef4444;
+  margin-top: 6px;
+}
+
 /* ===== Footer ===== */
 
 #app-footer {

@@ -253,14 +253,21 @@ const Audio = (() => {
       utter.pitch = pitch;
       utter.volume = 1.0;
 
-      // Always pick a fresh voice — preferredVoice may be stale after voice pack changes
-      const voices = synth.getVoices ? synth.getVoices() : [];
-      const freshVoice = voices.find(v => v.lang && v.lang.startsWith('en')) || voices[0];
-      if (voice || freshVoice) {
-        utter.voice = voice || freshVoice;
+      // Use the voice selected during init (respects user settings + female preference)
+      // Allow caller override via options.voice
+      if (voice || preferredVoice) {
+        utter.voice = voice || preferredVoice;
         console.log('[Audio] Using voice:', utter.voice ? utter.voice.name : 'none');
       } else {
-        console.log('[Audio] No voice available, using browser default');
+        // Voices not loaded yet — try one more time
+        const voices = synth.getVoices ? synth.getVoices() : [];
+        const fallback = voices.find(v => v.lang && v.lang.startsWith('en')) || voices[0];
+        if (fallback) {
+          utter.voice = fallback;
+          console.log('[Audio] Fallback voice:', fallback.name);
+        } else {
+          console.log('[Audio] No voice available, using browser default');
+        }
       }
 
       let done = false;

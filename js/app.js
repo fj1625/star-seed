@@ -7,6 +7,7 @@ const App = (() => {
   let currentScene = 'intro';
   let currentEpisodeId = 'ep01';
   let episodeList = [];
+  let activeEngine = null;
 
   // Scene sections in DOM
   const scenes = [
@@ -294,6 +295,11 @@ const App = (() => {
 
   /** Show a specific scene, hide others */
   function showScene(name) {
+    // Stop active engine when leaving a day scene
+    if (activeEngine && activeEngine.stop && currentScene !== name && currentScene.startsWith('day')) {
+      activeEngine.stop();
+      activeEngine = null;
+    }
     scenes.forEach(s => {
       const el = document.getElementById(s);
       if (el) el.style.display = 'none';
@@ -315,16 +321,23 @@ const App = (() => {
   function goToDay(day) {
     if (day >= 1 && day <= 5) {
       if (Storage.isDayUnlocked(day) || Storage.isDayCompleted(day)) {
+        // Stop any running engine before switching
+        if (activeEngine && activeEngine.stop) {
+          activeEngine.stop();
+        }
         showScene(`day${day}`);
         // Init the engine for this day
         const engineMap = {
-          1: () => EngineLight && EngineLight.start(),
-          2: () => EngineColor && EngineColor.start(),
-          3: () => EngineSound && EngineSound.start(),
-          4: () => EngineMotion && EngineMotion.start(),
-          5: () => EngineHeart && EngineHeart.start()
+          1: EngineLight,
+          2: EngineColor,
+          3: EngineSound,
+          4: EngineMotion,
+          5: EngineHeart
         };
-        if (engineMap[day]) engineMap[day]();
+        activeEngine = engineMap[day] || null;
+        if (activeEngine && activeEngine.start) {
+          activeEngine.start();
+        }
       }
     }
   }
@@ -382,12 +395,13 @@ const App = (() => {
         overlay.style.display = 'none';
         showScene(`day${day + 1}`);
         const nextEngineMap = {
-          2: () => EngineColor && EngineColor.start(),
-          3: () => EngineSound && EngineSound.start(),
-          4: () => EngineMotion && EngineMotion.start(),
-          5: () => EngineHeart && EngineHeart.start()
+          2: EngineColor,
+          3: EngineSound,
+          4: EngineMotion,
+          5: EngineHeart
         };
-        if (nextEngineMap[day + 1]) nextEngineMap[day + 1]();
+        activeEngine = nextEngineMap[day + 1] || null;
+        if (activeEngine && activeEngine.start) activeEngine.start();
       };
     } else {
       nextBtn.style.display = 'block';

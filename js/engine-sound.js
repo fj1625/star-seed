@@ -517,5 +517,11 @@ const EngineSound = (() => {
     pendingTimers.clear();
   }
 
-  return { init, start };
+  function stop() {
+    isActive = false;
+    clearPendingTimers();
+    Audio.cancel();
+  }
+
+  return { init, start, stop };
 })();

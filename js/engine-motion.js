@@ -324,5 +324,10 @@ const EngineMotion = (() => {
   }
 
 
-  return { init, start };
+  function stop() {
+    isActive = false;
+    Audio.cancel();
+  }
+
+  return { init, start, stop };
 })();

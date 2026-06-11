@@ -867,6 +867,12 @@ const EngineHeart = (() => {
     }
   }
 
+  function stop() {
+    isActive = false;
+    if (holdTimer) { clearInterval(holdTimer); holdTimer = null; }
+    resetHold();
+    Audio.cancel();
+  }
 
-  return { init, start, showCertificate };
+  return { init, start, stop, showCertificate };
 })();

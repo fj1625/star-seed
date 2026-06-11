@@ -791,5 +791,12 @@ const EngineColor = (() => {
     pendingTimers.clear();
   }
 
-  return { init, start };
+  function stop() {
+    isActive = false;
+    clearPendingTimers();
+    stopCamera();
+    Audio.cancel();
+  }
+
+  return { init, start, stop };
 })();

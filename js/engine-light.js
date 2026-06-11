@@ -423,6 +423,10 @@ const EngineLight = (() => {
     Audio.speak('Great! You found all the cards. Now, can you spell the secret word with your letters?', { rate: 0.85 });
   }
 
+  function stop() {
+    isActive = false;
+    Audio.cancel();
+  }
 
-  return { init, start };
+  return { init, start, stop };
 })();

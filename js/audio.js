@@ -43,18 +43,21 @@ const Audio = (() => {
         return;
       }
 
-      // Log all voices for debugging — open DevTools to see what your device offers
+      // Show ALL voices on page for mobile diagnosis
       console.log('[Audio] Available voices:');
+      const engVoices = voices.filter(v => v.lang && v.lang.startsWith('en'));
+      const debugLines = [];
       voices.forEach((v, i) => {
-        console.log(`  ${i + 1}. ${v.name} [${v.lang}] ${v.default ? '(default)' : ''}`);
+        const local = typeof v.localService !== 'undefined' ? (v.localService ? '本地' : '网络') : '?';
+        const def = v.default ? '★' : '';
+        console.log(`  ${i + 1}. ${def} ${v.name} [${v.lang}] ${v.localService !== undefined ? '(' + local + ')' : ''}`);
+        if (v.lang && v.lang.startsWith('en')) {
+          debugLines.push(`${def}${v.name} [${local}]`);
+        }
       });
 
-      // Score-based selection: prioritize high-quality voices
-      const HIGH_QUALITY = ['Siri', 'Premium', 'Enhanced', 'Natural', 'Wavenet', 'Neural', 'Aaron', 'Nicky', 'Samantha', 'Catherine'];
-      const LOW_QUALITY  = ['Compact', 'Google US English'];
-      const MALE_NAMES   = ['male', 'david', 'daniel', 'paul', 'tom', 'mark', 'alex', 'james', 'john', 'michael', 'george', 'fred', 'ryan', 'tony'];
-      const FEMALE_NAMES = ['female', 'samantha', 'karen', 'moira', 'tessa', 'veena', 'victoria', 'lisa', 'catherine', 'emma', 'jenny', 'aria', 'nicky', 'siri'];
-
+      // Score-based selection
+      // Priority: network > local, en-US > other en, female > male, system default
       let bestVoice = null;
       let bestScore = -Infinity;
 
@@ -65,35 +68,28 @@ const Audio = (() => {
         const nameLower = v.name.toLowerCase();
         const langLower = v.lang.toLowerCase();
 
+        // Network voices sound WAY better than local ones
+        if (v.localService === false) score += 40;       // network/high-quality
+        else if (v.localService === true) score -= 10;    // local/robotic
+
         // Language match
         if (langLower === 'en-us') score += 10;
         else if (langLower.startsWith('en')) score += 5;
 
-        // High-quality keywords
-        for (const kw of HIGH_QUALITY) {
-          if (nameLower.includes(kw.toLowerCase())) score += 20;
+        // System default voice
+        if (v.default) score += 10;
+
+        // Female names (common TTS female voices)
+        const FEMALE = ['female', 'samantha', 'karen', 'moira', 'tessa', 'veena', 'victoria', 'lisa', 'catherine', 'emma', 'jenny', 'aria', 'nicky', 'siri', 'susan', 'mary', 'anna'];
+        for (const kw of FEMALE) {
+          if (nameLower.includes(kw)) { score += 15; break; }
         }
 
-        // Microsoft Natural voices are excellent on Windows/Edge
-        if (nameLower.includes('microsoft') && nameLower.includes('natural')) score += 25;
-
-        // Low-quality / robotic keywords
-        for (const kw of LOW_QUALITY) {
-          if (nameLower.includes(kw.toLowerCase())) score -= 15;
+        // Male names — penalty
+        const MALE = ['male', 'david', 'daniel', 'paul', 'tom', 'mark', 'alex', 'james', 'john', 'michael', 'george', 'fred', 'ryan', 'tony'];
+        for (const kw of MALE) {
+          if (nameLower.includes(kw)) { score -= 20; break; }
         }
-
-        // Female voice — strong bonus
-        for (const kw of FEMALE_NAMES) {
-          if (nameLower.includes(kw.toLowerCase())) score += 20;
-        }
-
-        // Male voice — strong penalty
-        for (const kw of MALE_NAMES) {
-          if (nameLower.includes(kw.toLowerCase())) score -= 30;
-        }
-
-        // Default voice reflects system TTS setting — use it if it's English
-        if (v.default) score += 15;
 
         if (score > bestScore) {
           bestScore = score;
@@ -101,8 +97,11 @@ const Audio = (() => {
         }
       }
 
-      preferredVoice = bestVoice || voices.find(v => v.lang?.startsWith('en')) || voices[0];
-      showDebug('🎤 当前语音: ' + (preferredVoice?.name || '默认'));
+      preferredVoice = bestVoice || engVoices[0] || voices[0];
+      const quality = preferredVoice?.localService === false ? '✅ 高质量网络语音' : '⚠️ 本地基础语音（可能比较机械）';
+      const engCount = engVoices.length;
+      const netCount = engVoices.filter(v => v.localService === false).length;
+      showDebug(`设备有 ${engCount} 个英文语音(${netCount} 个高质量)。已选: ${preferredVoice?.name || '默认'} — ${quality}`);
       console.log('[Audio] Selected voice:', preferredVoice?.name, '(score:', bestScore + ')');
     };
 

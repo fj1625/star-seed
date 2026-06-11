@@ -99,16 +99,8 @@ const App = (() => {
     // Update day selector grid
     updateIntroDaySelect(state);
 
-    // Speak greeting
-    setTimeout(() => {
-      if (state.completedDays.length >= 5) {
-        Audio.speak('Welcome back, Star Guardian! You have collected all powers!', { rate: 0.9 });
-      } else if (state.completedDays.length > 0) {
-        Audio.speak('Welcome back! Ready to continue?', { rate: 0.9 });
-      } else {
-        Audio.speak('Hello, Star Guardian! I am Twinkle. I need your help!', { rate: 0.9 });
-      }
-    }, 500);
+    // Greeting is now triggered by the "Listen to the Story" button
+    // (iOS Safari requires user gesture before Web Speech API can play)
   }
 
   /** Load episode data from JSON */
@@ -228,17 +220,8 @@ const App = (() => {
     // Update day tabs with episode-specific emojis
     updateDayTabsForEpisode();
 
-    // Speak intro story once per session so the child can hear it
-    if (!window.__introSpoken) {
-      window.__introSpoken = true;
-      setTimeout(() => {
-        const week = episodeData.week || 1;
-        const storyText = week === 2
-          ? 'Twinkle needs your help again! The zoo animals are missing! Can you find them and bring them home?'
-          : 'A tiny star seed fell from the sky. Its name is Twinkle. Twinkle lost its 5 magic powers! Can you find them all?';
-        Audio.speak('The Star Seed. ' + storyText, { rate: 0.85, cancelPrevious: true });
-      }, 1500);
-    }
+    // Intro story speech is triggered by user click (iOS requires user gesture for audio)
+    // bindIntroButtons() wires up the #btn-listen-story button
   }
 
   /** Update day navigation tabs with current episode info */
@@ -568,6 +551,18 @@ const App = (() => {
       continueBtn.addEventListener('click', () => {
         const state = Storage.getState();
         goToDay(state.currentDay);
+      });
+    }
+
+    // Listen to story button (iOS requires user gesture for speech)
+    const listenBtn = document.getElementById('btn-listen-story');
+    if (listenBtn) {
+      listenBtn.addEventListener('click', () => {
+        const week = episodeData?.week || 1;
+        const storyText = week === 2
+          ? 'Twinkle needs your help again! The zoo animals are missing! Can you find them and bring them home?'
+          : 'A tiny star seed fell from the sky. Its name is Twinkle. Twinkle lost its 5 magic powers! Can you find them all?';
+        Audio.speak('The Star Seed. ' + storyText, { rate: 0.85, cancelPrevious: true });
       });
     }
 

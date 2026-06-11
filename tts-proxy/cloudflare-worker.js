@@ -22,7 +22,10 @@ function synthesizeEdgeTTS(text, rate) {
 
     ws.addEventListener('open', function() {
       var timestamp = new Date().toISOString();
-      var requestId = crypto.randomUUID();
+      var requestId = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+        var r = Math.random() * 16 | 0, v = c === 'x' ? r : (r & 0x3 | 0x8);
+        return v.toString(16);
+      });
 
       var configPayload = JSON.stringify({
         context: {

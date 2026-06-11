@@ -32,7 +32,7 @@ const EngineLight = (() => {
 
     currentCardIndex = foundCards.length;
     renderDay1();
-    await speakIntro();
+    await Utils.speakIntro(1, data);
     await showCardHunt(currentCardIndex);
   }
 
@@ -83,13 +83,6 @@ const EngineLight = (() => {
     }
   }
 
-  async function speakIntro() {
-    const speechEl = document.getElementById('day1-speech');
-    if (speechEl) {
-      speechEl.innerHTML = `<div class="speech-bubble">${data.days['1'].storyIntro}</div>`;
-    }
-    await Audio.speak(data.days['1'].storyIntro, { rate: 0.85, cancelPrevious: true });
-  }
 
   async function showCardHunt(index) {
     if (index >= cards.length) {
@@ -249,7 +242,7 @@ const EngineLight = (() => {
     const voiceWrap = document.createElement('div');
     voiceWrap.className = 'mini-voice-prompt';
     voiceWrap.innerHTML = `
-      <p class="mini-voice-hint">Say it: <strong>${capitalize(card.word)}!</strong></p>
+      <p class="mini-voice-hint">Say it: <strong>${Utils.capitalize(card.word)}!</strong></p>
       <button class="btn btn-tiny btn-mini-mic" id="btn-day1-voice">🎤 Speak</button>
       <span class="mini-voice-result" id="day1-voice-result"></span>
     `;
@@ -264,10 +257,10 @@ const EngineLight = (() => {
         onResult: (text) => {
           if (text.toLowerCase().includes(card.word.toLowerCase())) {
             resultSpan.textContent = '✅ Perfect!';
-            Audio.speak('Perfect! ' + capitalize(card.word) + '!', { rate: 0.85 });
+            Audio.speak('Perfect! ' + Utils.capitalize(card.word) + '!', { rate: 0.85 });
           } else {
             resultSpan.textContent = '💬 Good try!';
-            Audio.speak('Good try! ' + capitalize(card.word) + '!', { rate: 0.85 });
+            Audio.speak('Good try! ' + Utils.capitalize(card.word) + '!', { rate: 0.85 });
           }
         },
         onError: () => { resultSpan.textContent = 'That\'s okay!'; }
@@ -430,10 +423,6 @@ const EngineLight = (() => {
     Audio.speak('Great! You found all the cards. Now, can you spell the secret word with your letters?', { rate: 0.85 });
   }
 
-  function capitalize(str) {
-    if (!str) return str;
-    return str.charAt(0).toUpperCase() + str.slice(1);
-  }
 
   return { init, start };
 })();

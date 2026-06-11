@@ -28,7 +28,7 @@ const EngineMotion = (() => {
     }
 
     renderDay4();
-    await speakIntro();
+    await Utils.speakIntro(4, data);
     startDanceRound(currentRound);
   }
 
@@ -77,13 +77,6 @@ const EngineMotion = (() => {
     document.getElementById('round-num').textContent = currentRound + 1;
   }
 
-  async function speakIntro() {
-    const speechEl = document.getElementById('day4-speech');
-    if (speechEl) {
-      speechEl.innerHTML = `<div class="speech-bubble">${data.days['4'].storyIntro}</div>`;
-    }
-    await Audio.speak(data.days['4'].storyIntro, { rate: 0.85, cancelPrevious: true });
-  }
 
   async function startDanceRound(roundIdx) {
     if (roundIdx >= rounds.length) {
@@ -175,7 +168,7 @@ const EngineMotion = (() => {
     await Audio.speak(action.instruction, { rate: 0.85 });
 
     // Pause, then next
-    await sleep(1200);
+    await Utils.sleep(1200);
     await performActionSequence(index + 1);
   }
 
@@ -330,9 +323,6 @@ const EngineMotion = (() => {
     App.onDayComplete(4);
   }
 
-  function sleep(ms) {
-    return new Promise(r => setTimeout(r, ms));
-  }
 
   return { init, start };
 })();

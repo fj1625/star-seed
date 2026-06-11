@@ -31,7 +31,7 @@ const EngineColor = (() => {
     }
 
     renderDay2();
-    await speakIntro();
+    await Utils.speakIntro(2, data);
     startColorChallenge(currentColorIndex);
   }
 
@@ -135,13 +135,6 @@ const EngineColor = (() => {
     }, 0);
   }
 
-  async function speakIntro() {
-    const speechEl = document.getElementById('day2-speech');
-    if (speechEl) {
-      speechEl.innerHTML = `<div class="speech-bubble">${data.days['2'].storyIntro}</div>`;
-    }
-    await Audio.speak(data.days['2'].storyIntro, { rate: 0.85, cancelPrevious: true });
-  }
 
   // ==================== DRAG-TO-MIX ====================
 
@@ -196,8 +189,7 @@ const EngineColor = (() => {
 
     [c1, c2].forEach(circle => {
       // Remove old listeners by cloning
-      const clone = circle.cloneNode(true);
-      circle.parentNode.replaceChild(clone, circle);
+      const clone = Utils.replaceWithClone(circle);
 
       clone.addEventListener('pointerdown', (e) => {
         e.preventDefault();
@@ -396,8 +388,7 @@ const EngineColor = (() => {
     const currentColor = color;
 
     if (micBtn && micBtn.parentNode) {
-      const newMicBtn = micBtn.cloneNode(true);
-      micBtn.parentNode.replaceChild(newMicBtn, micBtn);
+      const newMicBtn = Utils.replaceWithClone(micBtn);
 
       newMicBtn.addEventListener('pointerdown', (e) => {
         e.preventDefault();
@@ -455,8 +446,7 @@ const EngineColor = (() => {
 
     // Skip button
     if (skipBtn) {
-      const newSkip = skipBtn.cloneNode(true);
-      skipBtn.parentNode.replaceChild(newSkip, skipBtn);
+      const newSkip = Utils.replaceWithClone(skipBtn);
       newSkip.addEventListener('click', () => goToCameraPhase(currentColor));
     }
 
@@ -696,14 +686,12 @@ const EngineColor = (() => {
       const noBtn = document.getElementById('btn-no');
 
       if (yesBtn) {
-        const newYes = yesBtn.cloneNode(true);
-        yesBtn.parentNode.replaceChild(newYes, yesBtn);
+        const newYes = Utils.replaceWithClone(yesBtn);
         newYes.addEventListener('click', () => onColorFound(color));
       }
 
       if (noBtn) {
-        const newNo = noBtn.cloneNode(true);
-        noBtn.parentNode.replaceChild(newNo, noBtn);
+        const newNo = Utils.replaceWithClone(noBtn);
         newNo.addEventListener('click', () => {
           showOnly('day2-find');
           Audio.speak('Keep looking! You can do it!', { rate: 0.9 });
@@ -769,11 +757,7 @@ const EngineColor = (() => {
   // ==================== HELPERS ====================
 
   function showOnly(showId) {
-    const phases = ['day2-drag', 'day2-find', 'day2-voice', 'day2-camera', 'day2-confirm', 'day2-success'];
-    phases.forEach(id => {
-      const el = document.getElementById(id);
-      if (el) el.style.display = (id === showId) ? '' : 'none';
-    });
+    Utils.showOnly(['day2-drag', 'day2-find', 'day2-voice', 'day2-camera', 'day2-confirm', 'day2-success'], showId);
   }
 
   function getEmojiForItem(item) {

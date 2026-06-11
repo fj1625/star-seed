@@ -24,7 +24,7 @@ const EngineHeart = (() => {
     }
 
     renderDay5();
-    await speakIntro();
+    await Utils.speakIntro(5, data);
     startDualTouchPhase();
   }
 
@@ -124,13 +124,6 @@ const EngineHeart = (() => {
     `;
   }
 
-  async function speakIntro() {
-    const speechEl = document.getElementById('day5-speech');
-    if (speechEl) {
-      speechEl.innerHTML = `<div class="speech-bubble">${data.days['5'].storyIntro}</div>`;
-    }
-    await Audio.speak(data.days['5'].storyIntro, { rate: 0.85, cancelPrevious: true });
-  }
 
   // ==================== DUAL-TOUCH PHASE ====================
 
@@ -151,8 +144,7 @@ const EngineHeart = (() => {
       const zoneNum = idx + 1;
 
       // Remove old listeners by cloning
-      const newZone = zone.cloneNode(true);
-      zone.parentNode.replaceChild(newZone, zone);
+      const newZone = Utils.replaceWithClone(zone);
       if (idx === 0) { /* zone1 replaced */ }
 
       newZone.addEventListener('pointerdown', (e) => {
@@ -352,7 +344,7 @@ const EngineHeart = (() => {
       if (success) {
         unlockPuzzlePiece(q.puzzlePiecePower);
         await Audio.speak(`Yes! ${q.hint}`, { rate: 0.85 });
-        await sleep(800);
+        await Utils.sleep(800);
       }
     }
 
@@ -472,8 +464,7 @@ const EngineHeart = (() => {
     [d1, d2, d3].forEach((input, i) => {
       if (!input) return;
       input.value = '';
-      const newInput = input.cloneNode(true);
-      input.parentNode.replaceChild(newInput, input);
+      const newInput = Utils.replaceWithClone(input);
       newInput.addEventListener('input', (e) => {
         const val = e.target.value.replace(/[^0-9]/g, '');
         e.target.value = val.slice(0, 1);
@@ -497,8 +488,7 @@ const EngineHeart = (() => {
     });
 
     if (checkBtn) {
-      const newCheck = checkBtn.cloneNode(true);
-      checkBtn.parentNode.replaceChild(newCheck, checkBtn);
+      const newCheck = Utils.replaceWithClone(checkBtn);
       newCheck.addEventListener('click', async () => {
         const v1 = document.getElementById('heart-code-1');
         const v2 = document.getElementById('heart-code-2');
@@ -568,8 +558,7 @@ const EngineHeart = (() => {
     const countNum = document.getElementById('countdown-number');
 
     if (plantBtn) {
-      const newPlant = plantBtn.cloneNode(true);
-      plantBtn.parentNode.replaceChild(newPlant, plantBtn);
+      const newPlant = Utils.replaceWithClone(plantBtn);
       newPlant.addEventListener('click', async () => {
         newPlant.style.display = 'none';
         if (countdownEl) countdownEl.style.display = 'block';
@@ -577,7 +566,7 @@ const EngineHeart = (() => {
         for (let i = 5; i >= 1; i--) {
           if (countNum) countNum.textContent = i;
           await Audio.speak(String(i), { rate: 0.7 });
-          await sleep(1000);
+          await Utils.sleep(1000);
         }
 
         if (countNum) countNum.textContent = '🌱';
@@ -613,8 +602,7 @@ const EngineHeart = (() => {
     let goodbyeTranscript = '';
 
     if (micBtn) {
-      const newMic = micBtn.cloneNode(true);
-      micBtn.parentNode.replaceChild(newMic, micBtn);
+      const newMic = Utils.replaceWithClone(micBtn);
 
       newMic.addEventListener('click', () => {
         if (VoiceInput.isActive()) {
@@ -657,8 +645,7 @@ const EngineHeart = (() => {
     // Done button
     const doneBtn = document.getElementById('btn-goodbye-done');
     if (doneBtn) {
-      const newDone = doneBtn.cloneNode(true);
-      doneBtn.parentNode.replaceChild(newDone, doneBtn);
+      const newDone = Utils.replaceWithClone(doneBtn);
       newDone.addEventListener('click', async () => {
         // Save to storage
         const playerName = Storage.getState().playerName || 'Star Guardian';
@@ -880,9 +867,6 @@ const EngineHeart = (() => {
     }
   }
 
-  function sleep(ms) {
-    return new Promise(r => setTimeout(r, ms));
-  }
 
   return { init, start, showCertificate };
 })();

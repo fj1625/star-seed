@@ -44,7 +44,7 @@ const EngineSound = (() => {
       // Matched but not completed — go to sequence
       currentPhase = 'sequence';
       renderDay3();
-      await speakIntro();
+      await Utils.speakIntro(3, data, { cancelPrevious: false });
       await startSequencePhase();
       return;
     }
@@ -82,14 +82,6 @@ const EngineSound = (() => {
     `;
   }
 
-  async function speakIntro() {
-    const speechEl = document.getElementById('day3-speech');
-    if (speechEl) {
-      speechEl.innerHTML = `<div class="speech-bubble">${data.days['3'].storyIntro}</div>`;
-    }
-    // No cancelPrevious here — it's the first speech on Day 3, nothing to cancel
-    await Audio.speak(data.days['3'].storyIntro, { rate: 0.85 });
-  }
 
   function showMatchPhase() {
     const matchPhase = document.getElementById('day3-match');

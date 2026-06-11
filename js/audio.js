@@ -58,6 +58,7 @@ const Audio = (() => {
       // Score-based selection
       // iOS: localService is always undefined — not a quality signal
       // Android/Chrome: localService=false = cloud/network high-quality
+      // Build a short list of voice names for mobile debugging
       let bestVoice = null;
       let bestScore = -Infinity;
 
@@ -107,17 +108,26 @@ const Audio = (() => {
 
       preferredVoice = bestVoice || engVoices[0] || voices[0];
 
+      // Build voice list for mobile debugging
+      const nameList = engVoices.map(v => {
+        const n = v.name;
+        // Mark suspiciously short names (often low quality on iOS)
+        if (isIOS && n.split(/[\s\-_]/).length === 1 && !n.includes('+') && !n.includes('Premium')) return n + '⚠️';
+        return n;
+      }).join(', ');
+
       // Build helpful debug message
       const vName = preferredVoice?.name || 'default';
       const isEnhanced = vName.toLowerCase().includes('enhanced');
       const isCloud = preferredVoice?.localService === false;
       let qualityNote = '';
-      if (isCloud) qualityNote = '✅ 云端高音质';
-      else if (isEnhanced) qualityNote = '✅ iOS 增强音质';
-      else if (isIOS) qualityNote = '⚠️ 基础音质 — 设置>辅助功能>朗读内容>语音>英文 可下载增强版';
-      else qualityNote = '⚠️ 本地基础语音（可能比较机械）';
+      if (isCloud) qualityNote = '✅ 云端';
+      else if (isEnhanced) qualityNote = '✅ 增强';
+      else if (isIOS) qualityNote = '⚠️ 基础';
+      else qualityNote = '⚠️ 基础';
 
-      showDebug(`🎤 ${vName} — ${qualityNote}`);
+      // Two-line debug: current voice + full list
+      showDebug(`🎤 ${vName} ${qualityNote} | 共${engVoices.length}个: ${nameList}`);
       console.log('[Audio] Selected voice:', vName, '(score:', bestScore + ')');
     };
 

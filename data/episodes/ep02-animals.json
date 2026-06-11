@@ -216,6 +216,41 @@
       "title": "Animal Rescue",
       "storyIntro": "I have all my powers back, but... there's a baby animal who lost its mommy! Only the Heart Power can reunite them. Will you and your Earth Helper help the baby find its family?",
       "heartPieceCode": "738",
+      "recallQuestions": [
+        {
+          "day": 1,
+          "emoji": "🔦",
+          "prompt": "What word did we spell with the 4 animal cards?",
+          "acceptedAnswers": ["wild"],
+          "hint": "W-I-L-D!",
+          "puzzlePiecePower": "light"
+        },
+        {
+          "day": 2,
+          "emoji": "🌈",
+          "prompt": "What color do red and white make?",
+          "acceptedAnswers": ["pink"],
+          "hint": "Pink!",
+          "puzzlePiecePower": "color"
+        },
+        {
+          "day": 3,
+          "emoji": "🎵",
+          "prompt": "Which farm animal says Moo?",
+          "acceptedAnswers": ["cow"],
+          "hint": "Cow!",
+          "puzzlePiecePower": "sound"
+        },
+        {
+          "day": 4,
+          "emoji": "🤸",
+          "prompt": "Tell me one animal move we danced!",
+          "acceptedAnswers": [],
+          "hint": "Hop, stomp, swim, fly, crawl... any animal move!",
+          "puzzlePiecePower": "motion",
+          "isOpenEnded": true
+        }
+      ],
       "puzzleMessage": "One piece is missing... Ask your Earth Helper for the Heart Piece!",
       "plantMessage": "The baby animal needs a home! Earth Helper: give your child a small toy animal or draw one together!",
       "countdownText": "Welcome the baby animal home!",

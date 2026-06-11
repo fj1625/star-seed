@@ -264,6 +264,10 @@ const EngineSound = (() => {
       btn.addEventListener('click', () => {
         const animalId = btn.dataset.animal;
         const a = animals.find(an => an.id === animalId);
+        if (!a) {
+          console.warn('[EngineSound] animal not found:', animalId);
+          return;
+        }
         const resultEl = document.getElementById('imitate-result');
 
         VoiceInput.listen({

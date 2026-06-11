@@ -339,7 +339,12 @@ const EngineHeart = (() => {
     // Hide code entry initially
     if (codeEntry) codeEntry.style.display = 'none';
 
-    const questions = data.days['5'].recallQuestions;
+    const questions = data.days?.['5']?.recallQuestions || [];
+    if (!questions.length) {
+      console.warn('[EngineHeart] no recallQuestions, skipping recall challenge');
+      showCodeEntry();
+      return;
+    }
 
     for (let i = 0; i < questions.length; i++) {
       const q = questions[i];
@@ -686,7 +691,7 @@ const EngineHeart = (() => {
     const container = document.getElementById('complete');
     if (!container) return;
 
-    const day5Data = data.days['5'];
+    const day5Data = data.days?.['5'] || {};
     const playerName = Storage.getState().playerName || 'Star Guardian';
     const goodbyeMsg = Storage.getState().day5GoodbyeMessage;
 

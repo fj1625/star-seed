@@ -11,6 +11,8 @@ const EngineColor = (() => {
   // Drag state
   let dragState = null;      // { el, startX, startY, originX, originY }
   let dragTarget = null;    // current color draggable being dragged
+  let pendingColor = null;   // color being processed in camera/confirm phases
+  let pendingSpokenItem = null;
 
   function init(episodeData) {
     data = episodeData;
@@ -644,9 +646,6 @@ const EngineColor = (() => {
   }
 
   // ==================== CONFIRM PHASE ====================
-
-  let pendingColor = null;
-  let pendingSpokenItem = null;
 
   function goToConfirmPhase(colorOverride) {
     try {

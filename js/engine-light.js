@@ -12,7 +12,10 @@ const EngineLight = (() => {
 
   function init(episodeData) {
     data = episodeData;
-    cards = episodeData.days['1'].cards;
+    cards = episodeData.days?.['1']?.cards || [];
+    if (!cards.length) {
+      console.error('[EngineLight] Day 1 data missing or empty');
+    }
   }
 
   async function start() {

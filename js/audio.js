@@ -296,11 +296,23 @@ const Audio = (() => {
       utter.pitch = (pitch === 1.0) ? autoPitch : pitch; // only auto-adjust if caller didn't override
       utter.volume = 1.0;
 
-      // Use the voice selected during init (respects user settings + female preference)
-      // Allow caller override via options.voice
-      if (voice || preferredVoice) {
-        utter.voice = voice || preferredVoice;
-        console.log('[Audio] Using voice:', utter.voice ? utter.voice.name : 'none');
+      // iOS strategy: DON'T set utter.voice — let the browser use the system default
+      // voice, which may reflect the user's "Spoken Content" settings (enhanced voices).
+      // Web Speech API on iOS only exposes basic voice names, but the underlying
+      // synthesis engine may still use the enhanced voice when no voice is forced.
+      const isIOS = /iPhone|iPad|iPod/.test(navigator.userAgent);
+      if (voice) {
+        // Caller explicitly requested a voice — respect it
+        utter.voice = voice;
+        console.log('[Audio] Using caller voice:', voice.name);
+      } else if (isIOS) {
+        // Don't force a voice on iOS — let Safari pick the system default
+        utter.lang = 'en-US';
+        console.log('[Audio] iOS: using system default voice (lang=en-US, no voice forced)');
+      } else if (preferredVoice) {
+        // Non-iOS: use our scored selection
+        utter.voice = preferredVoice;
+        console.log('[Audio] Using scored voice:', preferredVoice.name);
       } else {
         // Voices not loaded yet — try one more time
         const voices = synth.getVoices ? synth.getVoices() : [];

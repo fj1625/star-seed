@@ -1,4 +1,6 @@
-/* Edge TTS Proxy — ES5-compatible for Cloudflare Workers */
+/* Edge TTS Proxy for Cloudflare Workers */
+/* Uses Microsoft Edge browser's free TTS service via WebSocket */
+
 var EDGE_TTS_TOKEN = '6A5AA1D4EAFF4E9FB37E23D68491D6F4';
 var EDGE_TTS_URL = 'wss://speech.platform.bing.com/consumer/speech/synthesize/readaloud/edge/v1?TrustedClientToken=' + EDGE_TTS_TOKEN;
 
@@ -47,18 +49,17 @@ function synthesizeEdgeTTS(text, rate) {
     ws.addEventListener('message', function(event) {
       if (done) return;
 
-      if (event.data instanceof Blob) {
-        event.data.arrayBuffer().then(function(arrayBuffer) {
-          var uint8Array = new Uint8Array(arrayBuffer);
-          if (uint8Array.length < 2) return;
-          var headerLength = (uint8Array[0] << 8) | uint8Array[1];
-          var headerEnd = 2 + headerLength;
-          if (uint8Array.length <= headerEnd) return;
-          var audioPayload = uint8Array.slice(headerEnd);
-          if (audioPayload.length > 0) {
-            audioChunks.push(audioPayload);
-          }
-        });
+      // Workers WebSocket: binary messages are ArrayBuffer, not Blob
+      if (event.data instanceof ArrayBuffer) {
+        var uint8Array = new Uint8Array(event.data);
+        if (uint8Array.length < 2) return;
+        var headerLength = (uint8Array[0] << 8) | uint8Array[1];
+        var headerEnd = 2 + headerLength;
+        if (uint8Array.length <= headerEnd) return;
+        var audioPayload = uint8Array.slice(headerEnd);
+        if (audioPayload.length > 0) {
+          audioChunks.push(audioPayload);
+        }
       } else if (typeof event.data === 'string') {
         if (event.data.indexOf('Path:turn.end') !== -1) {
           done = true;
@@ -85,7 +86,7 @@ function synthesizeEdgeTTS(text, rate) {
       resolve(result.buffer);
     });
 
-    ws.addEventListener('error', function() {
+    ws.addEventListener('error', function(err) {
       reject(new Error('WebSocket error'));
     });
 

@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Edge TTS 测试</title>
+<style>
+body { font-family: -apple-system, BlinkMacSystemFont, sans-serif; padding: 20px; background: #0a0a2e; color: #fff; max-width: 400px; margin: 0 auto; }
+h2 { color: #ffd700; }
+input, button { width: 100%; padding: 14px; font-size: 1rem; border-radius: 12px; border: none; margin: 8px 0; box-sizing: border-box; }
+input { background: #1e1e5e; color: #fff; border: 2px solid rgba(255,255,255,0.1); }
+button { background: linear-gradient(135deg, #3b82f6, #a855f7); color: #fff; font-weight: 700; cursor: pointer; }
+button:active { transform: scale(0.96); }
+#result { margin-top: 16px; padding: 16px; background: #14144a; border-radius: 12px; min-height: 60px; word-break: break-all; }
+.success { color: #22c55e; }
+.error { color: #ef4444; }
+</style>
+</head>
+<body>
+<h2>🎤 Edge TTS 测试</h2>
+<p style="color:#a0a0c0;font-size:0.9rem;">输入文字，点播放，听声音质量。</p>
+
+<input type="text" id="textInput" value="Hello Star Guardian! I am Twinkle." placeholder="输入英文...">
+<button onclick="testTTS()">▶ 播放</button>
+
+<div id="result">等待测试...</div>
+
+<script>
+const WORKER_URL = 'https://star-seed.lidi1625.workers.dev';
+
+function testTTS() {
+  const text = document.getElementById('textInput').value.trim();
+  const resultEl = document.getElementById('result');
+  resultEl.innerHTML = '⏳ 请求中...';
+
+  fetch(WORKER_URL, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ text: text, rate: 0.9 })
+  })
+  .then(function(r) { return r.json(); })
+  .then(function(data) {
+    if (data.code === 3000 && data.data && data.data.length > 100) {
+      resultEl.innerHTML = '<span class="success">✅ 成功！音频长度: ' + data.data.length + '</span>';
+      // 播放
+      var audio = new Audio('data:audio/mp3;base64,' + data.data);
+      audio.play().catch(function(e) {
+        resultEl.innerHTML += '<br><span class="error">⚠️ 播放被阻止: ' + e.message + '</span>';
+      });
+    } else {
+      resultEl.innerHTML = '<span class="error">❌ 失败: ' + (data.error || data.message || JSON.stringify(data)) + '</span>';
+    }
+  })
+  .catch(function(err) {
+    resultEl.innerHTML = '<span class="error">❌ 网络错误: ' + err.message + '</span>';
+  });
+}
+</script>
+</body>
+</html>

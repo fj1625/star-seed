@@ -187,7 +187,9 @@ const App = (() => {
     // Update title and subtitle
     const subtitle = document.querySelector('.intro-subtitle');
     if (subtitle) {
-      subtitle.textContent = `Week ${episodeData.week}: ${episodeData.title}`;
+      subtitle.textContent = episodeData.week
+        ? `Week ${episodeData.week}: ${episodeData.title}`
+        : episodeData.title;
     }
 
     // Update story text based on episode
@@ -206,7 +208,7 @@ const App = (() => {
           <p>Can you find them and bring them home?</p>
           <p>New animal friends are waiting for you!</p>
         `,
-        5: `
+        0: `
           <p>Twinkle is ready for an <strong>outdoor adventure</strong>!</p>
           <p>Let's explore <strong>nature</strong> together!</p>
           <p>Find treasures, mix colors, hear wild sounds,</p>
@@ -225,7 +227,9 @@ const App = (() => {
     // Update footer
     const footer = document.querySelector('.footer-text');
     if (footer) {
-      footer.textContent = `The Star Seed · Week ${episodeData.week}: ${episodeData.title}`;
+      footer.textContent = episodeData.week
+        ? `The Star Seed · Week ${episodeData.week}: ${episodeData.title}`
+        : `The Star Seed · ${episodeData.title}`;
     }
 
     // Update day tabs with episode-specific emojis

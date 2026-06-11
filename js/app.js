@@ -227,6 +227,18 @@ const App = (() => {
 
     // Update day tabs with episode-specific emojis
     updateDayTabsForEpisode();
+
+    // Speak intro story once per session so the child can hear it
+    if (!window.__introSpoken) {
+      window.__introSpoken = true;
+      setTimeout(() => {
+        const week = episodeData.week || 1;
+        const storyText = week === 2
+          ? 'Twinkle needs your help again! The zoo animals are missing! Can you find them and bring them home?'
+          : 'A tiny star seed fell from the sky. Its name is Twinkle. Twinkle lost its 5 magic powers! Can you find them all?';
+        Audio.speak('The Star Seed. ' + storyText, { rate: 0.85, cancelPrevious: true });
+      }, 1500);
+    }
   }
 
   /** Update day navigation tabs with current episode info */

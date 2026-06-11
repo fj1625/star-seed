@@ -241,14 +241,20 @@ const Audio = (() => {
       utter.rate = rate;
       utter.pitch = pitch;
       utter.volume = 1.0;
-      if (voice || preferredVoice) {
-        utter.voice = voice || preferredVoice;
+
+      // Always pick a fresh voice — preferredVoice may be stale after voice pack changes
+      const voices = synth.getVoices ? synth.getVoices() : [];
+      const freshVoice = voices.find(v => v.lang && v.lang.startsWith('en')) || voices[0];
+      if (voice || freshVoice) {
+        utter.voice = voice || freshVoice;
+        console.log('[Audio] Using voice:', utter.voice ? utter.voice.name : 'none');
+      } else {
+        console.log('[Audio] No voice available, using browser default');
       }
 
       let done = false;
 
       // Safety net: Chrome sometimes silently ignores synth.speak()
-      // and neither onend nor onerror fires. Timeout after 8s.
       const safetyTimer = setTimeout(() => {
         if (!done) {
           console.warn('[Audio] Web Speech safety timeout — forcing resolve');
@@ -257,6 +263,10 @@ const Audio = (() => {
           resolve();
         }
       }, 8000);
+
+      utter.onstart = () => {
+        console.log('[Audio] Web Speech onstart fired');
+      };
 
       utter.onend = () => {
         if (done) return;
@@ -279,24 +289,18 @@ const Audio = (() => {
       };
 
       isSpeaking = true;
-      // Chrome workaround: resume if Chrome paused the synth (e.g. tab background)
+
+      // Force reset if synth is stuck
       if (synth.paused) {
         console.log('[Audio] Resuming paused synth');
         synth.resume();
       }
 
-      // Chrome/Edge: synth.speaking may still report true from a stale
-      // utterance whose onend already fired. New synth.speak() is silently
-      // ignored in that state. Poll until free, then force-cancel if stuck.
-      (function trySpeak(attempts) {
-        if (synth.speaking && attempts < 30) {
-          setTimeout(function() { trySpeak(attempts + 1); }, 100);
-        } else {
-          console.log('[Audio] Calling synth.speak(), attempts:', attempts, 'synth.speaking:', synth.speaking);
-          if (synth.speaking) synth.cancel(); // stuck — force clear
-          synth.speak(utter);
-        }
-      })(0);
+      // Always cancel before speaking to clear any stuck state
+      try { synth.cancel(); } catch (e) {}
+
+      console.log('[Audio] Calling synth.speak()');
+      synth.speak(utter);
     });
   }
 

@@ -18,8 +18,11 @@ const Audio = (() => {
 
   /** Show debug info on page for mobile users who can't open DevTools */
   function showDebug(msg) {
-    var el = document.getElementById('audio-debug');
-    if (el) el.textContent = msg;
+    // Only show on page when ?debug=1 is in the URL; otherwise just log to console
+    if (window.location && window.location.search && window.location.search.includes('debug')) {
+      var el = document.getElementById('audio-debug');
+      if (el) el.textContent = msg;
+    }
     console.log('[Audio]', msg);
   }
 

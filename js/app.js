@@ -19,7 +19,8 @@ const App = (() => {
     // Try to load episode list — in production, scan known episodes
     const known = [
       { id: 'ep01', title: 'My Home', emoji: '🏠', dataUrl: 'data/ep01-home.json' },
-      { id: 'ep02', title: 'Animals', emoji: '🐾', dataUrl: 'data/episodes/ep02-animals.json' }
+      { id: 'ep02', title: 'Animals', emoji: '🐾', dataUrl: 'data/episodes/ep02-animals.json' },
+      { id: 'ep05-outdoor', title: 'Nature Explorer', emoji: '🌿', dataUrl: 'data/ep05-outdoor.json', hidden: true }
     ];
     // Verify which ones exist
     const available = [];
@@ -80,6 +81,9 @@ const App = (() => {
     bindIntroButtons();
     bindRestartButton();
     bindEpisodeSelector();
+
+    // Bind outdoor entry (secret button in footer)
+    bindOutdoorEntry();
 
     // Always show intro first
     showScene('intro');
@@ -154,6 +158,7 @@ const App = (() => {
     showScene('intro');
     updateIntroForEpisode();
     updateIntroDaySelect(Storage.getState());
+    bindEpisodeSelector();
 
     const continueEl = document.getElementById('intro-continue');
     if (continueEl) continueEl.style.display = 'none';
@@ -200,6 +205,12 @@ const App = (() => {
           <p>The <strong>zoo animals</strong> are missing!</p>
           <p>Can you find them and bring them home?</p>
           <p>New animal friends are waiting for you!</p>
+        `,
+        5: `
+          <p>Twinkle is ready for an <strong>outdoor adventure</strong>!</p>
+          <p>Let's explore <strong>nature</strong> together!</p>
+          <p>Find treasures, mix colors, hear wild sounds,</p>
+          <p>and move like animals in the wild!</p>
         `
       };
       story.innerHTML = weekStories[episodeData.week] || weekStories[1];
@@ -232,10 +243,8 @@ const App = (() => {
       if (!dayData) continue;
       const tab = document.getElementById(`day-tab-${d}`);
       if (tab) {
-        const shortTitle = dayData.title.length > 14
-          ? dayData.title.substring(0, 12) + '…'
-          : dayData.title;
-        tab.textContent = `Day ${d} ${dayData.powerEmoji}`;
+        const label = dayData.tabLabel || `Day ${d}`;
+        tab.textContent = `${label} ${dayData.powerEmoji}`;
         tab.title = `${dayData.power} Power: ${dayData.title}`;
       }
     }
@@ -246,7 +255,14 @@ const App = (() => {
     const selector = document.getElementById('episode-selector');
     if (!selector) return;
 
-    selector.innerHTML = episodeList.map(ep => {
+    // Show non-hidden episodes, plus current if hidden
+    let displayEpisodes = episodeList.filter(ep => !ep.hidden);
+    if (currentEpisodeId && !displayEpisodes.find(ep => ep.id === currentEpisodeId)) {
+      const current = episodeList.find(ep => ep.id === currentEpisodeId);
+      if (current) displayEpisodes.push(current);
+    }
+
+    selector.innerHTML = displayEpisodes.map(ep => {
       const isActive = ep.id === currentEpisodeId;
       const isEp01 = ep.id === 'ep01';
       // ep01 is always unlocked; ep02 requires ep01 completion or secret unlock
@@ -286,6 +302,68 @@ const App = (() => {
         Audio.speak('Complete Week 1 first to unlock!', { rate: 0.9 });
       });
     });
+  }
+
+  /** Bind outdoor entry button + password modal */
+  function bindOutdoorEntry() {
+    const btn = document.getElementById('btn-outdoor-entry');
+    const modal = document.getElementById('outdoor-modal');
+    const codeInput = document.getElementById('outdoor-code-input');
+    const unlockBtn = document.getElementById('btn-outdoor-unlock');
+    const cancelBtn = document.getElementById('btn-outdoor-cancel');
+    const hintEl = document.getElementById('outdoor-unlock-hint');
+
+    if (!btn || !modal) return;
+
+    // Show modal on button click
+    btn.addEventListener('click', () => {
+      modal.style.display = 'flex';
+      modal.setAttribute('aria-hidden', 'false');
+      if (codeInput) { codeInput.value = ''; codeInput.focus(); }
+      if (hintEl) hintEl.style.display = 'none';
+    });
+
+    // Close modal
+    const closeModal = () => {
+      modal.style.display = 'none';
+      modal.setAttribute('aria-hidden', 'true');
+    };
+
+    // Escape to close
+    modal.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') closeModal();
+    });
+
+    if (cancelBtn) {
+      cancelBtn.addEventListener('click', closeModal);
+    }
+
+    // Unlock logic
+    const tryUnlock = async () => {
+      const val = codeInput ? codeInput.value.trim() : '';
+      if (val === '1801') {
+        closeModal();
+        // Switch to outdoor episode
+        // Make sure it's in the episode list for loading
+        const found = episodeList.find(ep => ep.id === 'ep05-outdoor');
+        if (!found) {
+          episodeList.push({ id: 'ep05-outdoor', title: 'Nature Explorer', emoji: '🌿', dataUrl: 'data/ep05-outdoor.json', hidden: true });
+        }
+        await switchEpisode('ep05-outdoor');
+      } else {
+        if (hintEl) hintEl.style.display = 'block';
+        if (codeInput) { codeInput.value = ''; codeInput.focus(); }
+      }
+    };
+
+    if (unlockBtn) {
+      unlockBtn.addEventListener('click', tryUnlock);
+    }
+    if (codeInput) {
+      codeInput.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') tryUnlock();
+      });
+    }
   }
 
   /** Show a specific scene, hide others */
@@ -393,23 +471,28 @@ const App = (() => {
     if (codeInput) { codeInput.value = ''; codeInput.disabled = false; }
     if (unlockHint) unlockHint.style.display = 'none';
 
-    // Next day button — hidden until parent unlocks (days 1-4)
-    if (day < 5) {
+    // Outdoor: only lock after Day 1B (app day 2). Normal: lock after days 1-4.
+    const isOutdoor = currentEpisodeId === 'ep05-outdoor';
+    const needsParentLock = isOutdoor ? (day === 2) : (day < 5);
+
+    const goToNextDay = () => {
+      overlay.style.display = 'none';
+      overlay.setAttribute('aria-hidden', 'true');
+      showScene(`day${day + 1}`);
+      const nextEngineMap = {
+        2: EngineColor,
+        3: EngineSound,
+        4: EngineMotion,
+        5: EngineHeart
+      };
+      activeEngine = nextEngineMap[day + 1] || null;
+      if (activeEngine && activeEngine.start) activeEngine.start();
+    };
+
+    if (needsParentLock) {
       nextBtn.style.display = 'none'; // hidden by default, shown after password
       nextBtn.textContent = `Day ${day + 1} →`;
-      nextBtn.onclick = () => {
-        overlay.style.display = 'none';
-        overlay.setAttribute('aria-hidden', 'true');
-        showScene(`day${day + 1}`);
-        const nextEngineMap = {
-          2: EngineColor,
-          3: EngineSound,
-          4: EngineMotion,
-          5: EngineHeart
-        };
-        activeEngine = nextEngineMap[day + 1] || null;
-        if (activeEngine && activeEngine.start) activeEngine.start();
-      };
+      nextBtn.onclick = goToNextDay;
 
       // Show parent unlock section
       if (unlockSection) unlockSection.style.display = 'block';
@@ -438,6 +521,12 @@ const App = (() => {
           };
         }
       }
+    } else if (day < 5) {
+      // No lock needed — show next button directly
+      nextBtn.style.display = 'block';
+      nextBtn.textContent = `Day ${day + 1} →`;
+      nextBtn.onclick = goToNextDay;
+      if (unlockSection) unlockSection.style.display = 'none';
     } else {
       // Day 5 — no lock, direct certificate
       nextBtn.style.display = 'block';
@@ -701,10 +790,19 @@ const App = (() => {
     const dayGrid = document.getElementById('intro-day-grid');
     if (!dayGrid) return;
 
+    // Custom labels for outdoor episode
+    const isOutdoor = currentEpisodeId === 'ep05-outdoor';
+    const outdoorLabels = { 1: '🔦 Day 1A', 2: '🌈 Day 1B', 3: '🎵 Day 2A', 4: '🤸 Day 2B', 5: '❤️ Day 2C' };
+
     const buttons = dayGrid.querySelectorAll('.intro-day-btn');
     buttons.forEach(btn => {
       const day = parseInt(btn.dataset.day);
       btn.classList.remove('locked', 'completed', 'unlocked');
+
+      // Update label for outdoor mode
+      if (isOutdoor && outdoorLabels[day]) {
+        btn.textContent = outdoorLabels[day];
+      }
 
       if (state.completedDays.includes(day)) {
         btn.classList.add('completed');

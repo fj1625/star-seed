@@ -1,0 +1,366 @@
+{
+  "episodeId": "ep05-outdoor",
+  "title": "Nature Explorer",
+  "theme": "outdoor",
+  "week": 5,
+  "isStandalone": true,
+  "days": {
+    "1": {
+      "power": "Light",
+      "powerEmoji": "🔦",
+      "tabLabel": "Day 1A",
+      "title": "Nature Hunt",
+      "storyIntro": "Twinkle wants to explore the great outdoors! But first, we need to find the hidden nature cards. Look around the park — can you find all 6 cards?",
+      "cards": [
+        {
+          "id": "leaf",
+          "word": "leaf",
+          "emoji": "🍃",
+          "silhouetteEmoji": "🌑",
+          "code": "137",
+          "letter": "N",
+          "hintText": "Something green and flat. It falls from trees in autumn. Look near the ground...",
+          "foundText": "You found the Leaf card! The letter is... N!"
+        },
+        {
+          "id": "stone",
+          "word": "stone",
+          "emoji": "🪨",
+          "silhouetteEmoji": "🌑",
+          "code": "258",
+          "letter": "A",
+          "hintText": "Something hard and round. You can skip it on water. Look on the path...",
+          "foundText": "You found the Stone card! The letter is... A!"
+        },
+        {
+          "id": "flower",
+          "word": "flower",
+          "emoji": "🌸",
+          "silhouetteEmoji": "🌑",
+          "code": "491",
+          "letter": "T",
+          "hintText": "Something beautiful and colorful. Bees love it! Look near the bushes...",
+          "foundText": "You found the Flower card! The letter is... T!"
+        },
+        {
+          "id": "stick",
+          "word": "stick",
+          "emoji": "🌿",
+          "silhouetteEmoji": "🌑",
+          "code": "623",
+          "letter": "U",
+          "hintText": "Something long and thin. It fell from a tree. Look under the big tree...",
+          "foundText": "You found the Stick card! The letter is... U!"
+        },
+        {
+          "id": "feather",
+          "word": "feather",
+          "emoji": "🪶",
+          "silhouetteEmoji": "🌑",
+          "code": "745",
+          "letter": "R",
+          "hintText": "Something soft and light. Birds have them. Look on the grass...",
+          "foundText": "You found the Feather card! The letter is... R!"
+        },
+        {
+          "id": "seed",
+          "word": "seed",
+          "emoji": "🌰",
+          "silhouetteEmoji": "🌑",
+          "code": "869",
+          "letter": "E",
+          "hintText": "Something small and brown. It can grow into a big tree! Look near the soil...",
+          "foundText": "You found the Seed card! The letter is... E!"
+        }
+      ],
+      "targetWord": "NATURE",
+      "completionText": "N-A-T-U-R-E! That spells NATURE! You are a true Nature Explorer! 🍃"
+    },
+    "2": {
+      "power": "Color",
+      "powerEmoji": "🌈",
+      "tabLabel": "Day 1B",
+      "title": "Nature Color Challenge",
+      "storyIntro": "Nature has so many beautiful colors! Can you find them all? Mix colors first, then find real nature items that match!",
+      "colors": [
+        {
+          "id": "brown",
+          "targetColor": "brown",
+          "targetEmoji": "🤎",
+          "mixFrom": ["red", "black"],
+          "exampleItems": ["soil", "bark", "pinecone"],
+          "promptText": "Find something BROWN in nature!",
+          "speechText": "Red and black make brown! Can you find something brown outside?"
+        },
+        {
+          "id": "gray",
+          "targetColor": "gray",
+          "targetEmoji": "🩶",
+          "mixFrom": ["white", "black"],
+          "exampleItems": ["stone", "cloud", "pebble"],
+          "promptText": "Find something GRAY in nature!",
+          "speechText": "White and black make gray! Can you find something gray outside?"
+        },
+        {
+          "id": "pink",
+          "targetColor": "pink",
+          "targetEmoji": "🩷",
+          "mixFrom": ["red", "white"],
+          "exampleItems": ["flower", "sunset", "mushroom"],
+          "promptText": "Find something PINK in nature!",
+          "speechText": "Red and white make pink! Can you find something pink outside?"
+        },
+        {
+          "id": "skyblue",
+          "targetColor": "skyblue",
+          "targetEmoji": "🩵",
+          "mixFrom": ["blue", "white"],
+          "exampleItems": ["sky", "lake", "forget-me-not"],
+          "promptText": "Find something SKY BLUE in nature!",
+          "speechText": "Blue and white make sky blue! Can you find something sky blue outside?"
+        },
+        {
+          "id": "gold",
+          "targetColor": "gold",
+          "targetEmoji": "💛",
+          "mixFrom": ["yellow", "orange"],
+          "exampleItems": ["sunlight", "fallen-leaf", "dandelion"],
+          "promptText": "Find something GOLD in nature!",
+          "speechText": "Yellow and orange make gold! Can you find something gold outside?"
+        },
+        {
+          "id": "silver",
+          "targetColor": "silver",
+          "targetEmoji": "🤍",
+          "mixFrom": ["white", "gray"],
+          "exampleItems": ["dewdrop", "rock", "fish-scale"],
+          "promptText": "Find something SILVER in nature!",
+          "speechText": "White and gray make silver! Can you find something silver outside?"
+        }
+      ],
+      "completionText": "Amazing! You found all the nature colors! The world is so colorful! 🌈"
+    },
+    "3": {
+      "power": "Sound",
+      "powerEmoji": "🎵",
+      "tabLabel": "Day 2A",
+      "title": "Sound Detective",
+      "storyIntro": "Close your eyes... What do you hear? The wind? The birds? Let's become sound detectives and learn nature's music!",
+      "animals": [
+        {
+          "id": "wind",
+          "animal": "wind",
+          "emoji": "💨",
+          "onomatopoeia": "Whoosh whoosh! Whoosh whoosh whoosh!",
+          "speechRate": 0.8,
+          "speechPitch": 0.6,
+          "distractors": ["stream", "leaves"]
+        },
+        {
+          "id": "rain",
+          "animal": "rain",
+          "emoji": "🌧️",
+          "onomatopoeia": "Pitter-patter pitter-patter! Pitter-patter!",
+          "speechRate": 1.4,
+          "speechPitch": 1.2,
+          "distractors": ["stream", "wind"]
+        },
+        {
+          "id": "bird",
+          "animal": "bird",
+          "emoji": "🐦",
+          "onomatopoeia": "Tweet tweet tweet! Tweet tweet!",
+          "speechRate": 1.3,
+          "speechPitch": 2.0,
+          "distractors": ["cricket", "frog"]
+        },
+        {
+          "id": "stream",
+          "animal": "stream",
+          "emoji": "💧",
+          "onomatopoeia": "Babble babble babble! Babble babble!",
+          "speechRate": 1.2,
+          "speechPitch": 1.4,
+          "distractors": ["rain", "wind"]
+        },
+        {
+          "id": "thunder",
+          "animal": "thunder",
+          "emoji": "⛈️",
+          "onomatopoeia": "Boom boom! Boom boom boom!",
+          "speechRate": 0.7,
+          "speechPitch": 0.5,
+          "distractors": ["wind", "rain"]
+        },
+        {
+          "id": "cricket",
+          "animal": "cricket",
+          "emoji": "🦗",
+          "onomatopoeia": "Chirp chirp chirp! Chirp chirp!",
+          "speechRate": 1.5,
+          "speechPitch": 1.8,
+          "distractors": ["bird", "frog"]
+        },
+        {
+          "id": "leaves",
+          "animal": "leaves",
+          "emoji": "🍂",
+          "onomatopoeia": "Rustle rustle rustle! Rustle rustle!",
+          "speechRate": 0.9,
+          "speechPitch": 0.8,
+          "distractors": ["wind", "rain"]
+        },
+        {
+          "id": "frog",
+          "animal": "frog",
+          "emoji": "🐸",
+          "onomatopoeia": "Ribbit ribbit! Ribbit ribbit ribbit!",
+          "speechRate": 1.0,
+          "speechPitch": 1.3,
+          "distractors": ["cricket", "bird"]
+        }
+      ],
+      "sequenceLength": 5,
+      "completionText": "I can hear nature! The wind, the rain, the birds, and all the beautiful sounds! 🎵"
+    },
+    "4": {
+      "power": "Motion",
+      "powerEmoji": "🤸",
+      "tabLabel": "Day 2B",
+      "title": "Nature Motion Adventure",
+      "storyIntro": "Nature moves in beautiful ways! Clouds float, rabbits hop, fish swim. Can you move like nature? Let's dance!",
+      "actions": [
+        {
+          "id": "float",
+          "verb": "float",
+          "emoji": "☁️",
+          "instruction": "Float like a cloud!",
+          "twinkleAnimation": "sway"
+        },
+        {
+          "id": "hop",
+          "verb": "hop",
+          "emoji": "🐰",
+          "instruction": "Hop like a rabbit!",
+          "twinkleAnimation": "bounce"
+        },
+        {
+          "id": "crawl",
+          "verb": "crawl",
+          "emoji": "🐛",
+          "instruction": "Crawl like a caterpillar!",
+          "twinkleAnimation": "sway"
+        },
+        {
+          "id": "swim",
+          "verb": "swim",
+          "emoji": "🐟",
+          "instruction": "Swim like a fish!",
+          "twinkleAnimation": "sway"
+        },
+        {
+          "id": "fly",
+          "verb": "fly",
+          "emoji": "🐦",
+          "instruction": "Fly like a bird!",
+          "twinkleAnimation": "spin"
+        },
+        {
+          "id": "roll",
+          "verb": "roll",
+          "emoji": "🪨",
+          "instruction": "Roll like a stone!",
+          "twinkleAnimation": "spin"
+        },
+        {
+          "id": "sway",
+          "verb": "sway",
+          "emoji": "🌳",
+          "instruction": "Sway like a tree!",
+          "twinkleAnimation": "sway"
+        },
+        {
+          "id": "spin",
+          "verb": "spin",
+          "emoji": "🌬️",
+          "instruction": "Spin like the wind!",
+          "twinkleAnimation": "spin"
+        },
+        {
+          "id": "crouch",
+          "verb": "crouch",
+          "emoji": "🐸",
+          "instruction": "Crouch like a frog!",
+          "twinkleAnimation": "bounce"
+        },
+        {
+          "id": "stretch",
+          "verb": "stretch",
+          "emoji": "🐱",
+          "instruction": "Stretch like a cat!",
+          "twinkleAnimation": "grow"
+        }
+      ],
+      "rounds": [3, 4, 5, 5, 6],
+      "completionText": "You move like nature! You're part of the wild world now! 🌿"
+    },
+    "5": {
+      "power": "Heart",
+      "powerEmoji": "❤️",
+      "tabLabel": "Day 2C",
+      "title": "Campfire Story",
+      "storyIntro": "The sun is setting. Let's sit by the campfire and remember all the wonderful things we found today. Earth Helper, join us!",
+      "heartPieceCode": "1801",
+      "recallQuestions": [
+        {
+          "day": 1,
+          "emoji": "🔦",
+          "prompt": "What word did we spell with the 6 nature cards?",
+          "acceptedAnswers": ["nature"],
+          "hint": "N-A-T-U-R-E!",
+          "puzzlePiecePower": "light"
+        },
+        {
+          "day": 2,
+          "emoji": "🌈",
+          "prompt": "Red plus black makes what color?",
+          "acceptedAnswers": ["brown"],
+          "hint": "Brown! Like soil and bark!",
+          "puzzlePiecePower": "color"
+        },
+        {
+          "day": 3,
+          "emoji": "🎵",
+          "prompt": "Which nature sound goes 'pitter-patter'?",
+          "acceptedAnswers": ["rain"],
+          "hint": "Rain! Pitter-patter!",
+          "puzzlePiecePower": "sound"
+        },
+        {
+          "day": 4,
+          "emoji": "🤸",
+          "prompt": "Tell me one nature move we did!",
+          "acceptedAnswers": [],
+          "hint": "Float, hop, swim, fly... any nature move!",
+          "puzzlePiecePower": "motion",
+          "isOpenEnded": true
+        }
+      ],
+      "puzzleMessage": "One piece is missing... Ask your Earth Helper for the Heart Piece!",
+      "plantMessage": "Earth Helper: give your child the seed they found today! Let's plant it together!",
+      "countdownText": "Plant the seed now!",
+      "certificateTitle": "Nature Explorer Certificate",
+      "certificateText": "This certifies that",
+      "certificateSubtext": "has completed the Nature Explorer outdoor adventure! You found nature's treasures, mixed its colors, heard its sounds, moved like its creatures, and planted a seed for the future! The star seed is now growing in nature!",
+      "completionText": "We did it! You're a true Nature Explorer! Twinkle is now a little tree in YOUR world! 🌱✨"
+    }
+  },
+  "vocabulary": {
+    "nouns": ["leaf", "stone", "flower", "stick", "feather", "seed", "soil", "bark", "pinecone", "cloud", "pebble", "sunset", "mushroom", "sky", "lake", "dewdrop", "rock"],
+    "animals": ["bird", "frog", "cricket", "fish", "rabbit", "caterpillar"],
+    "colors": ["red", "black", "white", "blue", "yellow", "orange", "gray", "brown", "pink", "skyblue", "gold", "silver"],
+    "actions": ["float", "hop", "crawl", "swim", "fly", "roll", "sway", "spin", "crouch", "stretch"],
+    "natureSounds": ["wind", "rain", "stream", "thunder", "leaves"],
+    "phrases": ["Can you find it?", "I found it!", "Good job!", "Let's go!", "Thank you!", "We did it!", "I need your help!", "Grow little seed!"]
+  }
+}

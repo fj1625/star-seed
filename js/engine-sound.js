@@ -307,8 +307,10 @@ const EngineSound = (() => {
     if (matchPhase) matchPhase.style.display = 'none';
     if (seqPhase) seqPhase.style.display = 'block';
 
-    // Generate sequence (4 animal IDs from the matched set, random order)
-    sequenceOrder = [...animals].sort(() => Math.random() - 0.5).slice(0, 4).map(a => a.id);
+    // Generate sequence (configurable length, default 4)
+    const seqLen = data.days?.['3']?.sequenceLength || 4;
+    const pool = [...animals].sort(() => Math.random() - 0.5);
+    sequenceOrder = pool.slice(0, Math.min(seqLen, pool.length)).map(a => a.id);
     playerSequence = [];
     sequenceAttempts = 0;
 

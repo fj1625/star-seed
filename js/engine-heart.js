@@ -772,8 +772,33 @@ const EngineHeart = (() => {
     if (!container) return;
 
     const state = Storage.getState();
+    const isOutdoor = state.episodeId === 'ep05-outdoor';
     const ep01Completed = state.completedEpisodes.includes('ep01');
     const ep02Completed = state.completedEpisodes.includes('ep02');
+
+    // Outdoor certificate: show "Back to Main Game" link
+    if (isOutdoor) {
+      if (heading) heading.textContent = 'You are a Nature Explorer! 🌿';
+      container.innerHTML = `
+        <div class="preview-week completed" style="justify-content:center">
+          <span class="preview-icon">🌿</span>
+          <span class="preview-label">Nature Explorer — Complete!</span>
+          <span class="preview-status">✅</span>
+        </div>
+        <div class="preview-week unlocked" style="justify-content:center">
+          <button class="btn btn-tiny btn-go-episode" id="btn-back-home">🏠 Back to Main Game</button>
+        </div>
+      `;
+      // Bind back-to-home button
+      const backBtn = container.querySelector('#btn-back-home');
+      if (backBtn) {
+        backBtn.addEventListener('click', async () => {
+          await App.switchEpisode('ep01');
+          App.showScene('intro');
+        });
+      }
+      return;
+    }
 
     const episodes = [
       {

@@ -158,9 +158,27 @@
     <!-- Footer -->
     <footer id="app-footer">
       <button class="btn-restart" id="btn-restart" title="Hold 3 seconds to reset">🔄</button>
+      <button class="btn-outdoor-entry" id="btn-outdoor-entry" title="Secret Nature Explorer Adventure">🌿</button>
       <span class="footer-text">The Star Seed · Week 1: My Home</span>
       <span class="footer-episode" id="footer-episode"></span>
     </footer>
+
+    <!-- Outdoor Password Modal -->
+    <div id="outdoor-modal" class="overlay" style="display:none" role="dialog" aria-modal="true" aria-labelledby="outdoor-modal-title">
+      <div class="overlay-card animate-pop outdoor-modal-card">
+        <div class="overlay-stars">🌿 🌳 🌿</div>
+        <h3 id="outdoor-modal-title">🌿 Nature Explorer</h3>
+        <p class="outdoor-modal-desc">A secret outdoor adventure awaits!<br>Ask your <strong>Earth Helper</strong> for the code.</p>
+        <div class="parent-unlock" style="display:block; border-top:none; margin-top:8px;">
+          <div class="parent-unlock-row">
+            <input type="password" class="parent-code-input" id="outdoor-code-input" placeholder="Code" maxlength="4" inputmode="numeric" pattern="[0-9]*">
+            <button class="btn btn-tiny" id="btn-outdoor-unlock">Enter 🌿</button>
+          </div>
+          <p class="parent-unlock-hint" id="outdoor-unlock-hint" style="display:none">Wrong code. Ask your Earth Helper!</p>
+        </div>
+        <button class="btn btn-ghost" id="btn-outdoor-cancel" style="margin-top:6px;">← Go Back</button>
+      </div>
+    </div>
   </div>
 
   <!-- Error State -->

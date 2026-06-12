@@ -313,22 +313,32 @@ const App = (() => {
 
   /** Bind outdoor entry button + password modal */
   function bindOutdoorEntry() {
-    const btn = document.getElementById('btn-outdoor-entry');
     const modal = document.getElementById('outdoor-modal');
     const codeInput = document.getElementById('outdoor-code-input');
     const unlockBtn = document.getElementById('btn-outdoor-unlock');
     const cancelBtn = document.getElementById('btn-outdoor-cancel');
     const hintEl = document.getElementById('outdoor-unlock-hint');
 
-    if (!btn || !modal) return;
+    if (!modal) return;
 
-    // Show modal on button click
-    btn.addEventListener('click', () => {
+    const showModal = () => {
       modal.style.display = 'flex';
       modal.setAttribute('aria-hidden', 'false');
       if (codeInput) { codeInput.value = ''; codeInput.focus(); }
       if (hintEl) hintEl.style.display = 'none';
-    });
+    };
+
+    // Footer button
+    const footerBtn = document.getElementById('btn-outdoor-entry');
+    if (footerBtn) {
+      footerBtn.addEventListener('click', showModal);
+    }
+
+    // Intro page button
+    const introBtn = document.getElementById('btn-outdoor-intro');
+    if (introBtn) {
+      introBtn.addEventListener('click', showModal);
+    }
 
     // Close modal
     const closeModal = () => {

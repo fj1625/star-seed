@@ -224,7 +224,8 @@ const App = (() => {
     // Update parent note link
     const parentNote = document.querySelector('.intro-parent-note a');
     if (parentNote) {
-      parentNote.href = `printable/ep${episodeData.episodeId.replace('ep', '')}-printable.html`;
+      const epNum = episodeData.episodeId.match(/^ep(\d+)/)?.[1] || '01';
+      parentNote.href = `printable/ep${epNum}-printable.html`;
     }
 
     // Update footer
@@ -707,16 +708,15 @@ const App = (() => {
     const listenBtn = document.getElementById('btn-listen-story');
     if (listenBtn) {
       listenBtn.addEventListener('click', () => {
-        const week = episodeData?.week || 1;
-        let storyText;
-        if (week === 2) {
-          storyText = 'Twinkle needs your help again! The zoo animals are missing! Can you find them and bring them home?';
-        } else if (week === 0) {
-          storyText = 'Twinkle is ready for an outdoor adventure! Let\'s explore nature together! Find treasures, mix colors, hear wild sounds, and move like animals in the wild!';
-        } else {
-          storyText = 'A tiny star seed fell from the sky. Its name is Twinkle. Twinkle lost its 5 magic powers! Can you find them all?';
-        }
-        Audio.speak('The Star Seed. ' + storyText, { rate: 0.85, cancelPrevious: true });
+        const titleEl = document.querySelector('.intro-title');
+        const subtitleEl = document.querySelector('.intro-subtitle');
+        const storyEl = document.querySelector('.intro-story');
+        const parts = [];
+        if (titleEl) parts.push(titleEl.textContent.trim());
+        if (subtitleEl) parts.push(subtitleEl.textContent.trim());
+        if (storyEl) parts.push(storyEl.textContent.replace(/\s+/g, ' ').trim());
+        const storyText = parts.join('. ') || 'Welcome to The Star Seed!';
+        Audio.speak(storyText, { rate: 0.85, cancelPrevious: true });
       });
     }
 

@@ -1,0 +1,751 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>The Star Seed — Nature Explorer Printable Materials</title>
+  <style>
+    /* --- Screen view styles --- */
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #0a2e12;
+      color: #e8f0e8;
+      padding: 20px;
+      max-width: 800px;
+      margin: 0 auto;
+    }
+
+    .print-header {
+      text-align: center;
+      padding: 30px 0;
+    }
+
+    .print-header h1 {
+      font-size: 2rem;
+      color: #4ade80;
+      margin-bottom: 8px;
+    }
+
+    .print-header p {
+      color: #a0c0a0;
+      margin-bottom: 6px;
+    }
+
+    .print-instructions {
+      background: #143a1a;
+      border-radius: 16px;
+      padding: 24px;
+      margin: 20px 0;
+      border: 1px solid rgba(255,255,255,0.1);
+    }
+
+    .print-instructions h2 {
+      color: #4ade80;
+      margin-bottom: 16px;
+      font-size: 1.3rem;
+    }
+
+    .print-instructions ol, .print-instructions ul {
+      padding-left: 20px;
+      line-height: 1.8;
+    }
+
+    .print-instructions li {
+      margin-bottom: 8px;
+    }
+
+    .print-section {
+      margin: 30px 0;
+      padding: 20px;
+      background: #143a1a;
+      border-radius: 16px;
+      page-break-before: always;
+    }
+
+    .print-section h3 {
+      color: #4ade80;
+      margin-bottom: 12px;
+      font-size: 1.2rem;
+      border-bottom: 1px solid rgba(255,255,255,0.1);
+      padding-bottom: 8px;
+    }
+
+    .cards-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 20px;
+    }
+
+    .card {
+      width: 100%;
+      aspect-ratio: 3/4;
+      border: 3px solid #4ade80;
+      border-radius: 12px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(135deg, #1a3e1a, #143a1a);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .card::before {
+      content: '';
+      position: absolute;
+      inset: 4px;
+      border: 2px dashed rgba(74,222,128,0.3);
+      border-radius: 8px;
+      pointer-events: none;
+    }
+
+    .card-stars {
+      position: absolute;
+      top: 8px;
+      left: 0; right: 0;
+      text-align: center;
+      font-size: 0.7rem;
+      letter-spacing: 8px;
+      color: rgba(74,222,128,0.4);
+    }
+
+    .card-emoji {
+      font-size: 4rem;
+      margin: 8px 0;
+      filter: brightness(1.2);
+    }
+
+    .card-word {
+      font-size: 1.2rem;
+      font-weight: 700;
+      color: #4ade80;
+      text-transform: capitalize;
+    }
+
+    .card-number {
+      font-size: 0.7rem;
+      color: rgba(74,222,128,0.5);
+      margin-top: 4px;
+    }
+
+    .card-fragment {
+      position: absolute;
+      bottom: 8px;
+      font-size: 0.6rem;
+      color: rgba(74,222,128,0.3);
+    }
+
+    .card-back {
+      width: 100%;
+      aspect-ratio: 3/4;
+      border: 3px solid #4ade80;
+      border-radius: 12px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(135deg, #1e2e1e, #0a2e0a);
+      position: relative;
+    }
+
+    .card-back::before {
+      content: '';
+      position: absolute;
+      inset: 4px;
+      border: 2px dashed rgba(74,222,128,0.3);
+      border-radius: 8px;
+      pointer-events: none;
+    }
+
+    .back-code {
+      font-size: 2rem;
+      font-weight: 900;
+      color: #4ade80;
+      letter-spacing: 8px;
+      margin-bottom: 12px;
+    }
+
+    .back-letter {
+      font-size: 3.5rem;
+      font-weight: 900;
+      color: #4ade80;
+      text-shadow: 0 0 20px rgba(74,222,128,0.5);
+    }
+
+    .back-label {
+      font-size: 0.6rem;
+      color: rgba(74,222,128,0.4);
+      margin-top: 8px;
+    }
+
+    .sound-card .card-emoji,
+    .motion-card .card-emoji {
+      font-size: 3.5rem;
+    }
+
+    .sound-text, .motion-text {
+      font-size: 0.95rem;
+      color: #e8f0e8;
+      text-align: center;
+      padding: 0 12px;
+      margin-top: 8px;
+      font-weight: 600;
+    }
+
+    .sound-sub {
+      font-size: 0.75rem;
+      color: rgba(255,255,255,0.5);
+      margin-top: 4px;
+    }
+
+    .heart-card {
+      width: 100%;
+      max-width: 300px;
+      margin: 0 auto;
+    }
+
+    .heart-piece-front, .heart-piece-back {
+      aspect-ratio: 1;
+      border: 3px solid #ef4444;
+      border-radius: 50%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      background: radial-gradient(circle, rgba(239,68,68,0.2), #143a1a);
+      position: relative;
+    }
+
+    .heart-piece-front .heart-emoji {
+      font-size: 4rem;
+    }
+
+    .heart-piece-front .heart-text {
+      font-size: 0.8rem;
+      color: #ef4444;
+      margin-top: 4px;
+    }
+
+    .heart-piece-back .back-code {
+      font-size: 2.5rem;
+      font-weight: 900;
+      color: #ef4444;
+      letter-spacing: 10px;
+    }
+
+    .setup-day {
+      margin: 16px 0;
+      padding: 14px;
+      background: rgba(255,255,255,0.03);
+      border-radius: 10px;
+      border-left: 3px solid #4ade80;
+    }
+
+    .setup-day h4 {
+      color: #4ade80;
+      margin-bottom: 6px;
+    }
+
+    .setup-day p {
+      font-size: 0.9rem;
+      line-height: 1.6;
+      color: #c0d0c0;
+    }
+
+    .setup-day .hide-spot {
+      display: inline-block;
+      background: rgba(74,222,128,0.1);
+      padding: 2px 8px;
+      border-radius: 4px;
+      color: #4ade80;
+      font-weight: 600;
+    }
+
+    .safety-box {
+      background: rgba(255,215,0,0.08);
+      border-left: 3px solid #ffd700;
+      border-radius: 10px;
+      padding: 14px;
+      margin: 16px 0;
+    }
+
+    .safety-box h4 {
+      color: #ffd700;
+      margin-bottom: 6px;
+    }
+
+    .color-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.9rem;
+      margin-top: 12px;
+    }
+
+    .color-table th,
+    .color-table td {
+      padding: 8px;
+      text-align: left;
+      border-bottom: 1px solid rgba(255,255,255,0.1);
+    }
+
+    .color-table th {
+      color: #4ade80;
+    }
+
+    .certificate-box {
+      border: 3px dashed #4ade80;
+      border-radius: 16px;
+      padding: 32px 24px;
+      text-align: center;
+      background: rgba(74,222,128,0.05);
+      margin-top: 16px;
+    }
+
+    .certificate-box h4 {
+      font-size: 1.5rem;
+      color: #4ade80;
+      margin-bottom: 12px;
+    }
+
+    .certificate-box .blank-line {
+      display: inline-block;
+      width: 200px;
+      border-bottom: 1px solid rgba(255,255,255,0.4);
+      margin: 0 8px;
+    }
+
+    .print-btn {
+      display: block;
+      margin: 30px auto;
+      padding: 16px 40px;
+      font-size: 1.2rem;
+      font-weight: 700;
+      background: linear-gradient(135deg, #4ade80, #22c55e);
+      color: #0a2e12;
+      border: none;
+      border-radius: 50px;
+      cursor: pointer;
+      box-shadow: 0 4px 20px rgba(74,222,128,0.3);
+    }
+
+    /* ===== Print styles ===== */
+    @media print {
+      * {
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+        color-adjust: exact !important;
+      }
+
+      body {
+        background: #0a2e12;
+        color: #e8f0e8;
+        padding: 0;
+        max-width: none;
+      }
+
+      .print-header {
+        padding: 10px 0 20px;
+      }
+
+      .print-header h1 {
+        font-size: 1.6rem;
+      }
+
+      .print-btn {
+        display: none !important;
+      }
+
+      .print-instructions {
+        page-break-after: always;
+      }
+
+      .print-section {
+        page-break-before: always;
+        margin: 10px 0;
+        padding: 10px;
+      }
+
+      .cards-grid {
+        page-break-inside: avoid;
+      }
+
+      @page {
+        size: A4;
+        margin: 15mm;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<div class="print-header">
+  <h1>🌿 The Star Seed</h1>
+  <p>Nature Explorer — Outdoor Adventure Printable Materials</p>
+  <p><strong>2 days · 6 nature cards · 8 sounds · 10 moves · 1 seed</strong></p>
+</div>
+
+<button class="print-btn" onclick="window.print()">🖨️ Print All Materials</button>
+
+<!-- ===== PARENT INSTRUCTIONS ===== -->
+<div class="print-instructions">
+  <h2>📋 Parent Setup Guide (15 minutes)</h2>
+  <p style="margin-bottom:14px;color:#a0c0a0;">Read this before you head outside!</p>
+
+  <div class="safety-box">
+    <h4>🌳 Outdoor Safety First</h4>
+    <ul>
+      <li>Choose a safe, familiar outdoor area: park, garden, or playground.</li>
+      <li>Bring water, sunscreen, a hat, and maybe a small bag for treasures.</li>
+      <li>Watch for cars, bodies of water, and plants you don't recognize.</li>
+      <li>Remind your child: look with eyes, ask before touching unknown plants.</li>
+      <li>Wash hands after the outdoor activities.</li>
+    </ul>
+  </div>
+
+  <div class="safety-box" style="border-left-color:#60a5fa;">
+    <h4>🌧️ Weather Backup</h4>
+    <p>If it's raining or too hot, do the sound day indoors. Use the sound cards or make the noises yourselves — the wind, rain, and thunder are easy to imitate!</p>
+  </div>
+
+  <div class="setup-day">
+    <h4>🔦 Day 1A — Nature Hunt (6 cards)</h4>
+    <p>Print pages 2-3 <strong>double-sided</strong> (flip on short edge). Cut out the 6 cards.</p>
+    <p>Hide them BEFORE your child starts the game:</p>
+    <p>🍃 <strong>Leaf card (N)</strong> → <span class="hide-spot">near a bush or on the grass</span></p>
+    <p>🪨 <strong>Stone card (A)</strong> → <span class="hide-spot">on a path or near rocks</span></p>
+    <p>🌸 <strong>Flower card (T)</strong> → <span class="hide-spot">near flowers or bushes</span></p>
+    <p>🌿 <strong>Stick card (U)</strong> → <span class="hide-spot">under a tree</span></p>
+    <p>🪶 <strong>Feather card (R)</strong> → <span class="hide-spot">on open grass</span></p>
+    <p>🌰 <strong>Seed card (E)</strong> → <span class="hide-spot">near soil or a planter</span></p>
+    <p><em>The letters spell N-A-T-U-R-E. Don't tell them yet — let them discover it!</em></p>
+  </div>
+
+  <div class="setup-day">
+    <h4>🌈 Day 1B — Nature Color Challenge</h4>
+    <p>No extra printing needed, but bring the Color Reference card (page 4) on a phone or print it.</p>
+    <p>Your child will mix colors on the screen, then find real nature items that match. Encourage them to take photos of each color they find.</p>
+  </div>
+
+  <div class="setup-day">
+    <h4>🎵 Day 2A — Sound Detective</h4>
+    <p>Sound cards are optional (pages 5-6). The game speaks each sound. You can also make the sounds together!</p>
+  </div>
+
+  <div class="setup-day">
+    <h4>🤸 Day 2B — Nature Motion Adventure</h4>
+    <p>Clear a safe space outside. Join in — it's a nature dance for two!</p>
+  </div>
+
+  <div class="setup-day">
+    <h4>❤️ Day 2C — Campfire Heart (YOU are the star!)</h4>
+    <p><strong>Important preparation:</strong></p>
+    <p>1. Print the <strong>Heart Piece card</strong> (page 7) and keep it in your pocket.</p>
+    <p>2. Prepare a <strong>real seed</strong> + a <strong>small pot with soil</strong>. (Bean or sunflower seeds sprout fast!)</p>
+    <p>3. When the game says "Ask your Earth Helper for the Heart Piece," give your child the card. The secret heart code is <strong>1801</strong>.</p>
+    <p>4. At the end, plant the seed together and say: <em>"Grow little seed, grow!"</em></p>
+  </div>
+</div>
+
+<!-- ===== DAY 1A CARDS (Page 2-3) ===== -->
+<div class="print-section">
+  <h3>🎴 Day 1A Cards — Print Double-Sided (Flip on Short Edge)</h3>
+  <p style="color:#a0c0a0;margin-bottom:16px;">Cut along the edges. Each card ≈ 10cm × 13cm</p>
+
+  <h4 style="color:#4ade80;margin:16px 0;">▶ CARD FRONTS</h4>
+  <div class="cards-grid">
+    <div class="card">
+      <div class="card-stars">✦ ✧ ✦ ✧ ✦</div>
+      <div class="card-emoji">🍃</div>
+      <div class="card-word">Leaf</div>
+      <div class="card-number">Nature Card #1</div>
+      <div class="card-fragment">✦ nature treasure</div>
+    </div>
+    <div class="card">
+      <div class="card-stars">✦ ✧ ✦ ✧ ✦</div>
+      <div class="card-emoji">🪨</div>
+      <div class="card-word">Stone</div>
+      <div class="card-number">Nature Card #2</div>
+      <div class="card-fragment">✦ nature treasure</div>
+    </div>
+    <div class="card">
+      <div class="card-stars">✦ ✧ ✦ ✧ ✦</div>
+      <div class="card-emoji">🌸</div>
+      <div class="card-word">Flower</div>
+      <div class="card-number">Nature Card #3</div>
+      <div class="card-fragment">✦ nature treasure</div>
+    </div>
+    <div class="card">
+      <div class="card-stars">✦ ✧ ✦ ✧ ✦</div>
+      <div class="card-emoji">🌿</div>
+      <div class="card-word">Stick</div>
+      <div class="card-number">Nature Card #4</div>
+      <div class="card-fragment">✦ nature treasure</div>
+    </div>
+    <div class="card">
+      <div class="card-stars">✦ ✧ ✦ ✧ ✦</div>
+      <div class="card-emoji">🪶</div>
+      <div class="card-word">Feather</div>
+      <div class="card-number">Nature Card #5</div>
+      <div class="card-fragment">✦ nature treasure</div>
+    </div>
+    <div class="card">
+      <div class="card-stars">✦ ✧ ✦ ✧ ✦</div>
+      <div class="card-emoji">🌰</div>
+      <div class="card-word">Seed</div>
+      <div class="card-number">Nature Card #6</div>
+      <div class="card-fragment">✦ nature treasure</div>
+    </div>
+  </div>
+
+  <h4 style="color:#4ade80;margin:24px 0 16px;">▶ CARD BACKS (secret codes and letters)</h4>
+  <div class="cards-grid">
+    <div class="card-back">
+      <div class="back-code">137</div>
+      <div class="back-letter">N</div>
+      <div class="back-label">secret code · star letter</div>
+    </div>
+    <div class="card-back">
+      <div class="back-code">258</div>
+      <div class="back-letter">A</div>
+      <div class="back-label">secret code · star letter</div>
+    </div>
+    <div class="card-back">
+      <div class="back-code">491</div>
+      <div class="back-letter">T</div>
+      <div class="back-label">secret code · star letter</div>
+    </div>
+    <div class="card-back">
+      <div class="back-code">623</div>
+      <div class="back-letter">U</div>
+      <div class="back-label">secret code · star letter</div>
+    </div>
+    <div class="card-back">
+      <div class="back-code">745</div>
+      <div class="back-letter">R</div>
+      <div class="back-label">secret code · star letter</div>
+    </div>
+    <div class="card-back">
+      <div class="back-code">869</div>
+      <div class="back-letter">E</div>
+      <div class="back-label">secret code · star letter</div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== DAY 1B COLOR REFERENCE ===== -->
+<div class="print-section">
+  <h3>🌈 Day 1B — Nature Color Reference</h3>
+  <p style="color:#a0c0a0;margin-bottom:16px;">Mix the colors on screen, then find real nature items that match.</p>
+  <table class="color-table">
+    <thead>
+      <tr>
+        <th>Color</th>
+        <th>Mix From</th>
+        <th>Find Outside</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr><td>🤎 Brown</td><td>Red + Black</td><td>soil, bark, pinecone</td></tr>
+      <tr><td>🩶 Gray</td><td>White + Black</td><td>stone, cloud, pebble</td></tr>
+      <tr><td>🩷 Pink</td><td>Red + White</td><td>flower, sunset, mushroom</td></tr>
+      <tr><td>🩵 Sky Blue</td><td>Blue + White</td><td>sky, lake, forget-me-not</td></tr>
+      <tr><td>💛 Gold</td><td>Yellow + Orange</td><td>sunlight, fallen leaf, dandelion</td></tr>
+      <tr><td>🤍 Silver</td><td>White + Gray</td><td>dewdrop, rock, fish scale</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- ===== DAY 2A SOUND CARDS ===== -->
+<div class="print-section">
+  <h3>🎵 Day 2A — Nature Sound Cards (Optional)</h3>
+  <p style="color:#a0c0a0;margin-bottom:16px;">Cut out and use as flashcards, or make the sounds yourselves!</p>
+
+  <h4 style="color:#4ade80;margin:16px 0;">▶ SOUND FRONTS</h4>
+  <div class="cards-grid">
+    <div class="card sound-card">
+      <div class="card-emoji">💨</div>
+      <div class="sound-text">Whoosh whoosh!</div>
+      <div class="sound-sub">Wind</div>
+    </div>
+    <div class="card sound-card">
+      <div class="card-emoji">🌧️</div>
+      <div class="sound-text">Pitter-patter!</div>
+      <div class="sound-sub">Rain</div>
+    </div>
+    <div class="card sound-card">
+      <div class="card-emoji">🐦</div>
+      <div class="sound-text">Tweet tweet tweet!</div>
+      <div class="sound-sub">Bird</div>
+    </div>
+    <div class="card sound-card">
+      <div class="card-emoji">💧</div>
+      <div class="sound-text">Babble babble!</div>
+      <div class="sound-sub">Stream</div>
+    </div>
+    <div class="card sound-card">
+      <div class="card-emoji">⛈️</div>
+      <div class="sound-text">Boom boom!</div>
+      <div class="sound-sub">Thunder</div>
+    </div>
+    <div class="card sound-card">
+      <div class="card-emoji">🦗</div>
+      <div class="sound-text">Chirp chirp chirp!</div>
+      <div class="sound-sub">Cricket</div>
+    </div>
+    <div class="card sound-card">
+      <div class="card-emoji">🍂</div>
+      <div class="sound-text">Rustle rustle!</div>
+      <div class="sound-sub">Leaves</div>
+    </div>
+    <div class="card sound-card">
+      <div class="card-emoji">🐸</div>
+      <div class="sound-text">Ribbit ribbit!</div>
+      <div class="sound-sub">Frog</div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== DAY 2B MOTION CARDS ===== -->
+<div class="print-section">
+  <h3>🤸 Day 2B — Nature Motion Cards</h3>
+  <p style="color:#a0c0a0;margin-bottom:16px;">Pick a card, read it out loud, and move like nature together!</p>
+
+  <div class="cards-grid">
+    <div class="card motion-card">
+      <div class="card-emoji">☁️</div>
+      <div class="motion-text">Float like a cloud</div>
+    </div>
+    <div class="card motion-card">
+      <div class="card-emoji">🐰</div>
+      <div class="motion-text">Hop like a rabbit</div>
+    </div>
+    <div class="card motion-card">
+      <div class="card-emoji">🐛</div>
+      <div class="motion-text">Crawl like a caterpillar</div>
+    </div>
+    <div class="card motion-card">
+      <div class="card-emoji">🐟</div>
+      <div class="motion-text">Swim like a fish</div>
+    </div>
+    <div class="card motion-card">
+      <div class="card-emoji">🐦</div>
+      <div class="motion-text">Fly like a bird</div>
+    </div>
+    <div class="card motion-card">
+      <div class="card-emoji">🪨</div>
+      <div class="motion-text">Roll like a stone</div>
+    </div>
+    <div class="card motion-card">
+      <div class="card-emoji">🌳</div>
+      <div class="motion-text">Sway like a tree</div>
+    </div>
+    <div class="card motion-card">
+      <div class="card-emoji">🌬️</div>
+      <div class="motion-text">Spin like the wind</div>
+    </div>
+    <div class="card motion-card">
+      <div class="card-emoji">🐸</div>
+      <div class="motion-text">Crouch like a frog</div>
+    </div>
+    <div class="card motion-card">
+      <div class="card-emoji">🐱</div>
+      <div class="motion-text">Stretch like a cat</div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== DAY 2C HEART PIECE + CERTIFICATE ===== -->
+<div class="print-section">
+  <h3>❤️ Day 2C — Heart Piece Card + Certificate</h3>
+  <p style="color:#a0c0a0;margin-bottom:16px;">Print double-sided. Keep the Heart Piece until the campfire moment.</p>
+
+  <div class="heart-card">
+    <h4 style="color:#ef4444;margin:16px 0;">▶ FRONT</h4>
+    <div class="heart-piece-front">
+      <div class="heart-emoji">❤️</div>
+      <div class="heart-text">For the Earth Helper</div>
+      <div style="font-size:0.6rem;color:rgba(239,68,68,0.4);margin-top:4px;">keep me safe until Day 2C</div>
+    </div>
+
+    <h4 style="color:#ef4444;margin:24px 0 16px;">▶ BACK</h4>
+    <div class="heart-piece-back">
+      <div class="back-code">1801</div>
+      <div style="font-size:0.7rem;color:rgba(239,68,68,0.5);margin-top:8px;">heart code</div>
+    </div>
+  </div>
+
+  <div class="certificate-box">
+    <h4>🌿 Nature Explorer Certificate 🌿</h4>
+    <p style="margin-bottom:18px;">This certifies that</p>
+    <p style="font-size:1.2rem;margin-bottom:18px;"><span class="blank-line">&nbsp;</span></p>
+    <p style="margin-bottom:18px;">has completed the Nature Explorer outdoor adventure!</p>
+    <p style="font-size:0.9rem;color:#a0c0a0;">Date: <span class="blank-line" style="width:120px;">&nbsp;</span></p>
+    <p style="font-size:0.85rem;color:#a0c0a0;margin-top:16px;">
+      You found nature's treasures, mixed its colors, heard its sounds,<br>
+      moved like its creatures, and planted a seed for the future.<br>
+      The star seed is now growing in nature! 🌱✨
+    </p>
+  </div>
+</div>
+
+<!-- ===== QUICK REFERENCE ===== -->
+<div class="print-instructions" style="page-break-before:always;">
+  <h2>📝 Quick Reference Card</h2>
+  <table class="color-table">
+    <thead>
+      <tr>
+        <th>Day</th>
+        <th>Phase</th>
+        <th>What Child Does</th>
+        <th>Parent Prep</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Day 1A</td>
+        <td>🔦 Light</td>
+        <td>Find 6 hidden nature cards, enter codes, spell NATURE</td>
+        <td>Print + hide 6 cards</td>
+      </tr>
+      <tr>
+        <td>Day 1B</td>
+        <td>🌈 Color</td>
+        <td>Mix colors, find matching real nature items</td>
+        <td>Bring color reference</td>
+      </tr>
+      <tr>
+        <td>Day 2A</td>
+        <td>🎵 Sound</td>
+        <td>Listen to 8 nature sounds, match + remember sequence</td>
+        <td>Optional sound cards</td>
+      </tr>
+      <tr>
+        <td>Day 2B</td>
+        <td>🤸 Motion</td>
+        <td>Follow 10 nature moves, 5 rounds</td>
+        <td>Clear outdoor space</td>
+      </tr>
+      <tr>
+        <td>Day 2C</td>
+        <td>❤️ Heart</td>
+        <td>Recall the adventure, get Heart Piece, plant a seed</td>
+        <td>Heart card + real seed + pot</td>
+      </tr>
+    </tbody>
+  </table>
+  <p style="margin-top:16px;font-size:0.85rem;color:#a0c0a0;">
+    <strong>English vocabulary this adventure (~25 words):</strong><br>
+    leaf, stone, flower, stick, feather, seed, soil, bark, pinecone, cloud, pebble, sky, lake, dewdrop, rock,<br>
+    brown, gray, pink, sky blue, gold, silver,<br>
+    wind, rain, bird, stream, thunder, cricket, leaves, frog,<br>
+    float, hop, crawl, swim, fly, roll, sway, spin, crouch, stretch,
+    NATURE
+  </p>
+</div>
+
+<button class="print-btn" onclick="window.print()" style="margin-bottom:40px;">🖨️ Print All Materials</button>
+
+</body>
+</html>

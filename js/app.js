@@ -510,7 +510,9 @@ const App = (() => {
 
     if (needsParentLock) {
       nextBtn.style.display = 'none'; // hidden by default, shown after password
-      nextBtn.textContent = `Day ${day + 1} →`;
+      const nextDay = day + 1;
+      const nextLabel = episodeData.days[String(nextDay)]?.tabLabel || `Day ${nextDay}`;
+      nextBtn.textContent = `${nextLabel} →`;
       nextBtn.onclick = goToNextDay;
 
       // Show parent unlock section
@@ -543,7 +545,9 @@ const App = (() => {
     } else if (day < 5) {
       // No lock needed — show next button directly
       nextBtn.style.display = 'block';
-      nextBtn.textContent = `Day ${day + 1} →`;
+      const nextDay = day + 1;
+      const nextLabel = episodeData.days[String(nextDay)]?.tabLabel || `Day ${nextDay}`;
+      nextBtn.textContent = `${nextLabel} →`;
       nextBtn.onclick = goToNextDay;
       if (unlockSection) unlockSection.style.display = 'none';
     } else {
@@ -805,7 +809,10 @@ const App = (() => {
     const cont = document.getElementById('intro-continue');
     const daySpan = document.getElementById('continue-day');
     if (cont) cont.style.display = 'block';
-    if (daySpan) daySpan.textContent = state.currentDay;
+    if (daySpan) {
+      const dayLabel = episodeData.days[String(state.currentDay)]?.tabLabel || `Day ${state.currentDay}`;
+      daySpan.textContent = dayLabel;
+    }
   }
 
   /** Update day selector buttons on intro based on progress */

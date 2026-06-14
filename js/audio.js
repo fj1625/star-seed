@@ -183,14 +183,15 @@ const Audio = (() => {
       ? speakVolcano(cleanText, rate)
       : speakWebSpeech(cleanText, options);
 
-    // Global safety: no matter what happens inside, force-resolve after 10s
-    // so the game NEVER hangs waiting for speech
+    // Global safety: scale timeout with text length so long intros are not cut off.
+    // Minimum 10s; roughly ~180ms/char at normal rate plus 2s buffer.
+    const globalTimeoutMs = Math.max(10000, Math.floor(cleanText.length * 180 / rate) + 2000);
     const timeoutPromise = new Promise((resolve) => {
       setTimeout(() => {
-        console.warn('[Audio] speak() global 10s timeout — forcing resolve');
+        console.warn('[Audio] speak() global timeout — forcing resolve');
         isSpeaking = false;
         resolve();
-      }, 10000);
+      }, globalTimeoutMs);
     });
 
     return Promise.race([speakPromise, timeoutPromise]);
@@ -330,7 +331,9 @@ const Audio = (() => {
 
       let done = false;
 
-      // Safety net: Chrome sometimes silently ignores synth.speak()
+      // Safety net: scale with text length so long intros don't resolve early.
+      // Chrome sometimes silently ignores synth.speak(); keep a minimum guard.
+      const safetyTimeoutMs = Math.max(8000, Math.floor(text.length * 200 / rate) + 2000);
       const safetyTimer = setTimeout(() => {
         if (!done) {
           console.warn('[Audio] Web Speech safety timeout — forcing resolve');
@@ -338,7 +341,7 @@ const Audio = (() => {
           isSpeaking = false;
           resolve();
         }
-      }, 8000);
+      }, safetyTimeoutMs);
 
       utter.onstart = () => {
         console.log('[Audio] Web Speech onstart fired');

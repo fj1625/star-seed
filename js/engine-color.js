@@ -287,7 +287,7 @@ const EngineColor = (() => {
     await sleep(400);
 
     if (target) {
-      target.style.backgroundColor = color.targetColor;
+      target.style.backgroundColor = color.displayColor || color.targetColor;
       target.textContent = color.targetEmoji;
       target.classList.add('revealed');
     }
@@ -331,7 +331,7 @@ const EngineColor = (() => {
 
     if (targetDisplay) {
       targetDisplay.innerHTML = `
-        <div class="target-color-circle" style="background:${color.targetColor}">
+        <div class="target-color-circle" style="background:${color.displayColor || color.targetColor}">
           <span class="target-color-emoji">${color.targetEmoji}</span>
         </div>
         <p class="target-color-name">${color.targetColor.toUpperCase()}</p>
@@ -530,7 +530,7 @@ const EngineColor = (() => {
 
     // Apply color filter
     if (filter) {
-      filter.style.backgroundColor = color.targetColor;
+      filter.style.backgroundColor = color.displayColor || color.targetColor;
     }
 
     // Try to access camera
@@ -721,7 +721,7 @@ const EngineColor = (() => {
       successEl.style.display = 'flex';
       successEl.innerHTML = `
         <div class="color-success-card animate-pop">
-          <div class="target-color-circle" style="background:${color.targetColor}">
+          <div class="target-color-circle" style="background:${color.displayColor || color.targetColor}">
             <span>${color.targetEmoji}</span>
           </div>
           <p>${color.targetColor.toUpperCase()} — Found!</p>

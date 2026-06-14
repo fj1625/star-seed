@@ -86,6 +86,7 @@
         {
           "id": "brown",
           "targetColor": "brown",
+          "displayColor": "#8B4513",
           "targetEmoji": "🤎",
           "mixFrom": ["red", "black"],
           "exampleItems": ["soil", "bark", "pinecone"],

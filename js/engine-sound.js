@@ -50,7 +50,7 @@ const EngineSound = (() => {
     }
 
     renderDay3();
-    await speakIntro();
+    await Utils.speakIntro(3, data, { cancelPrevious: false });
     showMatchPhase();
   }
 

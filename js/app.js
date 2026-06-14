@@ -753,9 +753,23 @@ const App = (() => {
           if (Storage.isDayUnlocked(day) || Storage.isDayCompleted(day)) {
             goToDay(day);
           } else {
-            btn.classList.add('shake');
-            setTimeout(() => btn.classList.remove('shake'), 500);
-            Audio.speak('Finish the previous days first!', { rate: 0.9 });
+            // Parent override: allow unlocking a locked day with the parent code
+            const code = window.prompt(`${btn.textContent} is locked. Enter parent code to unlock:`);
+            if (code && code.trim() === '1801') {
+              const powerMap = { 1: 'light', 2: 'color', 3: 'sound', 4: 'motion', 5: 'heart' };
+              for (let d = 1; d < day; d++) {
+                Storage.completeDay(d);
+                if (powerMap[d]) Storage.addPower(powerMap[d]);
+              }
+              updateStatusBar();
+              updateIntroDaySelect(Storage.getState());
+              goToDay(day);
+              Audio.speak(`${btn.textContent} unlocked!`, { rate: 0.9 });
+            } else if (code !== null) {
+              btn.classList.add('shake');
+              setTimeout(() => btn.classList.remove('shake'), 500);
+              Audio.speak('Not quite right. Ask your Earth Helper!', { rate: 0.9 });
+            }
           }
         });
       });

@@ -66,7 +66,7 @@ const EngineLight = (() => {
       </div>
       <div class="spelling-phase" id="day1-spelling" style="display:none">
         <h3>Now... spell the secret word!</h3>
-        <p class="spelling-hint">Arrange the letters to make a word. Hint: It's something in the night sky ✨</p>
+        <p class="spelling-hint">Arrange the letters to make the secret word.</p>
         <div class="spelling-slots" id="spelling-slots"></div>
         <div class="spelling-letters" id="spelling-letters-pool"></div>
         <button class="btn btn-primary" id="btn-check-spelling" style="display:none">Check my word!</button>
@@ -398,7 +398,7 @@ const EngineLight = (() => {
         const word = placedLetters.join('');
         if (word === targetWord) {
           if (feedbackEl) {
-            feedbackEl.textContent = '✨ S-T-A-R! That spells STAR! ✨';
+            feedbackEl.textContent = data.days['1'].completionText;
             feedbackEl.className = 'spelling-feedback success';
           }
           if (speechEl) {

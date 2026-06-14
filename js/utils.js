@@ -22,7 +22,7 @@ const Utils = (() => {
 
   /**
    * Speak the story intro for a given day.
-   * Updates the speech bubble and calls Audio.speak.
+   * Updates the speech bubble and waits for actual speech to finish.
    */
   async function speakIntro(dayNum, data, options = {}) {
     const speechEl = document.getElementById(`day${dayNum}-speech`);
@@ -34,7 +34,10 @@ const Utils = (() => {
     if (speechEl) {
       speechEl.innerHTML = `<div class="speech-bubble">${intro}</div>`;
     }
-    return Audio.speak(intro, { rate: 0.85, cancelPrevious: true, ...options });
+    await Audio.speak(intro, { rate: 0.85, cancelPrevious: true, ...options });
+    // Extra guard: don't return until the browser is truly silent,
+    // so long intros are not cut off before the game continues.
+    await Audio.waitForSilence(30000);
   }
 
   /**

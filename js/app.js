@@ -9,6 +9,9 @@ const App = (() => {
   let episodeList = [];
   let activeEngine = null;
 
+  // Optional standalone config set by sibling pages (e.g. week2.html)
+  const standalone = window.STAR_SEED_STANDALONE || null;
+
   // Scene sections in DOM
   const scenes = [
     'intro', 'day1', 'day2', 'day3', 'day4', 'day5', 'complete'
@@ -45,19 +48,28 @@ const App = (() => {
     Audio.init();
     VoiceInput.init();
 
-    // Discover available episodes
-    episodeList = await discoverEpisodes();
+    let state = Storage.getState();
 
-    // Determine which episode to load
-    const state = Storage.getState();
-    currentEpisodeId = state.episodeId || 'ep01';
+    if (standalone) {
+      // Standalone page: load the configured episode directly
+      currentEpisodeId = standalone.episodeId;
+    } else {
+      // Discover available episodes
+      episodeList = await discoverEpisodes();
 
-    // If saved episode not in list, use first available
-    const found = episodeList.find(ep => ep.id === currentEpisodeId);
-    if (!found) currentEpisodeId = episodeList[0].id;
+      // Determine which episode to load
+      currentEpisodeId = state.episodeId || 'ep01';
+
+      // If saved episode not in list, use first available
+      const found = episodeList.find(ep => ep.id === currentEpisodeId);
+      if (!found) currentEpisodeId = episodeList[0].id;
+    }
 
     // Load episode data
     await loadEpisode(currentEpisodeId);
+
+    // Reload state in case loadEpisode updated episodeId
+    state = Storage.getState();
 
     // Migration: if all 5 days completed but episode not marked complete, fix it
     const stAfterLoad = Storage.getState();
@@ -80,10 +92,10 @@ const App = (() => {
     bindNavigation();
     bindIntroButtons();
     bindRestartButton();
-    bindEpisodeSelector();
+    if (!standalone) bindEpisodeSelector();
 
     // Bind outdoor entry (secret button in footer)
-    bindOutdoorEntry();
+    if (!standalone) bindOutdoorEntry();
 
     // Always show intro first
     showScene('intro');
@@ -109,8 +121,15 @@ const App = (() => {
 
   /** Load episode data from JSON */
   async function loadEpisode(episodeId) {
+    let url;
     const ep = episodeList.find(e => e.id === episodeId);
-    const url = ep ? ep.dataUrl : `data/episodes/${episodeId}.json`;
+    if (ep) {
+      url = ep.dataUrl;
+    } else if (standalone && standalone.episodeId === episodeId) {
+      url = standalone.dataUrl;
+    } else {
+      url = `data/episodes/${episodeId}.json`;
+    }
 
     try {
       const resp = await fetch(url);
@@ -126,8 +145,8 @@ const App = (() => {
       return true;
     } catch (e) {
       console.error('Failed to load episode data:', url, e);
-      // Fallback: try ep01
-      if (episodeId !== 'ep01') {
+      // Fallback: try ep01 (skip fallback in standalone mode to surface errors clearly)
+      if (!standalone && episodeId !== 'ep01') {
         console.warn('Falling back to ep01');
         return loadEpisode('ep01');
       }

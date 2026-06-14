@@ -6,7 +6,7 @@
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <title>The Star Seed — My Home</title>
+  <title>The Star Seed — Week 2: Animals</title>
   <link rel="stylesheet" href="css/style.css?v=20260625">
 </head>
 <body>
@@ -57,12 +57,12 @@
             <div class="big-twinkle-glow"></div>
           </div>
           <h1 class="intro-title">The Star Seed</h1>
-          <p class="intro-subtitle">Episode 1: My Home</p>
+          <p class="intro-subtitle">Week 2: Animals</p>
           <div class="intro-story">
-            <p>A tiny star seed fell from the sky...</p>
-            <p>Its name is <strong>Twinkle</strong>.</p>
-            <p>Twinkle lost its 5 magic powers!</p>
-            <p>Can you find them all?</p>
+            <p>Twinkle needs your help again!</p>
+            <p>The <strong>zoo animals</strong> are missing!</p>
+            <p>Can you find them and bring them home?</p>
+            <p>New animal friends are waiting for you!</p>
           </div>
           <div class="intro-powers-preview">
             <span>🔦 Light</span>
@@ -75,11 +75,6 @@
           <button class="btn btn-listen" id="btn-listen-story" style="margin-top:12px">
             <span>🔊 Listen to the Story</span>
           </button>
-
-          <!-- Episode Selector -->
-          <div class="episode-selector" id="episode-selector">
-            <!-- Populated by App.bindEpisodeSelector() -->
-          </div>
 
           <!-- Continue area (shown when progress exists) -->
           <div class="intro-continue" id="intro-continue" style="display:none">
@@ -107,10 +102,12 @@
             </div>
           </div>
 
-          <p class="intro-parent-note">👋 Parent: Print the <a href="printable/ep01-printable.html" target="_blank">game materials</a> first!</p>
-          <div class="intro-outdoor-entry" id="intro-outdoor-entry">
-            <button class="btn btn-outdoor-intro" id="btn-outdoor-intro">🌿 Nature Explorer — Secret Outdoor Adventure!</button>
-          </div>
+          <p class="intro-parent-note">👋 Parent: Print the <a href="printable/ep02-printable.html" target="_blank">game materials</a> first!</p>
+
+          <p class="intro-back-link">
+            <a href="index.html" class="btn btn-ghost">← Back to Main Page</a>
+          </p>
+
           <p class="intro-reset-note" id="intro-reset-note" style="display:none">
             <a href="#" id="intro-reset-link">🔄 Reset all progress</a>
           </p>
@@ -161,27 +158,9 @@
     <!-- Footer -->
     <footer id="app-footer">
       <button class="btn-restart" id="btn-restart" title="Hold 3 seconds to reset">🔄</button>
-      <button class="btn-outdoor-entry" id="btn-outdoor-entry" title="🌿 Nature Explorer">🌿 Outdoor</button>
-      <span class="footer-text">The Star Seed · Week 1: My Home</span>
+      <span class="footer-text">The Star Seed · Week 2: Animals</span>
       <span class="footer-episode" id="footer-episode"></span>
     </footer>
-
-    <!-- Outdoor Password Modal -->
-    <div id="outdoor-modal" class="overlay" style="display:none" role="dialog" aria-modal="true" aria-labelledby="outdoor-modal-title">
-      <div class="overlay-card animate-pop outdoor-modal-card">
-        <div class="overlay-stars">🌿 🌳 🌿</div>
-        <h3 id="outdoor-modal-title">🌿 Nature Explorer</h3>
-        <p class="outdoor-modal-desc">A secret outdoor adventure awaits!<br>Ask your <strong>Earth Helper</strong> for the code.</p>
-        <div class="parent-unlock" style="display:block; border-top:none; margin-top:8px;">
-          <div class="parent-unlock-row">
-            <input type="password" class="parent-code-input" id="outdoor-code-input" placeholder="Code" maxlength="4" inputmode="numeric" pattern="[0-9]*">
-            <button class="btn btn-tiny" id="btn-outdoor-unlock">Enter 🌿</button>
-          </div>
-          <p class="parent-unlock-hint" id="outdoor-unlock-hint" style="display:none">Wrong code. Ask your Earth Helper!</p>
-        </div>
-        <button class="btn btn-ghost" id="btn-outdoor-cancel" style="margin-top:6px;">← Go Back</button>
-      </div>
-    </div>
   </div>
 
   <!-- Error State -->
@@ -198,6 +177,12 @@
   <script src="js/engine-sound.js?v=20260625"></script>
   <script src="js/engine-motion.js?v=20260625"></script>
   <script src="js/engine-heart.js?v=20260625"></script>
+  <script>
+    window.STAR_SEED_STANDALONE = {
+      episodeId: 'ep02',
+      dataUrl: 'data/episodes/ep02-animals.json'
+    };
+  </script>
   <script src="js/app.js?v=20260627"></script>
 </body>
 </html>

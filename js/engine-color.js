@@ -39,11 +39,14 @@ const EngineColor = (() => {
     const container = document.getElementById('day2');
     if (!container) return;
 
+    const dayLabel = data.days?.['2']?.tabLabel || 'Day 2';
+    const dayTitle = data.days?.['2']?.title || 'Color Detective';
+
     container.innerHTML = `
       <div class="day-header">
-        <span class="day-badge">Day 2</span>
+        <span class="day-badge">${dayLabel}</span>
         <h2>🌈 Color Power</h2>
-        <p class="day-subtitle">Color Detective</p>
+        <p class="day-subtitle">${dayTitle}</p>
       </div>
       <div class="twinkle-speech" id="day2-speech" aria-live="polite" aria-atomic="true"></div>
 

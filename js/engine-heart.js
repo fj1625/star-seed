@@ -32,11 +32,14 @@ const EngineHeart = (() => {
     const container = document.getElementById('day5');
     if (!container) return;
 
+    const dayLabel = data.days?.['5']?.tabLabel || 'Day 5';
+    const dayTitle = data.days?.['5']?.title || 'Heart of the Star';
+
     container.innerHTML = `
       <div class="day-header">
-        <span class="day-badge">Day 5</span>
+        <span class="day-badge">${dayLabel}</span>
         <h2>❤️ Heart Power</h2>
-        <p class="day-subtitle">Heart of the Star</p>
+        <p class="day-subtitle">${dayTitle}</p>
       </div>
       <div class="twinkle-speech" id="day5-speech" aria-live="polite" aria-atomic="true"></div>
 

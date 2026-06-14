@@ -40,11 +40,13 @@ const EngineLight = (() => {
     const container = document.getElementById('day1');
     if (!container) return;
 
+    const dayLabel = data.days?.['1']?.tabLabel || 'Day 1';
+    const dayTitle = data.days?.['1']?.title || 'Light Power';
     container.innerHTML = `
       <div class="day-header">
-        <span class="day-badge">Day 1</span>
+        <span class="day-badge">${dayLabel}</span>
         <h2>🔦 Light Power</h2>
-        <p class="day-subtitle">Hidden Star Fragments</p>
+        <p class="day-subtitle">${dayTitle}</p>
       </div>
       <div class="twinkle-speech" id="day1-speech" aria-live="polite" aria-atomic="true"></div>
       <div class="silhouette-display" id="day1-silhouette"></div>

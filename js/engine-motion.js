@@ -36,11 +36,14 @@ const EngineMotion = (() => {
     const container = document.getElementById('day4');
     if (!container) return;
 
+    const dayLabel = data.days?.['4']?.tabLabel || 'Day 4';
+    const dayTitle = data.days?.['4']?.title || 'Star Dance';
+
     container.innerHTML = `
       <div class="day-header">
-        <span class="day-badge">Day 4</span>
+        <span class="day-badge">${dayLabel}</span>
         <h2>🤸 Motion Power</h2>
-        <p class="day-subtitle">Star Dance</p>
+        <p class="day-subtitle">${dayTitle}</p>
       </div>
       <div class="twinkle-speech" id="day4-speech" aria-live="polite" aria-atomic="true"></div>
       <div class="dance-stage" id="dance-stage">

@@ -469,8 +469,9 @@ const App = (() => {
 
     if (!overlay) return;
 
+    const dayLabel = dayData.tabLabel || `Day ${day}`;
     powerEl.textContent = dayData.powerEmoji + ' ' + dayData.power + ' Power!';
-    titleEl.textContent = `Day ${day} Complete!`;
+    titleEl.textContent = `${dayLabel} Complete!`;
     textEl.textContent = dayData.completionText;
 
     Audio.cancel();

@@ -58,11 +58,14 @@ const EngineSound = (() => {
     const container = document.getElementById('day3');
     if (!container) return;
 
+    const dayLabel = data.days?.['3']?.tabLabel || 'Day 3';
+    const dayTitle = data.days?.['3']?.title || 'Sound Password';
+
     container.innerHTML = `
       <div class="day-header">
-        <span class="day-badge">Day 3</span>
+        <span class="day-badge">${dayLabel}</span>
         <h2>🎵 Sound Power</h2>
-        <p class="day-subtitle">Sound Password</p>
+        <p class="day-subtitle">${dayTitle}</p>
       </div>
       <div class="twinkle-speech" id="day3-speech" aria-live="polite" aria-atomic="true"></div>
       <div class="sound-phase-match" id="day3-match">

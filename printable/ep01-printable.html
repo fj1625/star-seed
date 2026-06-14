@@ -257,9 +257,17 @@
 
     /* ===== Print styles ===== */
     @media print {
+      /* Force browser to print background colors (otherwise browsers strip them by default) */
+      * {
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+        color-adjust: exact !important;
+      }
+
       body {
-        background: white;
-        color: black;
+        /* Keep dark theme when printing — these are game cards, not text documents */
+        background: #0a0a2e;
+        color: #e8e8f0;
         padding: 0;
         max-width: none;
       }
@@ -269,12 +277,7 @@
       }
 
       .print-header h1 {
-        color: #333;
         font-size: 1.6rem;
-      }
-
-      .print-header p {
-        color: #666;
       }
 
       .print-btn {
@@ -282,57 +285,13 @@
       }
 
       .print-instructions {
-        background: #fff;
-        border: 1px solid #ddd;
-        color: #333;
         page-break-after: always;
       }
 
-      .print-instructions h2 {
-        color: #333;
-      }
-
       .print-section {
-        background: white;
-        border: 1px solid #ddd;
         page-break-before: always;
         margin: 10px 0;
         padding: 10px;
-      }
-
-      .print-section h3 {
-        color: #333;
-      }
-
-      .card, .card-back, .heart-piece-front, .heart-piece-back {
-        border: 2px solid #333;
-        background: white;
-      }
-
-      .card::before, .card-back::before {
-        border-color: rgba(0,0,0,0.15);
-      }
-
-      .card-stars, .card-number, .card-fragment, .back-label {
-        color: #888;
-      }
-
-      .back-code, .back-letter {
-        color: #333;
-        text-shadow: none;
-      }
-
-      .setup-day {
-        background: #f9f9f9;
-        border-left-color: #333;
-      }
-
-      .setup-day h4 { color: #333; }
-      .setup-day p { color: #555; }
-
-      .setup-day .hide-spot {
-        background: #eee;
-        color: #333;
       }
 
       .cards-grid {

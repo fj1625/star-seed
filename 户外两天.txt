@@ -1,0 +1,141 @@
+Design 2: Outdoor Standalone Episode (户外独立关卡)
+
+目标
+
+- 独立于 Week 1-4 的 2 天户外 episode
+- 每天内容量 ≈ 现有 Star Seed 一天的两倍
+- 需要户外自然环境（公园、花园、小区绿地）
+- 家长陪同度更高
+
+数据结构
+
+{
+  "episodeId": "ep05-outdoor",
+  "title": "Nature Explorer",
+  "theme": "outdoor",
+  "week": 5,
+  "isStandalone": true,
+  "days": {
+    "1": { /* Day 1: Nature Hunt + Color Challenge */ },
+    "2": { /* Day 2: Sound Detective + Motion Adventure + Campfire Heart */ }
+  },
+  "vocabulary": { ... }
+}
+
+Day 1: Nature Explorer (自然探索者)
+
+内容量：≈ 现有 Day 1 + Day 2 的总和
+
+Phase A: 户外寻宝 (扩展版 Light 引擎)
+
+- 6 张自然卡片（现有是 4 张）
+  - leaf (叶子) → 代码 137 → 字母 N
+  - stone (石头) → 代码 258 → 字母 A
+  - flower (花朵) → 代码 491 → 字母 T
+  - stick (树枝) → 代码 623 → 字母 U
+  - feather (羽毛) → 代码 745 → 字母 R
+  - seed (种子) → 代码 869 → 字母 E
+  - 目标单词：NATURE
+- 寻找地点：公园
+- 家长任务：提前打印 6 张卡片藏在户外不同位置
+- 语音线索：每张卡片有自然声音描述（"Listen! Can you hear the wind in the trees?"）
+
+Phase B: 自然颜色挑战 (扩展版 Color 引擎)
+
+- 6 种自然颜色（现有是 3 种）
+  - brown (棕色)：泥土、树皮、松果
+  - gray (灰色)：石头、云朵、树皮
+  - pink (粉色)：花朵、晚霞、蘑菇
+  - sky blue (天蓝色)：天空、湖水、勿忘我
+  - gold (金色)：阳光、落叶、蒲公英
+  - silver (银色)：露珠、石头、鱼鳞
+- 混合逻辑：
+  - 红 + 黑 = 棕
+  - 白 + 黑 = 灰
+  - 红 + 白 = 粉
+  - 蓝 + 白 = 天蓝
+  - 黄 + 橙 = 金
+  - 白 + 灰 = 银
+- 拍照环节：孩子在户外找到对应颜色的自然物品，拍照确认
+- 语音环节
+
+Day 1 完成奖励：获得 "Nature Eye" (自然之眼) 力量
+
+---
+Day 2: Sound & Motion Adventure (声音与动作大冒险)
+
+内容量：≈ 现有 Day 3 + Day 4 + Day 5 的总和
+
+Phase A: 声音侦探 (扩展版 Sound 引擎)
+
+- 8 种自然声音（现有是 5 种）
+  - wind (风声)：Whoosh whoosh!
+  - rain (雨声)：Pitter-patter pitter-patter!
+  - bird (鸟鸣)：Tweet tweet tweet!
+  - stream (溪流)：Babble babble babble!
+  - thunder (雷声)：Boom boom!
+  - cricket (蟋蟀)：Chirp chirp chirp!
+  - leaves (树叶沙沙)：Rustle rustle rustle!
+  - frog (青蛙)：Ribbit ribbit!
+- 模仿环节：孩子模仿每种声音，VoiceInput 识别
+- 序列记忆：5 个声音的顺序（现有是 4 个）
+- 干扰项：每种声音有 2 个干扰动物/自然物
+
+Phase B: 动作大冒险 (扩展版 Motion 引擎)
+
+- 10 个自然动作（现有是 8 个）
+  - float (飘)：像云朵一样飘
+  - hop (跳)：像兔子一样跳
+  - crawl (爬)：像毛毛虫一样爬
+  - swim (游)：像小鱼一样游
+  - fly (飞)：像小鸟一样飞
+  - roll (滚)：像石头一样滚
+  - sway (摇)：像树一样摇
+  - spin (转)：像风车一样转
+  - crouch (蹲)：像青蛙一样蹲
+  - stretch (伸展)：像小猫一样伸展
+- 5 轮挑战（现有是 4 轮），每轮 3-6 个动作
+- 家长参与：家长和孩子一起做动作，形成"自然舞蹈"
+
+Phase C: 篝火故事 (Heart 引擎变体)
+
+- 回顾环节：回顾两天的发现（6 张卡片 + 6 种颜色 + 8 种声音 + 10 个动作）
+- 亲子对话：
+  - 孩子："Today I found a [leaf/stone/flower]!"
+  - 家长："What color was it?"
+  - 孩子："It was [color]!"
+- 故事创作：孩子编一个关于自然的小故事
+- 证书："Nature Explorer Certificate"
+- 种植仪式：种下 Day 1 找到的 seed，说 "Grow little seed, grow!"
+
+Day 2 完成奖励：获得 "Nature Heart" 力量，Twinkle 变成一棵小树
+
+---
+引擎复用策略
+
+┌─────────────┬──────────────┬─────────────────────────────────────────────────────────┐
+│ Day 1 Phase │   复用引擎   │                         改动点                          │
+├─────────────┼──────────────┼─────────────────────────────────────────────────────────┤
+│ 户外寻宝    │ EngineLight  │ cards 从 4 张扩到 6 张，targetWord 从 4 字母扩到 6 字母 │
+├─────────────┼──────────────┼─────────────────────────────────────────────────────────┤
+│ 自然颜色    │ EngineColor  │ colors 从 3 种扩到 6 种，mixFrom 逻辑扩展               │
+├─────────────┼──────────────┼─────────────────────────────────────────────────────────┤
+│ Day 2 Phase │ 复用引擎     │ 改动点                                                  │
+├─────────────┼──────────────┼─────────────────────────────────────────────────────────┤
+│ 声音侦探
+│ 动作冒险    │ EngineMotion │ actions 从 8 个扩到 10 个，rounds 从 4 扩到 5           │
+├─────────────┼──────────────┼─────────────────────────────────────────────────────────┤
+│ 篝火故事    │ EngineHeart  │ recallQuestions 扩展，证书文案变更                      │
+└─────────────┴──────────────┴─────────────────────────────────────────────────────────┘
+
+关键设计原则：所有扩展通过 JSON 数据驱动，引擎代码零改动。
+
+---
+打印材料 (Printable)
+
+- 6 张自然寻宝卡片（比现有卡片大一倍，适合户外）
+- 颜色挑战对照卡（6 种自然颜色的示例图片）
+- 家长指导手册（户外安全提示、天气备选方案）
+- 声音卡片（8 种自然声音的拟声词 + 图片）
+- 动作卡片（10 个动作的图示）
+- 自然探险家证书模板

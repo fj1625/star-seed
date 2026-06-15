@@ -527,27 +527,25 @@ const App = (() => {
     }
 
     Audio.cancel();
-    setTimeout(() => {
-      Audio.speak(dayData.completionText, { rate: 0.9 });
-      // Announce the gift after a short pause
+    setTimeout(async () => {
+      // Speak completion text first, then queue reward announcements after it finishes
+      await Audio.speak(dayData.completionText, { rate: 0.9 });
+
       if (rewardResult && rewardResult.reward && rewardResult.reward.isNew) {
-        setTimeout(() => {
-          Audio.speak(rewardResult.reward.voiceText, { rate: 0.9 });
-        }, 1200);
+        await new Promise(r => setTimeout(r, 400));
+        await Audio.speak(rewardResult.reward.voiceText, { rate: 0.9 });
       }
-      // Announce new achievements
+
       if (rewardResult && rewardResult.newAchievements && rewardResult.newAchievements.length > 0) {
-        rewardResult.newAchievements.forEach((ach, idx) => {
-          setTimeout(() => {
-            Audio.speak(`Achievement unlocked: ${ach.name}!`, { rate: 0.9 });
-          }, 2500 + idx * 900);
-        });
+        for (const ach of rewardResult.newAchievements) {
+          await new Promise(r => setTimeout(r, 400));
+          await Audio.speak(`Achievement unlocked: ${ach.name}!`, { rate: 0.9 });
+        }
       }
-      // Announce episode trophy
+
       if (rewardResult && rewardResult.trophy && rewardResult.trophy.isNew) {
-        setTimeout(() => {
-          Audio.speak(`You earned the ${rewardResult.trophy.name}!`, { rate: 0.9 });
-        }, 2800);
+        await new Promise(r => setTimeout(r, 400));
+        await Audio.speak(`You earned the ${rewardResult.trophy.name}!`, { rate: 0.9 });
       }
     }, 300);
 

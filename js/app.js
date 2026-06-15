@@ -92,6 +92,8 @@ const App = (() => {
     bindNavigation();
     bindIntroButtons();
     bindRestartButton();
+    bindTreasureButton();
+    updateTreasureButton();
     if (!standalone) bindEpisodeSelector();
 
     // Bind outdoor entry (secret button in footer)
@@ -472,17 +474,28 @@ const App = (() => {
       bindEpisodeSelector();
     }
 
+    // Grant daily gift, check achievements, possibly grant episode trophy
+    const rewardResult = typeof Achievements !== 'undefined'
+      ? Achievements.onDayComplete(day, currentEpisodeId, episodeData)
+      : { reward: null, newAchievements: [], trophy: null };
+
+    if (rewardResult.reward) {
+      Twinkle.giveGift(rewardResult.reward.emoji);
+    }
+    updateTreasureButton();
+
     // Show completion overlay
     const dayData = episodeData.days[String(day)];
-    showDayCompleteOverlay(day, dayData, isNew);
+    showDayCompleteOverlay(day, dayData, isNew, rewardResult);
   }
 
   /** Show the "Day Complete" overlay */
-  function showDayCompleteOverlay(day, dayData, isNew) {
+  function showDayCompleteOverlay(day, dayData, isNew, rewardResult) {
     const overlay = document.getElementById('day-complete-overlay');
     const powerEl = document.getElementById('complete-power');
     const titleEl = document.getElementById('complete-title');
     const textEl = document.getElementById('complete-text');
+    const rewardEl = document.getElementById('day-reward');
     const nextBtn = document.getElementById('btn-next-day');
     const homeBtn = document.getElementById('btn-go-home');
 
@@ -493,9 +506,36 @@ const App = (() => {
     titleEl.textContent = `${dayLabel} Complete!`;
     textEl.textContent = dayData.completionText;
 
+    // Render the daily gift and any new achievements/trophy
+    if (rewardEl) {
+      const summaryHtml = renderRewardSummary(rewardResult);
+      rewardEl.innerHTML = summaryHtml;
+      rewardEl.style.display = summaryHtml ? 'block' : 'none';
+    }
+
     Audio.cancel();
     setTimeout(() => {
       Audio.speak(dayData.completionText, { rate: 0.9 });
+      // Announce the gift after a short pause
+      if (rewardResult && rewardResult.reward && rewardResult.reward.isNew) {
+        setTimeout(() => {
+          Audio.speak(rewardResult.reward.voiceText, { rate: 0.9 });
+        }, 1200);
+      }
+      // Announce new achievements
+      if (rewardResult && rewardResult.newAchievements && rewardResult.newAchievements.length > 0) {
+        rewardResult.newAchievements.forEach((ach, idx) => {
+          setTimeout(() => {
+            Audio.speak(`Achievement unlocked: ${ach.name}!`, { rate: 0.9 });
+          }, 2500 + idx * 900);
+        });
+      }
+      // Announce episode trophy
+      if (rewardResult && rewardResult.trophy && rewardResult.trophy.isNew) {
+        setTimeout(() => {
+          Audio.speak(`You earned the ${rewardResult.trophy.name}!`, { rate: 0.9 });
+        }, 2800);
+      }
     }, 300);
 
     // Parent unlock section (hidden by default, shown for days 1-4)
@@ -607,6 +647,179 @@ const App = (() => {
     nextBtn.onclick = () => { cleanupEsc(); overlay.setAttribute('aria-hidden', 'true'); if (origNext) origNext(); };
     const origHome = homeBtn.onclick;
     homeBtn.onclick = () => { cleanupEsc(); overlay.setAttribute('aria-hidden', 'true'); if (origHome) origHome(); };
+  }
+
+  /** Render the reward/achievement/trophy summary HTML for the overlay */
+  function renderRewardSummary(result) {
+    if (!result) return '';
+    const parts = [];
+
+    if (result.reward) {
+      const r = result.reward;
+      parts.push(`
+        <div class="day-reward-gift animate-pop">
+          <div class="day-reward-emoji">${r.emoji}</div>
+          <div class="day-reward-label">${r.isNew ? '<span class="new-badge">New!</span> ' : ''}${r.name}</div>
+          <div class="day-reward-msg">${r.message || `Twinkle gives you a ${r.name}!`}</div>
+        </div>
+      `);
+    }
+
+    if (result.newAchievements && result.newAchievements.length > 0) {
+      for (const ach of result.newAchievements) {
+        parts.push(`
+          <div class="day-reward-achievement animate-pop">
+            <span class="day-reward-ach-emoji">${ach.emoji}</span>
+            <span class="day-reward-ach-text"><span class="new-badge">New!</span> Achievement: <strong>${ach.name}</strong></span>
+          </div>
+        `);
+      }
+    }
+
+    if (result.trophy && result.trophy.isNew) {
+      parts.push(`
+        <div class="day-reward-trophy animate-pop">
+          <div class="day-reward-emoji">${result.trophy.emoji}</div>
+          <div class="day-reward-label"><span class="new-badge">New!</span> ${result.trophy.name}</div>
+          <div class="day-reward-msg">You completed the whole week!</div>
+        </div>
+      `);
+    }
+
+    return parts.join('');
+  }
+
+  /** Update the treasure chest button visibility and "new" badge */
+  function updateTreasureButton() {
+    const btn = document.getElementById('treasure-chest-btn');
+    if (!btn) return;
+    const hasNew = typeof Achievements !== 'undefined' && Achievements.hasNewItems();
+    btn.classList.toggle('has-new', hasNew);
+  }
+
+  /** Bind the treasure chest button to open the treasure modal */
+  function bindTreasureButton() {
+    const btn = document.getElementById('treasure-chest-btn');
+    if (btn) {
+      btn.addEventListener('click', () => {
+        showTreasureModal();
+      });
+    }
+
+    // Bind tab switching inside the modal
+    const modal = document.getElementById('treasure-modal');
+    if (modal) {
+      modal.querySelectorAll('.treasure-tab').forEach(tabBtn => {
+        tabBtn.addEventListener('click', () => {
+          switchTreasureTab(tabBtn.dataset.tab);
+        });
+      });
+
+      const closeBtn = modal.querySelector('.treasure-close');
+      if (closeBtn) {
+        closeBtn.addEventListener('click', hideTreasureModal);
+      }
+
+      // Close when clicking the backdrop (outside the card)
+      modal.addEventListener('click', (e) => {
+        if (e.target === modal) hideTreasureModal();
+      });
+    }
+  }
+
+  /** Show the treasure chest modal */
+  function showTreasureModal() {
+    const modal = document.getElementById('treasure-modal');
+    if (!modal) return;
+    renderTreasureModal();
+    modal.style.display = 'flex';
+    modal.setAttribute('aria-hidden', 'false');
+    if (typeof Achievements !== 'undefined') {
+      Achievements.markAllSeen();
+    }
+    updateTreasureButton();
+
+    // Close on Escape
+    const escHandler = (e) => {
+      if (e.key === 'Escape') {
+        hideTreasureModal();
+        document.removeEventListener('keydown', escHandler);
+      }
+    };
+    modal._escHandler = escHandler;
+    document.addEventListener('keydown', escHandler);
+  }
+
+  /** Hide the treasure chest modal */
+  function hideTreasureModal() {
+    const modal = document.getElementById('treasure-modal');
+    if (!modal) return;
+    modal.style.display = 'none';
+    modal.setAttribute('aria-hidden', 'true');
+    if (modal._escHandler) {
+      document.removeEventListener('keydown', modal._escHandler);
+      modal._escHandler = null;
+    }
+  }
+
+  /** Render the contents of the treasure chest modal */
+  function renderTreasureModal() {
+    const modal = document.getElementById('treasure-modal');
+    if (!modal) return;
+
+    const rewards = (typeof Achievements !== 'undefined' ? Achievements.getRewards() : []);
+    const achievements = (typeof Achievements !== 'undefined' ? Achievements.getAchievements() : []);
+    const trophies = (typeof Achievements !== 'undefined' ? Achievements.getTrophies() : []);
+
+    const rewardsHtml = rewards.length > 0
+      ? rewards.map(r => `
+          <div class="treasure-item${r.isNew ? ' is-new' : ''}">
+            <div class="treasure-item-emoji">${r.emoji}</div>
+            <div class="treasure-item-name">${r.name}</div>
+            <div class="treasure-item-meta">${r.episodeId || ''} · Day ${r.day || '?'}</div>
+          </div>
+        `).join('')
+      : '<p class="treasure-empty">No gifts yet. Finish a day to get one!</p>';
+
+    const achievementsHtml = achievements.length > 0
+      ? achievements.map(a => `
+          <div class="treasure-item treasure-achievement${a.isNew ? ' is-new' : ''}">
+            <div class="treasure-item-emoji">${a.emoji}</div>
+            <div class="treasure-item-name">${a.name}</div>
+            <div class="treasure-item-meta">${a.desc || ''}</div>
+          </div>
+        `).join('')
+      : '<p class="treasure-empty">No achievements yet. Keep exploring!</p>';
+
+    const trophiesHtml = trophies.length > 0
+      ? trophies.map(t => `
+          <div class="treasure-item treasure-trophy${t.isNew ? ' is-new' : ''}">
+            <div class="treasure-item-emoji">${t.emoji}</div>
+            <div class="treasure-item-name">${t.name}</div>
+            <div class="treasure-item-meta">${t.episodeId || ''}</div>
+          </div>
+        `).join('')
+      : '<p class="treasure-empty">No trophies yet. Complete a whole week!</p>';
+
+    const rewardsPanel = modal.querySelector('.treasure-panel[data-panel="gifts"]');
+    const achievementsPanel = modal.querySelector('.treasure-panel[data-panel="achievements"]');
+    const trophiesPanel = modal.querySelector('.treasure-panel[data-panel="trophies"]');
+
+    if (rewardsPanel) rewardsPanel.innerHTML = rewardsHtml;
+    if (achievementsPanel) achievementsPanel.innerHTML = achievementsHtml;
+    if (trophiesPanel) trophiesPanel.innerHTML = trophiesHtml;
+  }
+
+  /** Switch active tab inside the treasure modal */
+  function switchTreasureTab(tabName) {
+    const modal = document.getElementById('treasure-modal');
+    if (!modal) return;
+    modal.querySelectorAll('.treasure-tab').forEach(btn => {
+      btn.classList.toggle('active', btn.dataset.tab === tabName);
+    });
+    modal.querySelectorAll('.treasure-panel').forEach(panel => {
+      panel.classList.toggle('active', panel.dataset.panel === tabName);
+    });
   }
 
   /** Update the top status bar */

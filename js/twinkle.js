@@ -51,6 +51,29 @@ const Twinkle = (() => {
     }
   }
 
+  /** Twinkle gives a gift: spawn an emoji that pops out and floats away */
+  function giveGift(emoji) {
+    if (!el || !emoji) return;
+
+    el.classList.add('twinkle-giving');
+
+    const gift = document.createElement('div');
+    gift.className = 'twinkle-gift-emoji';
+    gift.textContent = emoji;
+    gift.setAttribute('aria-hidden', 'true');
+    el.appendChild(gift);
+
+    // Force reflow so the pop animation triggers
+    void gift.offsetWidth;
+    gift.classList.add('twinkle-gift-pop');
+
+    // Clean up after animation
+    setTimeout(() => {
+      if (gift.parentNode) gift.remove();
+      el.classList.remove('twinkle-giving');
+    }, 1600);
+  }
+
   /** Get the emoji/visual for current state */
   function getCurrentEmoji() {
     const powers = Storage.getState().twinklePowers;
@@ -80,7 +103,7 @@ const Twinkle = (() => {
   }
 
   return {
-    init, syncFromStorage, addPower,
+    init, syncFromStorage, addPower, giveGift,
     getCurrentEmoji, getStatusText, getPowerCount
   };
 })();

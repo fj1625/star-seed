@@ -4,10 +4,22 @@
   "theme": "outdoor",
   "week": 0,
   "isStandalone": true,
+  "trophy": {
+    "id": "trophy_nature",
+    "emoji": "🌿",
+    "name": "Nature Explorer Trophy"
+  },
   "days": {
     "1": {
       "power": "Light",
       "powerEmoji": "🔦",
+      "reward": {
+        "id": "leaf_compass",
+        "emoji": "🍃",
+        "name": "Leaf Compass",
+        "message": "Twinkle gives you a Leaf Compass!",
+        "voiceText": "You got a Leaf Compass! You are a Nature Finder!"
+      },
       "tabLabel": "Day 1A",
       "title": "Nature Hunt",
       "storyIntro": "Twinkle wants to explore the great outdoors! But first, we need to find the hidden nature cards. Look around the park — can you find all 6 cards?",
@@ -79,6 +91,13 @@
     "2": {
       "power": "Color",
       "powerEmoji": "🌈",
+      "reward": {
+        "id": "sky_palette",
+        "emoji": "🎨",
+        "name": "Sky Palette",
+        "message": "Twinkle gives you a Sky Palette!",
+        "voiceText": "You got a Sky Palette! You paint the outdoors!"
+      },
       "tabLabel": "Day 1B",
       "title": "Nature Color Challenge",
       "storyIntro": "Nature has so many beautiful colors! Can you find them all? Mix colors first, then find real nature items that match!",
@@ -144,6 +163,13 @@
     "3": {
       "power": "Sound",
       "powerEmoji": "🎵",
+      "reward": {
+        "id": "wind_whistle",
+        "emoji": "🌬️",
+        "name": "Wind Whistle",
+        "message": "Twinkle gives you a Wind Whistle!",
+        "voiceText": "You got a Wind Whistle! You can speak with nature!"
+      },
       "tabLabel": "Day 2A",
       "title": "Sound Detective",
       "storyIntro": "Close your eyes... What do you hear? The wind? The birds? Let's become sound detectives and learn nature's music!",
@@ -227,6 +253,13 @@
     "4": {
       "power": "Motion",
       "powerEmoji": "🤸",
+      "reward": {
+        "id": "sun_medal",
+        "emoji": "☀️",
+        "name": "Sun Medal",
+        "message": "Twinkle gives you a Sun Medal!",
+        "voiceText": "You got a Sun Medal! You move like nature!"
+      },
       "tabLabel": "Day 2B",
       "title": "Nature Motion Adventure",
       "storyIntro": "Nature moves in beautiful ways! Clouds float, rabbits hop, fish swim. Can you move like nature? Let's dance!",
@@ -308,6 +341,13 @@
     "5": {
       "power": "Heart",
       "powerEmoji": "❤️",
+      "reward": {
+        "id": "nature_seed",
+        "emoji": "🌱",
+        "name": "Nature Seed",
+        "message": "Twinkle gives you a Nature Seed!",
+        "voiceText": "You got a Nature Seed! You are a Nature Explorer!"
+      },
       "tabLabel": "Day 2C",
       "title": "Campfire Story",
       "storyIntro": "The sun is setting. Let's sit by the campfire and remember all the wonderful things we found today. Earth Helper, join us!",

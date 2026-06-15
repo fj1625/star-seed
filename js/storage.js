@@ -10,6 +10,10 @@ const Storage = (() => {
     completedDays: [],
     completedEpisodes: [],
     twinklePowers: [],
+    // Achievement system: daily gifts, long-term achievements, episode trophies
+    rewards: [],
+    achievements: [],
+    trophies: [],
     day1CardsFound: [],
     day1Letters: [],
     day2ColorsFound: [],

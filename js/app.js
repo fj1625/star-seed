@@ -197,14 +197,24 @@ const App = (() => {
 
   /** Initialize all engines with current episode data */
   function initAllEngines() {
-    if (typeof EngineLight !== 'undefined') EngineLight.init(episodeData);
-    if (typeof EnginePattern !== 'undefined') EnginePattern.init(episodeData);
-    if (typeof EngineRhythm !== 'undefined') EngineRhythm.init(episodeData);
-    if (typeof EngineMotion !== 'undefined') EngineMotion.init(episodeData);
-    if (typeof EngineHeart !== 'undefined') EngineHeart.init(episodeData);
-    // EngineColor and EngineSound kept for backward compatibility with other episodes
-    if (typeof EngineColor !== 'undefined') EngineColor.init(episodeData);
-    if (typeof EngineSound !== 'undefined') EngineSound.init(episodeData);
+    const engines = [
+      { name: 'EngineLight', fn: typeof EngineLight !== 'undefined' ? EngineLight.init : null },
+      { name: 'EnginePattern', fn: typeof EnginePattern !== 'undefined' ? EnginePattern.init : null },
+      { name: 'EngineRhythm', fn: typeof EngineRhythm !== 'undefined' ? EngineRhythm.init : null },
+      { name: 'EngineMotion', fn: typeof EngineMotion !== 'undefined' ? EngineMotion.init : null },
+      { name: 'EngineHeart', fn: typeof EngineHeart !== 'undefined' ? EngineHeart.init : null },
+      { name: 'EngineColor', fn: typeof EngineColor !== 'undefined' ? EngineColor.init : null },
+      { name: 'EngineSound', fn: typeof EngineSound !== 'undefined' ? EngineSound.init : null }
+    ];
+
+    for (const engine of engines) {
+      if (!engine.fn) continue;
+      try {
+        engine.fn(episodeData);
+      } catch (e) {
+        console.error(`[App] Engine ${engine.name} init failed:`, e);
+      }
+    }
   }
 
   /** Update intro scene for current episode */

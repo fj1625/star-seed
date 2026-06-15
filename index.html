@@ -94,7 +94,7 @@
             </button>
           </div>
 
-          <button class="btn btn-start" id="btn-start">
+          <button class="btn btn-start" id="btn-start" onclick="App.goToDay(1)" type="button">
             <span class="btn-start-text">Begin the Adventure!</span>
             <span class="btn-start-rocket">🚀</span>
           </button>
@@ -191,7 +191,7 @@
     <!-- Treasure Chest Modal -->
     <div id="treasure-modal" class="overlay" style="display:none" role="dialog" aria-modal="true" aria-labelledby="treasure-modal-title">
       <div class="overlay-card treasure-card animate-pop">
-        <button class="treasure-close" aria-label="Close treasure chest">✕</button>
+        <button class="treasure-close" aria-label="Close treasure chest" onclick="App.hideTreasureModal()" type="button">✕</button>
         <div class="overlay-stars">🎁 ✨ 🎁</div>
         <h3 id="treasure-modal-title">Twinkle's Treasure</h3>
         <div class="treasure-tabs">

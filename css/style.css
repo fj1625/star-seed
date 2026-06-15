@@ -2609,6 +2609,7 @@ body {
   align-items: center;
   justify-content: center;
   transition: all 0.2s;
+  z-index: 10;
 }
 
 .treasure-close:hover,

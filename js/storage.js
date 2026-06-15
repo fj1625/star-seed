@@ -17,10 +17,13 @@ const Storage = (() => {
     day1CardsFound: [],
     day1Letters: [],
     day2ColorsFound: [],
+    day2PatternsMatched: [],
     day2ItemsFound: [],
     day3AnimalsMatched: [],
+    day3RhythmRound: 0,
     day4HighestRound: 0,
     day5GoodbyeMessage: null,
+    day5ShelterAnswers: [],
     day1WordsSpoken: [],
     day3SoundsImitated: [],
     day4MovesNamed: [],
@@ -106,6 +109,20 @@ const Storage = (() => {
     }
   }
 
+  /** Day 2 (pattern mode): record matched animal pattern */
+  function addDay2Pattern(animalId) {
+    if (!state.day2PatternsMatched.includes(animalId)) {
+      state.day2PatternsMatched.push(animalId);
+      save();
+    }
+  }
+
+  /** Day 3 (rhythm mode): record current rhythm round */
+  function setDay3RhythmRound(round) {
+    state.day3RhythmRound = round;
+    save();
+  }
+
   /** Day 4: record highest round */
   function setDay4Round(round) {
     if (round > state.day4HighestRound) {
@@ -136,10 +153,13 @@ const Storage = (() => {
     state.day1CardsFound = [];
     state.day1Letters = [];
     state.day2ColorsFound = [];
+    state.day2PatternsMatched = [];
     state.day2ItemsFound = [];
     state.day3AnimalsMatched = [];
+    state.day3RhythmRound = 0;
     state.day4HighestRound = 0;
     state.day5GoodbyeMessage = null;
+    state.day5ShelterAnswers = [];
     state.day1WordsSpoken = [];
     state.day3SoundsImitated = [];
     state.day4MovesNamed = [];
@@ -168,7 +188,8 @@ const Storage = (() => {
   return {
     load, save, getState,
     completeDay, addPower,
-    addDay1Card, addDay2Color, addDay3Animal, setDay4Round,
+    addDay1Card, addDay2Color, addDay2Pattern, addDay3Animal,
+    setDay3RhythmRound, setDay4Round,
     setPlayerName,
     resetAll, resetEpisodeProgress, markEpisodeComplete,
     isDayUnlocked, isDayCompleted

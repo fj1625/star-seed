@@ -127,13 +127,19 @@ const EngineMotion = (() => {
         startBtn.style.display = 'none';
         if (doneBtn) doneBtn.style.display = 'block';
 
-        if (speechEl) {
-          speechEl.innerHTML = `<div class="speech-bubble">Watch me, then YOU do it!</div>`;
-        }
-        await Audio.speak(`Round ${roundIdx + 1}! ${numActions} moves. Watch me first!`, { rate: 0.9 });
+        const isMimicMode = roundActions.some(a => a.requiresMimic);
 
-        // Show each action
-        await performActionSequence(0);
+        if (speechEl) {
+          speechEl.innerHTML = `<div class="speech-bubble">${isMimicMode ? 'Copy the shadow!' : 'Watch me, then YOU do it!'}</div>`;
+        }
+
+        if (isMimicMode) {
+          await Audio.speak(`Round ${roundIdx + 1}! Copy the animal shadows!`, { rate: 0.9 });
+          await performShadowSequence(0);
+        } else {
+          await Audio.speak(`Round ${roundIdx + 1}! ${numActions} moves. Watch me first!`, { rate: 0.9 });
+          await performActionSequence(0);
+        }
       };
     }
 
@@ -173,6 +179,117 @@ const EngineMotion = (() => {
     // Pause, then next
     await Utils.sleep(1200);
     await performActionSequence(index + 1);
+  }
+
+  async function performShadowSequence(index) {
+    if (index >= roundActions.length) {
+      await onShadowRoundComplete();
+      return;
+    }
+
+    const action = roundActions[index];
+    currentActionIndex = index;
+
+    const actionDisplay = document.getElementById('dance-action-display');
+    const actionEmoji = document.getElementById('action-emoji');
+    const actionText = document.getElementById('action-text');
+    const doneBtn = document.getElementById('btn-action-done');
+    const dancerEl = document.getElementById('twinkle-dancer');
+    const speechEl = document.getElementById('day4-speech');
+    const counterEl = document.getElementById('dance-counter');
+
+    if (actionDisplay) {
+      actionDisplay.style.display = 'flex';
+      actionDisplay.classList.remove('your-turn');
+    }
+
+    // Show silhouette instead of emoji
+    if (actionEmoji) actionEmoji.textContent = action.silhouetteEmoji || action.emoji;
+    if (actionText) actionText.textContent = action.instruction;
+
+    // Animate Twinkle
+    if (dancerEl) {
+      dancerEl.className = 'twinkle-dancer';
+      dancerEl.classList.add(`twinkle-${action.twinkleAnimation}`);
+    }
+
+    if (speechEl) {
+      speechEl.innerHTML = `<div class="speech-bubble">${action.instruction} Copy the shadow!</div>`;
+    }
+    await Audio.speak(`${action.instruction} Copy the shadow!`, { rate: 0.85 });
+
+    // Show progress checklist
+    if (counterEl) {
+      counterEl.innerHTML = `
+        <div class="action-checklist">
+          ${roundActions.map((a, i) => `
+            <div class="checklist-item ${i < index ? 'done' : ''} ${i === index ? 'current' : ''}" id="check-${i}">
+              <span class="check-emoji">${i < index ? '✅' : (a.silhouetteEmoji || a.emoji)}</span>
+              <span class="check-text">${a.instruction}</span>
+            </div>
+          `).join('')}
+        </div>
+      `;
+    }
+
+    // Set up parent confirmation button
+    if (doneBtn) {
+      doneBtn.disabled = false;
+      doneBtn.style.display = 'block';
+      doneBtn.textContent = `✓ ${action.verb} done!`;
+
+      // Replace listener by cloning
+      const newDone = Utils.replaceWithClone(doneBtn);
+      newDone.addEventListener('click', async () => {
+        newDone.disabled = true;
+
+        // Mark checklist item done
+        const checkItem = document.getElementById(`check-${index}`);
+        if (checkItem) {
+          checkItem.classList.add('done');
+          checkItem.querySelector('.check-emoji').textContent = '✅';
+        }
+
+        if (speechEl) {
+          speechEl.innerHTML = `<div class="speech-bubble happy">Great ${action.verb}ing!</div>`;
+        }
+        await Audio.speak(`Great ${action.verb}ing!`, { rate: 0.85 });
+
+        await Utils.sleep(600);
+        await performShadowSequence(index + 1);
+      });
+    }
+  }
+
+  async function onShadowRoundComplete() {
+    const actionDisplay = document.getElementById('dance-action-display');
+    const doneBtn = document.getElementById('btn-action-done');
+    const counterEl = document.getElementById('dance-counter');
+    const speechEl = document.getElementById('day4-speech');
+
+    if (doneBtn) doneBtn.style.display = 'none';
+    if (counterEl) counterEl.innerHTML = '';
+
+    if (speechEl) {
+      speechEl.innerHTML = `<div class="speech-bubble happy">Amazing! You copied all the shadows!</div>`;
+    }
+    await Audio.speak('Amazing! You copied all the shadows!', { rate: 0.85 });
+
+    currentRound++;
+    Storage.setDay4Round(currentRound);
+    App.updateStatusBar();
+
+    // Update round dots
+    const dot = document.getElementById(`rdot-${currentRound - 1}`);
+    if (dot) { dot.classList.add('done'); dot.textContent = '⭐'; }
+
+    await Utils.sleep(800);
+
+    if (currentRound >= rounds.length) {
+      onAllRoundsComplete();
+    } else {
+      await startDanceRound(currentRound);
+    }
   }
 
   async function showChildTurn() {

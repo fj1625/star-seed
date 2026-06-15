@@ -243,7 +243,6 @@ const EngineHeart = (() => {
 
   async function onDualTouchComplete() {
     const dualPhase = document.getElementById('heart-phase-dual');
-    const puzzlePhase = document.getElementById('heart-phase-puzzle');
     const speechEl = document.getElementById('day5-speech');
 
     // Celebration
@@ -254,16 +253,23 @@ const EngineHeart = (() => {
     }
 
     if (speechEl) {
-      speechEl.innerHTML = `<div class="speech-bubble happy">You did it together! Now let's put Twinkle's heart back!</div>`;
+      speechEl.innerHTML = `<div class="speech-bubble happy">You did it together! Now let's finish the mission!</div>`;
     }
-    await Audio.speak('You did it together! Now let\'s complete the puzzle!', { rate: 0.85 });
+    await Audio.speak('You did it together! Now let\'s finish the mission!', { rate: 0.85 });
 
-    // Transition to recall challenge + puzzle
+    const buildSteps = data.days?.['5']?.buildSteps;
+
     setTimeout(() => {
       if (dualPhase) dualPhase.style.display = 'none';
-      if (puzzlePhase) puzzlePhase.style.display = 'block';
-      buildPuzzle([]); // all pieces hidden initially
-      startRecallChallenge();
+
+      if (buildSteps && buildSteps.length > 0) {
+        showBuildPhase();
+      } else {
+        const puzzlePhase = document.getElementById('heart-phase-puzzle');
+        if (puzzlePhase) puzzlePhase.style.display = 'block';
+        buildPuzzle([]);
+        startRecallChallenge();
+      }
     }, 2000);
   }
 
@@ -536,6 +542,213 @@ const EngineHeart = (() => {
     await Audio.speak('The heart is complete! Now Twinkle wants to stay with you. Will you plant a seed?', { rate: 0.85 });
 
     setTimeout(() => showPlantPhase(), 2000);
+  }
+
+  // ==================== BUILD SHELTER PHASE ====================
+
+  function showBuildPhase() {
+    const container = document.getElementById('day5');
+    if (!container) return;
+
+    // Insert build phase UI if not present
+    let buildPhase = document.getElementById('heart-phase-build');
+    if (!buildPhase) {
+      buildPhase = document.createElement('div');
+      buildPhase.id = 'heart-phase-build';
+      buildPhase.className = 'heart-phase-build';
+      container.appendChild(buildPhase);
+    }
+
+    buildPhase.style.display = 'flex';
+    buildPhase.innerHTML = `
+      <div class="build-stage" id="build-stage"></div>
+      <div class="build-progress-bar">
+        <div class="build-progress-fill" id="build-progress-fill"></div>
+      </div>
+    `;
+
+    renderBuildStep(0);
+  }
+
+  function renderBuildStep(stepIndex) {
+    const buildSteps = data.days?.['5']?.buildSteps || [];
+    if (stepIndex >= buildSteps.length) {
+      onBuildComplete();
+      return;
+    }
+
+    const step = buildSteps[stepIndex];
+    const stage = document.getElementById('build-stage');
+    const progressFill = document.getElementById('build-progress-fill');
+    const speechEl = document.getElementById('day5-speech');
+
+    if (progressFill) {
+      progressFill.style.width = `${((stepIndex) / buildSteps.length) * 100}%`;
+    }
+
+    if (stage) {
+      stage.innerHTML = `
+        <div class="build-step-card animate-pop">
+          <div class="build-step-emoji">${step.emoji}</div>
+          <h3 class="build-step-title">${step.title}</h3>
+          <p class="build-step-instruction">${step.instruction}</p>
+          <p class="build-step-english">🗣️ Say it: "${step.english}"</p>
+        </div>
+        <button class="btn btn-primary btn-large" id="btn-build-step-done">✓ Done! Next →</button>
+      `;
+
+      const nextBtn = document.getElementById('btn-build-step-done');
+      if (nextBtn) {
+        nextBtn.addEventListener('click', async () => {
+          if (speechEl) {
+            speechEl.innerHTML = `<div class="speech-bubble happy">${step.english}</div>`;
+          }
+          await Audio.speak(step.english, { rate: 0.85 });
+          renderBuildStep(stepIndex + 1);
+        });
+      }
+    }
+
+    if (speechEl) {
+      speechEl.innerHTML = `<div class="speech-bubble">${step.title}. ${step.instruction}</div>`;
+    }
+    Audio.speak(`${step.title}. ${step.instruction}. Say: ${step.english}`, { rate: 0.85 });
+  }
+
+  async function onBuildComplete() {
+    const buildPhase = document.getElementById('heart-phase-build');
+    const progressFill = document.getElementById('build-progress-fill');
+    const speechEl = document.getElementById('day5-speech');
+
+    if (progressFill) progressFill.style.width = '100%';
+
+    if (speechEl) {
+      speechEl.innerHTML = `<div class="speech-bubble happy">The shelter is built! Now tell Twinkle about it!</div>`;
+    }
+    await Audio.speak('The shelter is built! Now tell Twinkle about it!', { rate: 0.85 });
+
+    if (buildPhase) buildPhase.style.display = 'none';
+
+    showDescriptionPhase();
+  }
+
+  // ==================== DESCRIPTION PHASE ====================
+
+  function showDescriptionPhase() {
+    const container = document.getElementById('day5');
+    if (!container) return;
+
+    let descPhase = document.getElementById('heart-phase-description');
+    if (!descPhase) {
+      descPhase = document.createElement('div');
+      descPhase.id = 'heart-phase-description';
+      descPhase.className = 'heart-phase-description';
+      container.appendChild(descPhase);
+    }
+
+    descPhase.style.display = 'flex';
+    descPhase.innerHTML = `
+      <div class="description-stage" id="description-stage"></div>
+    `;
+
+    renderDescriptionPrompt(0);
+  }
+
+  function renderDescriptionPrompt(promptIndex) {
+    const prompts = data.days?.['5']?.descriptionPrompts || [];
+    if (promptIndex >= prompts.length) {
+      onDescriptionComplete();
+      return;
+    }
+
+    const prompt = prompts[promptIndex];
+    const stage = document.getElementById('description-stage');
+    const speechEl = document.getElementById('day5-speech');
+
+    if (stage) {
+      stage.innerHTML = `
+        <div class="description-card animate-pop">
+          <div class="description-emoji">🎤</div>
+          <p class="description-question">${prompt.question}</p>
+          <p class="description-hint">${prompt.hint}</p>
+          <div class="description-mic-area">
+            <button class="btn btn-mic" id="btn-desc-mic">🎤 Tap to Answer</button>
+            <p class="voice-status" id="desc-voice-status"></p>
+          </div>
+          <div class="voice-fallback-container" id="desc-fallback"></div>
+        </div>
+        <button class="btn btn-skip" id="btn-desc-skip">Skip →</button>
+      `;
+
+      const micBtn = document.getElementById('btn-desc-mic');
+      const statusEl = document.getElementById('desc-voice-status');
+      const fallbackContainer = document.getElementById('desc-fallback');
+      const skipBtn = document.getElementById('btn-desc-skip');
+
+      const onAnswer = async (text) => {
+        if (statusEl) statusEl.innerHTML = `<span class="voice-heard">✅ "${text}"</span>`;
+        if (speechEl) {
+          speechEl.innerHTML = `<div class="speech-bubble happy">Good job! You said: ${text}</div>`;
+        }
+        await Audio.speak(`Good job! You said: ${text}`, { rate: 0.85 });
+
+        // Save answer
+        const state = Storage.getState();
+        if (!state.day5ShelterAnswers) state.day5ShelterAnswers = [];
+        state.day5ShelterAnswers.push({ question: prompt.question, answer: text });
+        Storage.save();
+
+        await Utils.sleep(800);
+        renderDescriptionPrompt(promptIndex + 1);
+      };
+
+      if (micBtn) {
+        const newMic = Utils.replaceWithClone(micBtn);
+        newMic.addEventListener('click', () => {
+          VoiceInput.listen({
+            lang: 'en-US',
+            onInterim: (text) => {
+              if (statusEl) statusEl.innerHTML = `<span class="voice-hearing">👂 "${text}"</span>`;
+            },
+            onResult: onAnswer,
+            onError: () => {
+              if (statusEl) statusEl.innerHTML = '<span class="voice-error">Try typing below!</span>';
+            }
+          });
+        });
+      }
+
+      if (fallbackContainer) {
+        VoiceInput.renderFallbackInput(fallbackContainer, {
+          placeholder: 'Type your answer...',
+          buttonText: 'Send',
+          onSubmit: onAnswer
+        });
+      }
+
+      if (skipBtn) {
+        skipBtn.addEventListener('click', () => renderDescriptionPrompt(promptIndex + 1));
+      }
+    }
+
+    if (speechEl) {
+      speechEl.innerHTML = `<div class="speech-bubble">${prompt.question}</div>`;
+    }
+    Audio.speak(prompt.question, { rate: 0.85 });
+  }
+
+  async function onDescriptionComplete() {
+    const descPhase = document.getElementById('heart-phase-description');
+    const speechEl = document.getElementById('day5-speech');
+
+    if (descPhase) descPhase.style.display = 'none';
+
+    if (speechEl) {
+      speechEl.innerHTML = `<div class="speech-bubble happy">${data.days['5'].completionText}</div>`;
+    }
+    await Audio.speak(data.days['5'].completionText, { rate: 0.85 });
+
+    App.onDayComplete(5);
   }
 
   // ==================== PLANT PHASE ====================

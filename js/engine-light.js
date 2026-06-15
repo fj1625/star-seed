@@ -183,8 +183,12 @@ const EngineLight = (() => {
       btn.onclick = async () => {
         const entered = `${d1?.value || ''}${d2?.value || ''}${d3?.value || ''}`;
         if (entered === card.code) {
-          // Correct!
-          onCardFound(index, card);
+          // Correct code — now match the footprint if this episode uses them
+          if (card.matchOptions && card.matchOptions.length > 0) {
+            showFootprintMatch(index, card);
+          } else {
+            onCardFound(index, card);
+          }
         } else {
           if (errorEl) {
             errorEl.textContent = 'Not quite right... Try again!';
@@ -201,6 +205,64 @@ const EngineLight = (() => {
         Audio.speak(card.hintText, { rate: 0.8 });
       };
     }
+  }
+
+  async function showFootprintMatch(index, card) {
+    const codeEntryEl = document.getElementById('day1-code-entry');
+    const silhouetteEl = document.getElementById('day1-silhouette');
+    const speechEl = document.getElementById('day1-speech');
+
+    if (codeEntryEl) codeEntryEl.style.display = 'none';
+
+    const matchId = `footprint-match-${card.id}`;
+
+    // Create footprint match UI inside silhouette display
+    if (silhouetteEl) {
+      silhouetteEl.style.display = 'flex';
+      silhouetteEl.innerHTML = `
+        <div class="footprint-match-card" id="${matchId}">
+          <div class="footprint-emoji">${card.footprintEmoji || '🐾'}</div>
+          <p class="footprint-label">${card.footprintLabel || 'mystery footprint'}</p>
+          <p class="footprint-question">Whose footprint is this?</p>
+          <div class="footprint-options" id="footprint-options-${card.id}">
+            ${card.matchOptions.map(opt => `
+              <button class="btn footprint-option" data-id="${opt.id}">
+                <span class="footprint-option-emoji">${opt.emoji}</span>
+                <span class="footprint-option-label">${opt.label}</span>
+              </button>
+            `).join('')}
+          </div>
+        </div>
+      `;
+
+      const optionsEl = document.getElementById(`footprint-options-${card.id}`);
+      if (optionsEl) {
+        optionsEl.querySelectorAll('.footprint-option').forEach(btn => {
+          btn.addEventListener('click', async () => {
+            if (btn.dataset.id === card.id) {
+              // Correct match!
+              if (speechEl) {
+                speechEl.innerHTML = `<div class="speech-bubble happy">Yes! It's a ${card.word}!</div>`;
+              }
+              await Audio.speak(`Yes! It's a ${card.word}!`, { rate: 0.85 });
+              onCardFound(index, card);
+            } else {
+              btn.classList.add('shake');
+              setTimeout(() => btn.classList.remove('shake'), 500);
+              if (speechEl) {
+                speechEl.innerHTML = `<div class="speech-bubble">Try again! Look at the footprint.</div>`;
+              }
+              Audio.speak('Try again! Look at the footprint.', { rate: 0.9 });
+            }
+          });
+        });
+      }
+    }
+
+    if (speechEl) {
+      speechEl.innerHTML = `<div class="speech-bubble">Whose ${card.footprintLabel || 'footprint'} is this? Tap the right animal!</div>`;
+    }
+    await Audio.speak(`Whose ${card.footprintLabel || 'footprint'} is this? Tap the right animal!`, { rate: 0.85 });
   }
 
   async function onCardFound(index, card) {

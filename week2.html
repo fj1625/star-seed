@@ -7,7 +7,7 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <title>The Star Seed — Week 2: Animals</title>
-  <link rel="stylesheet" href="css/style.css?v=20260625">
+  <link rel="stylesheet" href="css/style.css?v=20260629">
 </head>
 <body>
   <!-- ===== App Shell ===== -->
@@ -35,6 +35,10 @@
         <span class="power-dot" id="power-dot-4">○</span>
         <span class="power-dot" id="power-dot-5">○</span>
       </div>
+      <button class="treasure-chest-btn" id="treasure-chest-btn" title="Twinkle's Treasure" aria-label="Open treasure chest" onclick="App.showTreasureModal()" type="button">
+        <span class="treasure-chest-icon">🎁</span>
+        <span class="treasure-chest-new" aria-hidden="true"></span>
+      </button>
     </header>
 
     <!-- Day Navigation Tabs -->
@@ -140,6 +144,7 @@
         <h2 class="overlay-power" id="complete-power"></h2>
         <h3 id="complete-title"></h3>
         <p id="complete-text"></p>
+        <div id="day-reward" class="day-reward"></div>
         <div class="overlay-buttons">
           <button class="btn btn-primary" id="btn-next-day">Next Day →</button>
           <button class="btn btn-ghost" id="btn-go-home">Stay on this page</button>
@@ -161,6 +166,24 @@
       <span class="footer-text">The Star Seed · Week 2: Animals</span>
       <span class="footer-episode" id="footer-episode"></span>
     </footer>
+    <!-- Treasure Chest Modal -->
+    <div id="treasure-modal" class="overlay" style="display:none" role="dialog" aria-modal="true" aria-labelledby="treasure-modal-title">
+      <div class="overlay-card treasure-card animate-pop">
+        <button class="treasure-close" aria-label="Close treasure chest">✕</button>
+        <div class="overlay-stars">🎁 ✨ 🎁</div>
+        <h3 id="treasure-modal-title">Twinkle's Treasure</h3>
+        <div class="treasure-tabs">
+          <button class="treasure-tab active" data-tab="gifts">🎁 Gifts</button>
+          <button class="treasure-tab" data-tab="achievements">🏅 Achievements</button>
+          <button class="treasure-tab" data-tab="trophies">🏆 Trophies</button>
+        </div>
+        <div class="treasure-panels">
+          <div class="treasure-panel active" data-panel="gifts"></div>
+          <div class="treasure-panel" data-panel="achievements"></div>
+          <div class="treasure-panel" data-panel="trophies"></div>
+        </div>
+      </div>
+    </div>
   </div>
 
   <!-- Error State -->
@@ -172,17 +195,20 @@
   <script src="js/voice-input.js?v=20260625"></script>
   <script src="js/utils.js?v=20260625"></script>
   <script src="js/twinkle.js?v=20260625"></script>
+  <script src="js/achievements.js?v=20260629"></script>
   <script src="js/engine-light.js?v=20260625"></script>
-  <script src="js/engine-color.js?v=20260625"></script>
-  <script src="js/engine-sound.js?v=20260625"></script>
+  <script src="js/engine-pattern.js?v=20260625"></script>
+  <script src="js/engine-rhythm.js?v=20260625"></script>
   <script src="js/engine-motion.js?v=20260625"></script>
   <script src="js/engine-heart.js?v=20260625"></script>
+  <script src="js/engine-color.js?v=20260625"></script>
+  <script src="js/engine-sound.js?v=20260625"></script>
   <script>
     window.STAR_SEED_STANDALONE = {
       episodeId: 'ep02',
       dataUrl: 'data/episodes/ep02-animals.json'
     };
   </script>
-  <script src="js/app.js?v=20260628"></script>
+  <script src="js/app.js?v=20260629"></script>
 </body>
 </html>

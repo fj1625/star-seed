@@ -78,6 +78,10 @@
       gap: 20px;
     }
 
+    .cards-grid-4 {
+      grid-template-columns: repeat(4, 1fr);
+    }
+
     /* Card front */
     .card {
       width: 100%;
@@ -173,6 +177,110 @@
       font-size: 0.6rem;
       color: rgba(74,222,128,0.4);
       margin-top: 8px;
+    }
+
+    /* Pattern cards */
+    .pattern-card {
+      width: 100%;
+      aspect-ratio: 1;
+      border: 3px solid #fbbf24;
+      border-radius: 12px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(135deg, #1a3e1a, #143a1a);
+      position: relative;
+      text-align: center;
+      padding: 12px;
+    }
+
+    .pattern-card::before {
+      content: '';
+      position: absolute;
+      inset: 4px;
+      border: 2px dashed rgba(251,191,36,0.3);
+      border-radius: 8px;
+      pointer-events: none;
+    }
+
+    .pattern-sample {
+      width: 70%;
+      aspect-ratio: 1;
+      border-radius: 12px;
+      margin-bottom: 10px;
+      border: 2px solid rgba(255,255,255,0.2);
+    }
+
+    .pattern-stripes {
+      background: repeating-linear-gradient(
+        45deg,
+        #1a1a2e,
+        #1a1a2e 8px,
+        #ffd700 8px,
+        #ffd700 16px
+      );
+    }
+
+    .pattern-spots {
+      background-color: #1a1a2e;
+      background-image: radial-gradient(circle, #ff6b9d 25%, transparent 26%);
+      background-size: 18px 18px;
+    }
+
+    .pattern-scales {
+      background-color: #1a1a2e;
+      background-image: radial-gradient(circle at 50% 0, transparent 8px, #4ecdc4 9px, #4ecdc4 11px, transparent 12px);
+      background-size: 22px 22px;
+    }
+
+    .pattern-card-label {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: #fbbf24;
+    }
+
+    .pattern-card-example {
+      font-size: 0.65rem;
+      color: rgba(255,255,255,0.5);
+      margin-top: 4px;
+    }
+
+    /* Shadow pose cards */
+    .pose-card {
+      width: 100%;
+      aspect-ratio: 1;
+      border: 3px solid #a78bfa;
+      border-radius: 12px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(135deg, #1a3e1a, #143a1a);
+      position: relative;
+      text-align: center;
+      padding: 12px;
+    }
+
+    .pose-card::before {
+      content: '';
+      position: absolute;
+      inset: 4px;
+      border: 2px dashed rgba(167,139,250,0.3);
+      border-radius: 8px;
+      pointer-events: none;
+    }
+
+    .pose-emoji {
+      font-size: 4rem;
+      filter: brightness(0.35);
+      margin-bottom: 6px;
+    }
+
+    .pose-label {
+      font-size: 0.9rem;
+      font-weight: 700;
+      color: #a78bfa;
     }
 
     /* Heart piece card */
@@ -304,12 +412,12 @@
         color: #333;
       }
 
-      .card, .card-back, .heart-piece-front, .heart-piece-back {
+      .card, .card-back, .pattern-card, .pose-card, .heart-piece-front, .heart-piece-back {
         border: 2px solid #333;
         background: white;
       }
 
-      .card::before, .card-back::before {
+      .card::before, .card-back::before, .pattern-card::before, .pose-card::before {
         border-color: rgba(0,0,0,0.15);
       }
 
@@ -320,6 +428,10 @@
       .back-code, .back-letter {
         color: #333;
         text-shadow: none;
+      }
+
+      .pattern-card-label, .pose-label {
+        color: #333;
       }
 
       .setup-day {
@@ -362,39 +474,42 @@
   <p style="margin-bottom:14px;color:#a0c0a0;">Read this before you print!</p>
 
   <div class="setup-day">
-    <h4>🔦 Day 1 — Zoo Animal Hunt (Card Hunt)</h4>
+    <h4>🔦 Day 1 — Animal Footprint Tracker (Card Hunt)</h4>
     <p>Print pages 2-3 <strong>double-sided</strong> (flip on short edge). Cut out the 4 animal cards.</p>
     <p>Hide them BEFORE your child starts the game:</p>
     <p>🐵 <strong>Monkey card</strong> → <span class="hide-spot">somewhere high up</span> (like on a shelf or top of a cabinet)</p>
     <p>🦁 <strong>Lion card</strong> → <span class="hide-spot">under a blanket or cushion</span> (the king's "den")</p>
     <p>🐼 <strong>Panda card</strong> → <span class="hide-spot">on something soft and cozy</span> (bed, sofa, or plush toy)</p>
     <p>🐯 <strong>Tiger card</strong> → <span class="hide-spot">behind a door or curtain</span> (tigers love to ambush!)</p>
-    <p><em>The cards spell W-I-L-D when all 4 are found. The letter is on the back!</em></p>
+    <p><em>After entering the code, your child must match the footprint to the right animal. The cards spell W-I-L-D when all 4 are found.</em></p>
   </div>
 
   <div class="setup-day">
-    <h4>🌈 Day 2 — Animal Colors</h4>
-    <p>No printing needed! Your child will mix colors by dragging on screen, then find real objects matching: <strong>pink</strong>, <strong>light blue</strong>, and <strong>brown</strong>. Have some colorful items around (pink clothes, blue cups, brown toys, etc.).</p>
+    <h4>🌈 Day 2 — Animal Pattern Puzzle</h4>
+    <p>Print page 4 (pattern cards). Cut out the 3 pattern squares.</p>
+    <p>Your child will drag stripes, spots, and scales onto the right animal on screen. After the puzzle, ask them to find something at home with one of these patterns (striped shirt, spotted cup, scaly fish toy, etc.).</p>
   </div>
 
   <div class="setup-day">
-    <h4>🎵 Day 3 — Farm Sounds</h4>
-    <p>No printing needed! The game plays farm animal sounds: cow, sheep, horse, pig, and chicken. <strong>Optional fun:</strong> make the animal sounds yourself from another room! Can your child tell which animal is mooing?</p>
+    <h4>🎵 Day 3 — Animal Choir Rhythm</h4>
+    <p>No printing needed! The game plays a sequence of animal sounds. Your child taps the animals in the same order.</p>
+    <p><strong>Optional fun:</strong> clap or tap a steady beat while the "choir" sings. Can your child keep the rhythm?</p>
   </div>
 
   <div class="setup-day">
-    <h4>🤸 Day 4 — Animal Dance</h4>
-    <p>No printing needed! Make sure there's open floor space. Your child will hop like a rabbit, stomp like an elephant, swim like a fish, fly like a bird, and crawl like a crab. <strong>Join in!</strong> Kids love it when parents act silly too!</p>
+    <h4>🤸 Day 4 — Animal Shadow Mimic</h4>
+    <p>Print page 5 (shadow pose cards). Cut them out and keep them nearby, or just use the on-screen shadows.</p>
+    <p>Your child copies each animal pose. <strong>You are the judge!</strong> Tap "✓ [verb] done!" when they look like the animal. Make sure there's open floor space. Join in!</p>
   </div>
 
   <div class="setup-day">
-    <h4>❤️ Day 5 — Animal Rescue (YOU are the hero!)</h4>
+    <h4>❤️ Day 5 — Build an Animal Shelter (YOU are the hero!)</h4>
     <p><strong>Important preparation:</strong></p>
-    <p>1. Print the <strong>Heart Piece card</strong> (page 4) and keep it with you.</p>
-    <p>2. Prepare a <strong>small toy animal</strong> or draw a cute animal together on paper.</p>
-    <p>3. When the game says "Find your Earth Helper," give your child the Heart Piece card. The code is <strong>738</strong>.</p>
-    <p>4. Later, present the toy/drawn animal — this is the "rescued baby animal" that found its mommy!</p>
-    <p><em>This is about empathy and caring. Praise your child for being kind to animals!</em></p>
+    <p>1. Print the <strong>Heart Piece card</strong> (page 6) and keep it with you.</p>
+    <p>2. Gather household materials: a small box or basket, a tissue/towel, a bottle cap or paper bowl, crayons.</p>
+    <p>3. When the game says "Ask your Earth Helper for the Heart Piece," give your child the card. The code is <strong>738</strong>.</p>
+    <p>4. Follow the on-screen steps to build a cozy shelter together. Then help your child describe it in English!</p>
+    <p><em>This is about creativity, teamwork, and caring for animals. Praise your little architect!</em></p>
   </div>
 </div>
 
@@ -411,7 +526,7 @@
       <div class="card-stars">🐾 🐾 🐾 🐾 🐾</div>
       <div class="card-emoji">🐵</div>
       <div class="card-number">Zoo Animal #1</div>
-      <div class="card-fragment">🐾 swings from trees</div>
+      <div class="card-fragment">🐾 small hand-like prints</div>
     </div>
 
     <!-- Card 2: Lion 🦁 → I -->
@@ -419,7 +534,7 @@
       <div class="card-stars">🐾 🐾 🐾 🐾 🐾</div>
       <div class="card-emoji">🦁</div>
       <div class="card-number">Zoo Animal #2</div>
-      <div class="card-fragment">🐾 king of the jungle</div>
+      <div class="card-fragment">🐾 big paw prints</div>
     </div>
 
     <!-- Card 3: Panda 🐼 → L -->
@@ -427,7 +542,7 @@
       <div class="card-stars">🐾 🐾 🐾 🐾 🐾</div>
       <div class="card-emoji">🐼</div>
       <div class="card-number">Zoo Animal #3</div>
-      <div class="card-fragment">🐾 black & white, loves bamboo</div>
+      <div class="card-fragment">🐾 round paw prints</div>
     </div>
 
     <!-- Card 4: Tiger 🐯 → D -->
@@ -435,7 +550,7 @@
       <div class="card-stars">🐾 🐾 🐾 🐾 🐾</div>
       <div class="card-emoji">🐯</div>
       <div class="card-number">Zoo Animal #4</div>
-      <div class="card-fragment">🐾 orange with black stripes</div>
+      <div class="card-fragment">🐾 striped paw prints</div>
     </div>
   </div>
 
@@ -472,7 +587,86 @@
   </div>
 </div>
 
-<!-- ===== HEART PIECE CARD (Page 4) ===== -->
+<!-- ===== DAY 2 PATTERN CARDS (Page 4) ===== -->
+<div class="print-section">
+  <h3>🌈 Day 2 — Animal Pattern Cards</h3>
+  <p style="color:#a0c0a0;margin-bottom:16px;">Cut out the 3 pattern cards. Use them as a reference while playing, or hide them around the room for a pattern scavenger hunt!</p>
+
+  <div class="cards-grid cards-grid-4">
+    <div class="pattern-card">
+      <div class="pattern-sample pattern-stripes"></div>
+      <div class="pattern-card-label">Stripes</div>
+      <div class="pattern-card-example">zebra · tiger</div>
+    </div>
+
+    <div class="pattern-card">
+      <div class="pattern-sample pattern-spots"></div>
+      <div class="pattern-card-label">Spots</div>
+      <div class="pattern-card-example">leopard · ladybug</div>
+    </div>
+
+    <div class="pattern-card">
+      <div class="pattern-sample pattern-scales"></div>
+      <div class="pattern-card-label">Scales</div>
+      <div class="pattern-card-example">snake · fish</div>
+    </div>
+
+    <div class="pattern-card" style="border-color:#4ade80;">
+      <div class="pattern-card-label" style="font-size:0.95rem;">Find at home:</div>
+      <div class="pattern-card-example" style="font-size:0.75rem;">striped shirt<br>spotted cup<br>scaly toy</div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== DAY 4 SHADOW POSE CARDS (Page 5) ===== -->
+<div class="print-section">
+  <h3>🤸 Day 4 — Animal Shadow Pose Cards</h3>
+  <p style="color:#a0c0a0;margin-bottom:16px;">Optional reference cards. Hold one up or lay it on the floor, then ask your child to copy the pose!</p>
+
+  <div class="cards-grid cards-grid-4">
+    <div class="pose-card">
+      <div class="pose-emoji">🐰</div>
+      <div class="pose-label">Hop like a rabbit</div>
+    </div>
+
+    <div class="pose-card">
+      <div class="pose-emoji">🐘</div>
+      <div class="pose-label">Stomp like an elephant</div>
+    </div>
+
+    <div class="pose-card">
+      <div class="pose-emoji">🐟</div>
+      <div class="pose-label">Swim like a fish</div>
+    </div>
+
+    <div class="pose-card">
+      <div class="pose-emoji">🐦</div>
+      <div class="pose-label">Fly like a bird</div>
+    </div>
+
+    <div class="pose-card">
+      <div class="pose-emoji">🦀</div>
+      <div class="pose-label">Crawl like a crab</div>
+    </div>
+
+    <div class="pose-card">
+      <div class="pose-emoji">🐎</div>
+      <div class="pose-label">Gallop like a horse</div>
+    </div>
+
+    <div class="pose-card">
+      <div class="pose-emoji">🐧</div>
+      <div class="pose-label">Waddle like a penguin</div>
+    </div>
+
+    <div class="pose-card">
+      <div class="pose-emoji">🐍</div>
+      <div class="pose-label">Slither like a snake</div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== HEART PIECE CARD (Page 6) ===== -->
 <div class="print-section">
   <h3>❤️ Day 5 — Heart Piece Card (Keep this!)</h3>
   <p style="color:#a0c0a0;margin-bottom:16px;">Print double-sided. Keep this card with you until Day 5!</p>
@@ -480,15 +674,15 @@
   <div class="heart-card">
     <h4 style="color:#ef4444;margin:16px 0;">▶ FRONT</h4>
     <div class="heart-piece-front">
-      <div class="heart-emoji">🐾❤️</div>
-      <div class="heart-text">Baby Animal Rescue Card</div>
+      <div class="heart-emoji">🏠❤️</div>
+      <div class="heart-text">Animal Shelter Card</div>
       <div style="font-size:0.6rem;color:rgba(239,68,68,0.4);margin-top:4px;">keep me safe until Day 5</div>
     </div>
 
     <h4 style="color:#ef4444;margin:24px 0 16px;">▶ BACK</h4>
     <div class="heart-piece-back">
       <div class="back-code">738</div>
-      <div style="font-size:0.7rem;color:rgba(239,68,68,0.5);margin-top:8px;">rescue code</div>
+      <div style="font-size:0.7rem;color:rgba(239,68,68,0.5);margin-top:8px;">shelter code</div>
     </div>
   </div>
 </div>
@@ -509,38 +703,38 @@
       <tr style="border-bottom:1px solid rgba(255,255,255,0.05);">
         <td style="padding:8px;">1</td>
         <td style="padding:8px;">🔦 Light</td>
-        <td style="padding:8px;">Find 4 zoo animal cards, enter codes, spell WILD</td>
+        <td style="padding:8px;">Find cards, enter codes, match footprints, spell WILD</td>
         <td style="padding:8px;">Print + hide 4 animal cards</td>
       </tr>
       <tr style="border-bottom:1px solid rgba(255,255,255,0.05);">
         <td style="padding:8px;">2</td>
         <td style="padding:8px;">🌈 Color</td>
-        <td style="padding:8px;">Drag-mix pink/blue/brown, find real objects</td>
-        <td style="padding:8px;">Have colorful items around home</td>
+        <td style="padding:8px;">Drag patterns onto animals, find a patterned object</td>
+        <td style="padding:8px;">Print pattern cards</td>
       </tr>
       <tr style="border-bottom:1px solid rgba(255,255,255,0.05);">
         <td style="padding:8px;">3</td>
         <td style="padding:8px;">🎵 Sound</td>
-        <td style="padding:8px;">Listen to farm animals, match + remember sequence</td>
-        <td style="padding:8px;">None (optional: make sounds!)</td>
+        <td style="padding:8px;">Listen to animal choir, repeat the sequence in rhythm</td>
+        <td style="padding:8px;">None (optional: keep a beat!)</td>
       </tr>
       <tr style="border-bottom:1px solid rgba(255,255,255,0.05);">
         <td style="padding:8px;">4</td>
         <td style="padding:8px;">🤸 Motion</td>
-        <td style="padding:8px;">Dance like animals: hop, stomp, swim, fly, crawl</td>
-        <td style="padding:8px;">Clear floor space; join in!</td>
+        <td style="padding:8px;">Copy animal shadow poses one by one</td>
+        <td style="padding:8px;">Clear floor space; print pose cards (optional)</td>
       </tr>
       <tr>
         <td style="padding:8px;">5</td>
         <td style="padding:8px;">❤️ Heart</td>
-        <td style="padding:8px;">Dual-touch with parent, rescue baby animal</td>
-        <td style="padding:8px;">Heart card + small toy animal</td>
+        <td style="padding:8px;">Build an animal shelter with parent, describe it in English</td>
+        <td style="padding:8px;">Heart card + box/towel/bottle cap/crayons</td>
       </tr>
     </tbody>
   </table>
   <p style="margin-top:16px;font-size:0.85rem;color:#a0c0a0;">
-    <strong>English vocabulary this week (~20 words):</strong>
-    monkey, lion, panda, tiger · pink, sky blue, brown · cow, sheep, horse, pig, chicken · hop, stomp, swim, fly, crawl · WILD
+    <strong>English vocabulary this week (~25 words):</strong>
+    monkey, lion, panda, tiger, zebra, leopard, snake · stripes, spots, scales · cow, sheep, horse, pig, chicken · hop, stomp, swim, fly, crawl, gallop, waddle, slither · home, bed, food, beautiful · WILD
   </p>
 </div>
 

@@ -198,10 +198,13 @@ const App = (() => {
   /** Initialize all engines with current episode data */
   function initAllEngines() {
     if (typeof EngineLight !== 'undefined') EngineLight.init(episodeData);
-    if (typeof EngineColor !== 'undefined') EngineColor.init(episodeData);
-    if (typeof EngineSound !== 'undefined') EngineSound.init(episodeData);
+    if (typeof EnginePattern !== 'undefined') EnginePattern.init(episodeData);
+    if (typeof EngineRhythm !== 'undefined') EngineRhythm.init(episodeData);
     if (typeof EngineMotion !== 'undefined') EngineMotion.init(episodeData);
     if (typeof EngineHeart !== 'undefined') EngineHeart.init(episodeData);
+    // EngineColor and EngineSound kept for backward compatibility with other episodes
+    if (typeof EngineColor !== 'undefined') EngineColor.init(episodeData);
+    if (typeof EngineSound !== 'undefined') EngineSound.init(episodeData);
   }
 
   /** Update intro scene for current episode */
@@ -441,8 +444,8 @@ const App = (() => {
         // Init the engine for this day
         const engineMap = {
           1: EngineLight,
-          2: EngineColor,
-          3: EngineSound,
+          2: EnginePattern,
+          3: EngineRhythm,
           4: EngineMotion,
           5: EngineHeart
         };
@@ -558,8 +561,8 @@ const App = (() => {
       overlay.setAttribute('aria-hidden', 'true');
       showScene(`day${day + 1}`);
       const nextEngineMap = {
-        2: EngineColor,
-        3: EngineSound,
+        2: EnginePattern,
+        3: EngineRhythm,
         4: EngineMotion,
         5: EngineHeart
       };
@@ -731,12 +734,16 @@ const App = (() => {
   function showTreasureModal() {
     const modal = document.getElementById('treasure-modal');
     if (!modal) return;
-    renderTreasureModal();
+    try {
+      renderTreasureModal();
+      if (typeof Achievements !== 'undefined') {
+        Achievements.markAllSeen();
+      }
+    } catch (e) {
+      console.error('Failed to render treasure modal:', e);
+    }
     modal.style.display = 'flex';
     modal.setAttribute('aria-hidden', 'false');
-    if (typeof Achievements !== 'undefined') {
-      Achievements.markAllSeen();
-    }
     updateTreasureButton();
 
     // Close on Escape
@@ -1111,7 +1118,8 @@ const App = (() => {
     init, showScene, goToDay, onDayComplete,
     updateStatusBar, getEpisodeData,
     updateIntroDaySelect, showContinueOption,
-    switchEpisode, getCurrentEpisodeId: () => currentEpisodeId
+    switchEpisode, getCurrentEpisodeId: () => currentEpisodeId,
+    showTreasureModal, hideTreasureModal, switchTreasureTab
   };
 })();
 

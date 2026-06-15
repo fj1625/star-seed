@@ -3064,6 +3064,529 @@ body {
   .sound-jar { width: 65px; }
 }
 
+/* ===== Week 2 New Mechanics ===== */
+
+/* --- Day 1: Footprint Matching --- */
+.footprint-match-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  padding: 20px;
+  background: var(--bg-card);
+  border: 2px dashed rgba(255, 215, 0, 0.4);
+  border-radius: var(--radius-lg);
+  max-width: 320px;
+  width: 100%;
+  text-align: center;
+}
+
+.footprint-emoji {
+  font-size: 4rem;
+  line-height: 1;
+  animation: footprintPulse 1.5s ease-in-out infinite;
+}
+
+@keyframes footprintPulse {
+  0%, 100% { transform: scale(1); opacity: 0.8; }
+  50% { transform: scale(1.1); opacity: 1; }
+}
+
+.footprint-label {
+  font-size: 1rem;
+  color: var(--text-muted);
+}
+
+.footprint-question {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: var(--gold);
+}
+
+.footprint-options {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 12px;
+  width: 100%;
+}
+
+.footprint-option {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 14px 18px;
+  min-width: 80px;
+  background: var(--bg-light);
+  border: 2px solid rgba(255,255,255,0.1);
+  border-radius: var(--radius);
+  color: var(--text);
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.footprint-option:active {
+  transform: scale(0.96);
+  border-color: var(--gold);
+  background: rgba(255, 215, 0, 0.15);
+}
+
+.footprint-option-emoji {
+  font-size: 2.2rem;
+  line-height: 1;
+}
+
+/* --- Day 2: Pattern Puzzle --- */
+.pattern-stage {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  width: 100%;
+  padding: 0 16px;
+}
+
+.pattern-instruction {
+  font-size: 1.1rem;
+  text-align: center;
+  color: var(--text);
+}
+
+.pattern-animal-targets {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+}
+
+.pattern-animal-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  padding: 24px;
+  background: var(--bg-card);
+  border: 3px dashed rgba(255,255,255,0.15);
+  border-radius: var(--radius-lg);
+  width: 220px;
+  transition: all 0.3s;
+}
+
+.pattern-animal-card.matched {
+  border-color: var(--gold);
+  box-shadow: 0 0 24px rgba(255, 215, 0, 0.25);
+}
+
+.pattern-animal-silhouette {
+  font-size: 5rem;
+  line-height: 1;
+  filter: brightness(0.85);
+}
+
+.pattern-animal-name {
+  font-size: 1.3rem;
+  font-weight: 700;
+  text-transform: capitalize;
+  color: var(--gold);
+}
+
+.pattern-drop-zone {
+  width: 90px;
+  height: 90px;
+  border-radius: 50%;
+  background: var(--bg-light);
+  border: 3px dashed rgba(255,255,255,0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2rem;
+  color: var(--text-muted);
+  overflow: hidden;
+}
+
+.pattern-drop-zone.matched {
+  border-color: var(--gold);
+  background: rgba(255, 215, 0, 0.1);
+}
+
+.pattern-reveal-animal {
+  font-size: 4rem;
+  line-height: 1;
+  animation: popIn 0.5s ease-out;
+}
+
+.pattern-swatch-pool {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 16px;
+  width: 100%;
+  padding: 16px;
+  background: var(--bg-card);
+  border-radius: var(--radius-lg);
+}
+
+.pattern-swatch {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 12px;
+  background: var(--bg-light);
+  border: 2px solid rgba(255,255,255,0.1);
+  border-radius: var(--radius);
+  cursor: grab;
+  touch-action: none;
+  user-select: none;
+  transition: transform 0.15s, box-shadow 0.15s;
+}
+
+.pattern-swatch.dragging {
+  transform: scale(1.12);
+  box-shadow: 0 0 20px rgba(255, 215, 0, 0.4);
+  border-color: var(--gold);
+  z-index: 20;
+  transition: none;
+}
+
+.pattern-swatch-preview {
+  width: 70px;
+  height: 70px;
+  border-radius: 12px;
+  border: 2px solid rgba(255,255,255,0.2);
+}
+
+.pattern-swatch-label {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text);
+}
+
+/* Pattern textures */
+.pattern-stripes {
+  background: repeating-linear-gradient(
+    45deg,
+    #1a1a2e,
+    #1a1a2e 8px,
+    #ffd700 8px,
+    #ffd700 16px
+  );
+}
+
+.pattern-spots {
+  background-color: #1a1a2e;
+  background-image: radial-gradient(circle, #ff6b9d 25%, transparent 26%);
+  background-size: 18px 18px;
+}
+
+.pattern-scales {
+  background-color: #1a1a2e;
+  background-image: radial-gradient(circle at 50% 0, transparent 8px, #4ecdc4 9px, #4ecdc4 11px, transparent 12px);
+  background-size: 22px 22px;
+}
+
+.pattern-find-phase {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  padding: 24px;
+  text-align: center;
+}
+
+.pattern-find-emoji {
+  font-size: 4rem;
+  animation: findPulse 2s ease-in-out infinite;
+}
+
+.pattern-find-prompt {
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: var(--text);
+}
+
+/* --- Day 3: Rhythm Choir --- */
+.rhythm-stage {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  width: 100%;
+  padding: 0 16px;
+}
+
+.rhythm-conductor {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  max-width: 320px;
+}
+
+.rhythm-beat-bar {
+  width: 100%;
+  height: 12px;
+  background: rgba(255,255,255,0.1);
+  border-radius: 6px;
+  overflow: hidden;
+  transition: width 0.1s linear;
+}
+
+.rhythm-beat-bar::after {
+  content: '';
+  display: block;
+  width: 0%;
+  height: 100%;
+  background: linear-gradient(90deg, var(--gold), var(--orange));
+  border-radius: 6px;
+  transition: width 0.2s linear;
+}
+
+.rhythm-conductor-emoji {
+  font-size: 3rem;
+  animation: bounce 1s ease-in-out infinite;
+}
+
+.rhythm-instruction {
+  font-size: 1rem;
+  text-align: center;
+  color: var(--text);
+  min-height: 3rem;
+}
+
+.choir-grid {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 12px;
+  width: 100%;
+}
+
+.choir-animal {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 12px 14px;
+  min-width: 76px;
+  background: var(--bg-card);
+  border: 2px solid rgba(255,255,255,0.1);
+  border-radius: var(--radius);
+  color: var(--text);
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.choir-animal:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.choir-animal:active:not(:disabled) {
+  transform: scale(0.95);
+}
+
+.choir-animal.highlight {
+  border-color: var(--gold);
+  background: rgba(255, 215, 0, 0.2);
+  box-shadow: 0 0 18px rgba(255, 215, 0, 0.35);
+  animation: choirHighlight 0.4s ease-out;
+}
+
+@keyframes choirHighlight {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.15); }
+  100% { transform: scale(1); }
+}
+
+.choir-animal-emoji {
+  font-size: 2.4rem;
+  line-height: 1;
+}
+
+.choir-animal-name {
+  font-size: 0.8rem;
+  text-transform: capitalize;
+}
+
+.rhythm-sequence-display {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  min-height: 36px;
+}
+
+.rhythm-dot {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.2rem;
+  color: var(--text-muted);
+  transition: all 0.2s;
+}
+
+.rhythm-dot.filled {
+  background: rgba(255, 215, 0, 0.25);
+  color: var(--gold);
+  border: 2px solid var(--gold);
+}
+
+.rhythm-controls {
+  display: flex;
+  gap: 12px;
+}
+
+/* --- Day 4: Shadow Mimic --- */
+.dance-action-display .action-emoji {
+  font-size: 5rem;
+  filter: brightness(0.35);
+}
+
+.checklist-item.current {
+  border-color: var(--gold);
+  background: rgba(255, 215, 0, 0.1);
+}
+
+.checklist-item.done {
+  opacity: 0.6;
+}
+
+/* --- Day 5: Shelter Build & Description --- */
+.heart-phase-build,
+.heart-phase-description {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  width: 100%;
+  padding: 0 16px;
+}
+
+.build-stage {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  width: 100%;
+}
+
+.build-step-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  padding: 24px;
+  background: var(--bg-card);
+  border: 2px solid rgba(255,255,255,0.1);
+  border-radius: var(--radius-lg);
+  max-width: 340px;
+  width: 100%;
+  text-align: center;
+}
+
+.build-step-emoji {
+  font-size: 4rem;
+  line-height: 1;
+}
+
+.build-step-title {
+  font-size: 1.3rem;
+  color: var(--gold);
+  margin: 0;
+}
+
+.build-step-instruction {
+  font-size: 1rem;
+  color: var(--text);
+  line-height: 1.5;
+}
+
+.build-step-english {
+  font-size: 0.95rem;
+  color: var(--cyan);
+  font-style: italic;
+  background: rgba(78, 205, 196, 0.1);
+  padding: 8px 14px;
+  border-radius: var(--radius);
+}
+
+.build-progress-bar {
+  width: 100%;
+  max-width: 300px;
+  height: 10px;
+  background: rgba(255,255,255,0.1);
+  border-radius: 5px;
+  overflow: hidden;
+}
+
+.build-progress-fill {
+  height: 100%;
+  width: 0%;
+  background: linear-gradient(90deg, var(--green), var(--cyan));
+  border-radius: 5px;
+  transition: width 0.4s ease-out;
+}
+
+.description-stage {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  width: 100%;
+}
+
+.description-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  padding: 24px;
+  background: var(--bg-card);
+  border: 2px solid rgba(255,255,255,0.1);
+  border-radius: var(--radius-lg);
+  max-width: 340px;
+  width: 100%;
+  text-align: center;
+}
+
+.description-emoji {
+  font-size: 3.5rem;
+  line-height: 1;
+}
+
+.description-question {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.description-hint {
+  font-size: 0.95rem;
+  color: var(--text-muted);
+  font-style: italic;
+}
+
+.description-mic-area {
+  margin-top: 8px;
+}
+
+/* Small screens */
+@media (max-width: 360px) {
+  .pattern-animal-card { width: 180px; padding: 18px; }
+  .pattern-animal-silhouette { font-size: 4rem; }
+  .pattern-swatch-preview { width: 55px; height: 55px; }
+  .choir-animal { min-width: 64px; padding: 10px 12px; }
+  .choir-animal-emoji { font-size: 2rem; }
+  .footprint-option { min-width: 70px; padding: 12px 14px; }
+}
+
 /* Respect user's motion preference */
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {

@@ -34,12 +34,47 @@ const Storage = (() => {
 
   let state = defaultState();
 
+  /** Migrate old episode identifiers to current naming */
+  function migrate(saved) {
+    let changed = false;
+    const OLD = 'ep05-outdoor';
+    const NEW = 'week1-outdoor';
+
+    // migrate episodeId
+    if (saved.episodeId === OLD) { saved.episodeId = NEW; changed = true; }
+
+    // migrate completedEpisodes array
+    if (Array.isArray(saved.completedEpisodes)) {
+      const idx = saved.completedEpisodes.indexOf(OLD);
+      if (idx !== -1) { saved.completedEpisodes[idx] = NEW; changed = true; }
+    }
+
+    // migrate trophies episodeId
+    if (Array.isArray(saved.trophies)) {
+      for (const t of saved.trophies) {
+        if (t.episodeId === OLD) { t.episodeId = NEW; changed = true; }
+      }
+    }
+
+    // migrate rewards episodeId
+    if (Array.isArray(saved.rewards)) {
+      for (const r of saved.rewards) {
+        if (r.episodeId === OLD) { r.episodeId = NEW; changed = true; }
+      }
+    }
+
+    return changed;
+  }
+
   /** Load state from localStorage, merge with defaults */
   function load() {
     try {
       const raw = localStorage.getItem(KEY);
       if (raw) {
         const saved = JSON.parse(raw);
+        if (migrate(saved)) {
+          try { localStorage.setItem(KEY, JSON.stringify(saved)); } catch (e) { /* ignore */ }
+        }
         state = { ...defaultState(), ...saved };
       } else {
         state = defaultState();

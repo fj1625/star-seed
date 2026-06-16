@@ -1,13 +1,13 @@
 {
-  "episodeId": "ep05-outdoor",
-  "title": "Nature Explorer",
+  "episodeId": "week1-outdoor",
+  "title": "Week 1 Outdoor",
   "theme": "outdoor",
   "week": 0,
   "isStandalone": true,
   "trophy": {
     "id": "trophy_nature",
     "emoji": "🌿",
-    "name": "Nature Explorer Trophy"
+    "name": "Week 1 Outdoor Trophy"
   },
   "days": {
     "1": {
@@ -22,7 +22,7 @@
       },
       "tabLabel": "Day 1A",
       "title": "Nature Hunt",
-      "storyIntro": "Twinkle wants to explore the great outdoors! But first, we need to find the hidden nature cards. Look around the park — can you find all 6 cards?",
+      "storyIntro": "Twinkle wants to explore the great outdoors for the Week 1 Outdoor adventure! But first, we need to find the hidden nature cards. Look around the park — can you find all 6 cards?",
       "cards": [
         {
           "id": "leaf",
@@ -86,7 +86,7 @@
         }
       ],
       "targetWord": "NATURE",
-      "completionText": "N-A-T-U-R-E! That spells NATURE! You are a true Nature Explorer! 🍃"
+      "completionText": "N-A-T-U-R-E! That spells NATURE! You are a true Week 1 Outdoor explorer! 🍃"
     },
     "2": {
       "power": "Color",
@@ -346,7 +346,7 @@
         "emoji": "🌱",
         "name": "Nature Seed",
         "message": "Twinkle gives you a Nature Seed!",
-        "voiceText": "You got a Nature Seed! You are a Nature Explorer!"
+        "voiceText": "You got a Nature Seed! You are a Week 1 Outdoor explorer!"
       },
       "tabLabel": "Day 2C",
       "title": "Campfire Story",
@@ -390,10 +390,10 @@
       "puzzleMessage": "One piece is missing... Ask your Earth Helper for the Heart Piece!",
       "plantMessage": "Earth Helper: give your child the seed they found today! Let's plant it together!",
       "countdownText": "Plant the seed now!",
-      "certificateTitle": "Nature Explorer Certificate",
+      "certificateTitle": "Week 1 Outdoor Certificate",
       "certificateText": "This certifies that",
-      "certificateSubtext": "has completed the Nature Explorer outdoor adventure! You found nature's treasures, mixed its colors, heard its sounds, moved like its creatures, and planted a seed for the future! The star seed is now growing in nature!",
-      "completionText": "We did it! You're a true Nature Explorer! Twinkle is now a little tree in YOUR world! 🌱✨"
+      "certificateSubtext": "has completed the Week 1 Outdoor adventure! You found nature's treasures, mixed its colors, heard its sounds, moved like its creatures, and planted a seed for the future! The star seed is now growing in nature!",
+      "completionText": "We did it! You're a true Week 1 Outdoor explorer! Twinkle is now a little tree in YOUR world! 🌱✨"
     }
   },
   "vocabulary": {

@@ -988,17 +988,17 @@ const EngineHeart = (() => {
     if (!container) return;
 
     const state = Storage.getState();
-    const isOutdoor = state.episodeId === 'ep05-outdoor';
+    const isOutdoor = state.episodeId === 'week1-outdoor';
     const ep01Completed = state.completedEpisodes.includes('ep01');
     const ep02Completed = state.completedEpisodes.includes('ep02');
 
     // Outdoor certificate: show "Back to Main Game" link
     if (isOutdoor) {
-      if (heading) heading.textContent = 'You are a Nature Explorer! 🌿';
+      if (heading) heading.textContent = 'You are a Week 1 Outdoor explorer! 🌿';
       container.innerHTML = `
         <div class="preview-week completed" style="justify-content:center">
           <span class="preview-icon">🌿</span>
-          <span class="preview-label">Nature Explorer — Complete!</span>
+          <span class="preview-label">Week 1 Outdoor — Complete!</span>
           <span class="preview-status">✅</span>
         </div>
         <div class="preview-week unlocked" style="justify-content:center">

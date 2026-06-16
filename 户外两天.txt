@@ -10,10 +10,10 @@ Design 2: Outdoor Standalone Episode (户外独立关卡)
 数据结构
 
 {
-  "episodeId": "ep05-outdoor",
-  "title": "Nature Explorer",
+  "episodeId": "week1-outdoor",
+  "title": "Week 1 Outdoor",
   "theme": "outdoor",
-  "week": 5,
+  "week": 1,
   "isStandalone": true,
   "days": {
     "1": { /* Day 1: Nature Hunt + Color Challenge */ },
@@ -22,7 +22,7 @@ Design 2: Outdoor Standalone Episode (户外独立关卡)
   "vocabulary": { ... }
 }
 
-Day 1: Nature Explorer (自然探索者)
+Day 1: Week 1 Outdoor — Nature Hunt (自然探索者)
 
 内容量：≈ 现有 Day 1 + Day 2 的总和
 
@@ -105,7 +105,7 @@ Phase C: 篝火故事 (Heart 引擎变体)
   - 家长："What color was it?"
   - 孩子："It was [color]!"
 - 故事创作：孩子编一个关于自然的小故事
-- 证书："Nature Explorer Certificate"
+- 证书："Week 1 Outdoor Certificate"
 - 种植仪式：种下 Day 1 找到的 seed，说 "Grow little seed, grow!"
 
 Day 2 完成奖励：获得 "Nature Heart" 力量，Twinkle 变成一棵小树

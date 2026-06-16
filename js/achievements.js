@@ -23,7 +23,7 @@ const Achievements = (() => {
   const EPISODE_TROPHIES = {
     ep01: { id: 'trophy_home',    emoji: '🏠', name: 'Home Guardian Trophy' },
     ep02: { id: 'trophy_animals', emoji: '🐾', name: 'Animal Friend Trophy' },
-    ep05: { id: 'trophy_nature',  emoji: '🌿', name: 'Nature Explorer Trophy' }
+    'week1-outdoor': { id: 'trophy_nature',  emoji: '🌿', name: 'Week 1 Outdoor Trophy' }
   };
 
   // Long-term achievement table.
@@ -89,8 +89,8 @@ const Achievements = (() => {
       id: 'secret_seeker',
       emoji: '🌿',
       name: 'Secret Seeker',
-      desc: 'Unlock the secret outdoor adventure.',
-      check: s => s.completedEpisodes.includes('ep05-outdoor')
+      desc: 'Unlock the secret Week 1 Outdoor adventure.',
+      check: s => s.completedEpisodes.includes('week1-outdoor')
     }
   ];
 

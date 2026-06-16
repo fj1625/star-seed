@@ -160,14 +160,20 @@ const EngineLight = (() => {
       if (!input) return;
       input.value = '';
       input.addEventListener('input', (e) => {
-        const val = e.target.value.replace(/[^0-9]/g, '');
-        e.target.value = val.slice(0, 1);
-        if (val && i < 2) {
+        const rawVal = e.target.value.replace(/[^0-9]/g, '');
+        const cleanVal = rawVal.slice(0, 1);
+        // Only rewrite if the value actually changed — avoid recursive input events
+        const changed = e.target.value !== cleanVal;
+        if (changed) {
+          e.target.value = cleanVal;
+          return; // the programmatic value change fires another input, which will handle focus/submit
+        }
+        if (cleanVal && i < 2) {
           const next = [d1, d2, d3][i + 1];
           if (next) next.focus();
         }
-        // If last digit entered, auto-submit
-        if (val && i === 2) {
+        // If last digit entered, auto-submit (only once since changed is false here)
+        if (cleanVal && i === 2) {
           setTimeout(() => btn?.click(), 300);
         }
       });
@@ -180,7 +186,10 @@ const EngineLight = (() => {
     });
 
     if (btn) {
+      let btnProcessing = false;
       btn.onclick = async () => {
+        if (btnProcessing) return;
+        btnProcessing = true;
         const entered = `${d1?.value || ''}${d2?.value || ''}${d3?.value || ''}`;
         if (entered === card.code) {
           // Correct code — now match the footprint if this episode uses them
@@ -197,6 +206,7 @@ const EngineLight = (() => {
           }
           Audio.speak('Not quite right. Try again!', { rate: 0.9 });
         }
+        btnProcessing = false;
       };
     }
 

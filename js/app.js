@@ -23,7 +23,7 @@ const App = (() => {
     const known = [
       { id: 'ep01', title: 'My Home', emoji: '🏠', dataUrl: 'data/ep01-home.json' },
       { id: 'ep02', title: 'Animals', emoji: '🐾', dataUrl: 'data/episodes/ep02-animals.json' },
-      { id: 'ep05-outdoor', title: 'Nature Explorer', emoji: '🌿', dataUrl: 'data/ep05-outdoor.json', hidden: true }
+      { id: 'week1-outdoor', title: 'Week 1 Outdoor', emoji: '🌿', dataUrl: 'data/week1-outdoor.json', hidden: true }
     ];
     // Verify which ones exist
     const available = [];
@@ -246,7 +246,7 @@ const App = (() => {
           <p>New animal friends are waiting for you!</p>
         `,
         0: `
-          <p>Twinkle is ready for an <strong>outdoor adventure</strong>!</p>
+          <p>Twinkle is ready for the <strong>Week 1 Outdoor</strong> adventure!</p>
           <p>Let's explore <strong>nature</strong> together!</p>
           <p>Find treasures, mix colors, hear wild sounds,</p>
           <p>and move like animals in the wild!</p>
@@ -258,8 +258,9 @@ const App = (() => {
     // Update parent note link
     const parentNote = document.querySelector('.intro-parent-note a');
     if (parentNote) {
-      const epNum = episodeData.episodeId.match(/^ep(\d+)/)?.[1] || '01';
-      parentNote.href = `printable/ep${epNum}-printable.html`;
+      const epMatch = episodeData.episodeId.match(/^ep(\d+)$/);
+      const printableName = epMatch ? `ep${epMatch[1]}-printable` : `${episodeData.episodeId}-printable`;
+      parentNote.href = `printable/${printableName}.html`;
     }
 
     // Update footer
@@ -397,11 +398,11 @@ const App = (() => {
         closeModal();
         // Switch to outdoor episode
         // Make sure it's in the episode list for loading
-        const found = episodeList.find(ep => ep.id === 'ep05-outdoor');
+        const found = episodeList.find(ep => ep.id === 'week1-outdoor');
         if (!found) {
-          episodeList.push({ id: 'ep05-outdoor', title: 'Nature Explorer', emoji: '🌿', dataUrl: 'data/ep05-outdoor.json', hidden: true });
+          episodeList.push({ id: 'week1-outdoor', title: 'Week 1 Outdoor', emoji: '🌿', dataUrl: 'data/week1-outdoor.json', hidden: true });
         }
-        await switchEpisode('ep05-outdoor');
+        await switchEpisode('week1-outdoor');
       } else {
         if (hintEl) hintEl.style.display = 'block';
         if (codeInput) { codeInput.value = ''; codeInput.focus(); }
@@ -442,6 +443,25 @@ const App = (() => {
     updateDayIndicator(name);
   }
 
+  /** Pick the right engine for a day based on the loaded episode data */
+  function getEngineForDay(day) {
+    const dayData = episodeData && episodeData.days && episodeData.days[String(day)];
+    if (!dayData) return null;
+    switch (day) {
+      case 1: return EngineLight;
+      case 2:
+        if (dayData.colors) return EngineColor;
+        if (dayData.patternAnimals || dayData.patterns) return EnginePattern;
+        return EngineColor;
+      case 3:
+        if (dayData.choirAnimals && dayData.rounds) return EngineRhythm;
+        return EngineSound;
+      case 4: return EngineMotion;
+      case 5: return EngineHeart;
+      default: return null;
+    }
+  }
+
   /** Navigate to a day scene */
   function goToDay(day) {
     if (day >= 1 && day <= 5) {
@@ -452,14 +472,7 @@ const App = (() => {
         }
         showScene(`day${day}`);
         // Init the engine for this day
-        const engineMap = {
-          1: EngineLight,
-          2: EnginePattern,
-          3: EngineRhythm,
-          4: EngineMotion,
-          5: EngineHeart
-        };
-        activeEngine = engineMap[day] || null;
+        activeEngine = getEngineForDay(day);
         if (activeEngine && activeEngine.start) {
           activeEngine.start();
         }
@@ -561,20 +574,14 @@ const App = (() => {
     if (unlockHint) unlockHint.style.display = 'none';
 
     // Outdoor: only lock after Day 1B (app day 2). Normal: lock after days 1-4.
-    const isOutdoor = currentEpisodeId === 'ep05-outdoor';
+    const isOutdoor = currentEpisodeId === 'week1-outdoor';
     const needsParentLock = isOutdoor ? (day === 2) : (day < 5);
 
     const goToNextDay = () => {
       overlay.style.display = 'none';
       overlay.setAttribute('aria-hidden', 'true');
       showScene(`day${day + 1}`);
-      const nextEngineMap = {
-        2: EnginePattern,
-        3: EngineRhythm,
-        4: EngineMotion,
-        5: EngineHeart
-      };
-      activeEngine = nextEngineMap[day + 1] || null;
+      activeEngine = getEngineForDay(day + 1);
       if (activeEngine && activeEngine.start) activeEngine.start();
     };
 
@@ -1081,8 +1088,8 @@ const App = (() => {
     const dayGrid = document.getElementById('intro-day-grid');
     if (!dayGrid) return;
 
-    // Custom labels for outdoor episode
-    const isOutdoor = currentEpisodeId === 'ep05-outdoor';
+    // Custom labels for Week 1 Outdoor episode
+    const isOutdoor = currentEpisodeId === 'week1-outdoor';
     const outdoorLabels = { 1: '🔦 Day 1A', 2: '🌈 Day 1B', 3: '🎵 Day 2A', 4: '🤸 Day 2B', 5: '❤️ Day 2C' };
 
     const buttons = dayGrid.querySelectorAll('.intro-day-btn');

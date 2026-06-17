@@ -340,24 +340,30 @@ const EngineHeart = (() => {
     // Hide code entry initially
     if (codeEntry) codeEntry.style.display = 'none';
 
+    const locations = data.days?.['5']?.memoryLocations || [];
     const questions = data.days?.['5']?.recallQuestions || [];
-    if (!questions.length) {
-      console.warn('[EngineHeart] no recallQuestions, skipping recall challenge');
+
+    if (locations.length > 0) {
+      // Use memory treasure hunt (preferred)
+      await startMemoryTreasureHunt(locations);
+    } else if (questions.length > 0) {
+      // Fallback: original Q&A mode
+      for (let i = 0; i < questions.length; i++) {
+        const q = questions[i];
+        const success = await askRecallQuestion(q, i + 1, questions.length);
+        if (success) {
+          unlockPuzzlePiece(q.puzzlePiecePower);
+          await Audio.speak(`Yes! ${q.hint}`, { rate: 0.85 });
+          await Utils.sleep(800);
+        }
+      }
+    } else {
+      console.warn('[EngineHeart] no memoryLocations or recallQuestions, skipping recall challenge');
       showCodeEntry();
       return;
     }
 
-    for (let i = 0; i < questions.length; i++) {
-      const q = questions[i];
-      const success = await askRecallQuestion(q, i + 1, questions.length);
-      if (success) {
-        unlockPuzzlePiece(q.puzzlePiecePower);
-        await Audio.speak(`Yes! ${q.hint}`, { rate: 0.85 });
-        await Utils.sleep(800);
-      }
-    }
-
-    // All questions answered
+    // All done
     if (speechEl) {
       speechEl.innerHTML = `<div class="speech-bubble happy">All pieces are back! Now complete the heart!</div>`;
     }
@@ -367,6 +373,159 @@ const EngineHeart = (() => {
     if (codeEntry) codeEntry.style.display = 'block';
     setupHeartCodeEntry();
   }
+
+  // ==================== MEMORY TREASURE HUNT ====================
+
+  async function startMemoryTreasureHunt(locations) {
+    const puzzlePhase = document.getElementById('heart-phase-puzzle');
+    const speechEl = document.getElementById('day5-speech');
+
+    // Intro: set up the treasure hunt
+    if (speechEl) {
+      speechEl.innerHTML = `<div class="speech-bubble">Twinkle's memories are scattered around your home! Can you find them? 🗺️</div>`;
+    }
+    await Audio.speak('My memories are scattered around your home! Run and find them! Earth Helper, follow along!', { rate: 0.85 });
+
+    // Create hunt area
+    let huntArea = document.getElementById('memory-hunt-area');
+    if (!huntArea) {
+      huntArea = document.createElement('div');
+      huntArea.id = 'memory-hunt-area';
+      huntArea.className = 'memory-hunt';
+      if (puzzlePhase) puzzlePhase.appendChild(huntArea);
+    }
+
+    for (let i = 0; i < locations.length; i++) {
+      const loc = locations[i];
+      huntArea.style.display = 'block';
+      const success = await showMemoryLocation(loc, i + 1, locations.length, huntArea);
+      if (success) {
+        unlockPuzzlePiece(loc.puzzlePiecePower);
+        await Audio.speak(`Yes! ${loc.hintAnswer}`, { rate: 0.85 });
+        await Utils.sleep(800);
+      }
+    }
+
+    // Hide hunt area after done
+    if (huntArea) huntArea.style.display = 'none';
+  }
+
+  async function showMemoryLocation(loc, current, total, huntArea) {
+    const speechEl = document.getElementById('day5-speech');
+
+    // Phase 1: Show the location clue — child runs there
+    huntArea.innerHTML = `
+      <div class="memory-card animate-pop">
+        <div class="memory-progress">📍 Memory ${current} of ${total}</div>
+        <div class="memory-day-badge">Day ${loc.day} ${loc.emoji}</div>
+        <div class="memory-location-emoji">${loc.emoji}</div>
+        <p class="memory-hint">${loc.hint}</p>
+        <p class="memory-location-label">🏃 Find: <strong>${loc.locationName}</strong></p>
+        <button class="btn btn-primary btn-large" id="btn-memory-arrived">✅ We're here!</button>
+      </div>
+    `;
+
+    if (speechEl) {
+      speechEl.innerHTML = `<div class="speech-bubble">${loc.hint}</div>`;
+    }
+    await Audio.speak(loc.hint, { rate: 0.85 });
+
+    // Wait for parent to confirm arrival
+    await new Promise((resolve) => {
+      setTimeout(() => {
+        const arrivedBtn = document.getElementById('btn-memory-arrived');
+        arrivedBtn?.addEventListener('click', async () => {
+          arrivedBtn.disabled = true;
+          arrivedBtn.textContent = '📍 Found it!';
+          resolve();
+        });
+      }, 200);
+    });
+
+    // Phase 2: Ask the recall question at the location
+    huntArea.innerHTML = `
+      <div class="memory-card animate-pop">
+        <div class="memory-progress">📍 Memory ${current} of ${total} — ${loc.emoji} ${loc.locationName}</div>
+        <p class="memory-question">${loc.arrivedPrompt}</p>
+        <div class="voice-mic-area">
+          <button class="btn btn-mic" id="memory-mic-btn">🎤 Tap to Answer</button>
+          <p class="voice-status" id="memory-voice-status"></p>
+        </div>
+        <div class="voice-fallback-container" id="memory-fallback"></div>
+        <button class="btn btn-skip" id="memory-skip-btn" style="margin-top:8px;">Skip →</button>
+      </div>
+    `;
+
+    if (speechEl) {
+      speechEl.innerHTML = `<div class="speech-bubble">${loc.arrivedPrompt}</div>`;
+    }
+    await Audio.speak(loc.arrivedPrompt, { rate: 0.85, cancelPrevious: true });
+
+    // Wait for answer
+    return new Promise((resolve) => {
+      const micBtn = document.getElementById('memory-mic-btn');
+      const statusEl = document.getElementById('memory-voice-status');
+      const skipBtn = document.getElementById('memory-skip-btn');
+      const fallbackContainer = document.getElementById('memory-fallback');
+
+      let resolved = false;
+
+      const checkAnswer = (text) => {
+        const lowerText = text.toLowerCase().trim();
+
+        if (loc.isOpenEnded) {
+          const day4Actions = data.days?.['4']?.actions || [];
+          return day4Actions.some(a => lowerText.includes(a.verb.toLowerCase()));
+        }
+
+        return loc.acceptedAnswers.some(ans => lowerText.includes(ans.toLowerCase()));
+      };
+
+      const onAnswer = (text) => {
+        if (resolved) return;
+        if (checkAnswer(text)) {
+          resolved = true;
+          if (statusEl) statusEl.innerHTML = '<span class="voice-heard">✅ Correct!</span>';
+          resolve(true);
+        } else {
+          if (statusEl) statusEl.innerHTML = `<span class="voice-error">💡 ${loc.hintAnswer}</span>`;
+          Audio.speak(`Not quite. ${loc.hintAnswer}`, { rate: 0.9 });
+        }
+      };
+
+      const onSkip = () => {
+        if (resolved) return;
+        resolved = true;
+        resolve(true);
+      };
+
+      if (micBtn) {
+        micBtn.addEventListener('click', () => {
+          VoiceInput.listen({
+            lang: 'en-US',
+            onResult: onAnswer,
+            onError: () => {
+              if (statusEl) statusEl.innerHTML = '<span class="voice-error">Try again or type below!</span>';
+            }
+          });
+        });
+      }
+
+      if (skipBtn) {
+        skipBtn.addEventListener('click', onSkip);
+      }
+
+      if (fallbackContainer) {
+        VoiceInput.renderFallbackInput(fallbackContainer, {
+          placeholder: 'Type your answer...',
+          buttonText: 'Check',
+          onSubmit: onAnswer
+        });
+      }
+    });
+  }
+
+  // ==================== ORIGINAL RECALL Q&A (fallback) ====================
 
   async function askRecallQuestion(q, current, total) {
     const puzzlePhase = document.getElementById('heart-phase-puzzle');

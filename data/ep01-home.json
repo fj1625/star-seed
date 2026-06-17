@@ -240,7 +240,12 @@
           "twinkleAnimation": "sway"
         }
       ],
-      "rounds": [2, 3, 4, 5],
+      "rounds": [
+        { "count": 2, "mode": "freeze", "dotEmoji": "🧊", "freezeCycles": 3 },
+        { "count": 3, "mode": "watch", "dotEmoji": "👀" },
+        { "count": 3, "mode": "create", "dotEmoji": "🎨", "watchCount": 2 },
+        { "count": 5, "mode": "watch", "dotEmoji": "💃" }
+      ],
       "completionText": "I can move! Look at me dance! You're the best dance teacher ever! 💃"
     },
     "5": {
@@ -256,6 +261,49 @@
       "title": "Heart of the Star",
       "storyIntro": "I have light, color, sound, and motion... but there's one more thing I need. The Heart power. Only someone who loves you can give it to me. Will you find them?",
       "heartPieceCode": "999",
+      "memoryLocations": [
+        {
+          "day": 1,
+          "emoji": "🪟",
+          "locationName": "the Window",
+          "hint": "Run to where the sunlight comes in! By the window! ☀️",
+          "arrivedPrompt": "What word did we spell with the 4 cards?",
+          "acceptedAnswers": ["star"],
+          "hintAnswer": "S-T-A-R! STAR!",
+          "puzzlePiecePower": "light"
+        },
+        {
+          "day": 2,
+          "emoji": "🍳",
+          "locationName": "the Kitchen",
+          "hint": "Find where yummy food is made! Run to the kitchen! 🍳",
+          "arrivedPrompt": "What color do red and blue make?",
+          "acceptedAnswers": ["purple"],
+          "hintAnswer": "Purple! Red + Blue = Purple! 💜",
+          "puzzlePiecePower": "color"
+        },
+        {
+          "day": 3,
+          "emoji": "🛁",
+          "locationName": "the Bathroom",
+          "hint": "Where does water splash and splish? Run to the bathroom! 🛁",
+          "arrivedPrompt": "Which animal says Ribbit?",
+          "acceptedAnswers": ["frog"],
+          "hintAnswer": "Frog! Ribbit ribbit! 🐸",
+          "puzzlePiecePower": "sound"
+        },
+        {
+          "day": 4,
+          "emoji": "🛋️",
+          "locationName": "the Living Room",
+          "hint": "Where do you dance and play? Run to the living room! 🛋️",
+          "arrivedPrompt": "Show me your favorite dance move! (Then tell me what it is!)",
+          "acceptedAnswers": [],
+          "hintAnswer": "Any dance move! Clap, jump, spin...",
+          "puzzlePiecePower": "motion",
+          "isOpenEnded": true
+        }
+      ],
       "recallQuestions": [
         {
           "day": 1,
